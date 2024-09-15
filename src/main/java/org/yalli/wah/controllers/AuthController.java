@@ -10,6 +10,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
+import org.yalli.wah.dtos.LoginDto;
 import org.yalli.wah.dtos.RegisterDto;
 import org.yalli.wah.models.User;
 import org.yalli.wah.payloads.ApiResponse;
@@ -46,19 +47,20 @@ public class AuthController {
     private UserDetailsService userDetailsService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestParam String email, @RequestParam String password) {
+    public ResponseEntity<?> login(@RequestBody LoginDto loginDto) {
         try {
-
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(email, password)
+                    new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword())
             );
 
-            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(loginDto.getEmail());
 
-            return ResponseEntity.ok().body("Login successful for user: " + userDetails.getUsername());
+            // You might want to generate and return a JWT token here for stateless authentication
+
+            return ResponseEntity.ok().body(new ApiResponse("Login successful for user: " + userDetails.getUsername(), true));
 
         } catch (AuthenticationException e) {
-            return ResponseEntity.status(401).body("Invalid email or password");
+            return ResponseEntity.status(401).body(new ApiResponse("Invalid email or password", false));
         }
     }
 }

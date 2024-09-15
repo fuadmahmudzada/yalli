@@ -2,6 +2,8 @@ package org.yalli.wah.services.impls;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.yalli.wah.dtos.RegisterDto;
@@ -44,7 +46,10 @@ public class UserServiceImpl implements UserService {
         String hashedPassword = passwordEncoder.encode(register.getPassword());
         String token = generateConfirmationToken();
 
-        User newUser = modelMapper.map(register, User.class);
+        User newUser = new User();
+        newUser.setEmail(register.getEmail());
+        newUser.setFirstName(register.getFirstName());
+        newUser.setLastName(register.getLastName());
         newUser.setEmailConfirmed(false);
         newUser.setConfirmationToken(token);
         newUser.setPassword(hashedPassword);
@@ -57,7 +62,6 @@ public class UserServiceImpl implements UserService {
 
         return modelMapper.map(savedUser, UserDto.class);
     }
-
     @Override
     public boolean confirmEmail(String email, String token) {
         Optional<User> userOptional = userRepository.findByEmail(email);
@@ -77,4 +81,6 @@ public class UserServiceImpl implements UserService {
     private String generateConfirmationToken() {
         return UUID.randomUUID().toString();
     }
+
+
 }

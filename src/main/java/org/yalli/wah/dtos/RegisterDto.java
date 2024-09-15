@@ -25,4 +25,5 @@ public class RegisterDto {
 //@NotBlank(message = "Password confirmation is required")
         private String passwordRepeat;
 
+
 }
