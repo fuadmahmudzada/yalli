@@ -48,14 +48,13 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestParam String email, @RequestParam String password) {
         try {
-            // Perform authentication
+
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(email, password)
             );
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
-            // You can return the authenticated user or a JWT token here
             return ResponseEntity.ok().body("Login successful for user: " + userDetails.getUsername());
 
         } catch (AuthenticationException e) {
