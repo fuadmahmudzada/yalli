@@ -9,17 +9,17 @@ import org.yalli.wah.services.EmailService;
 public class EmailServiceImpl implements EmailService {
 
     @Autowired
-    private JavaMailSender mailSender;  // Inject JavaMailSender to send emails
+    private JavaMailSender mailSender;
 
     @Override
     public void sendConfirmationEmail(String email, String token) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("your-email@domain.com");  // Sender email (should be valid)
+        message.setFrom("your-email@domain.com");
         message.setTo(email);  // Recipient email
 
         message.setSubject("Email Confirmation - Please verify your email");
 
-        // Construct the email confirmation URL
+
         String confirmationUrl = "http://localhost:2100/api/auth/confirm?email=" + email + "&token=" + token;
 
         // Email body message

@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ApiResponse {  // Add the generic type <T> here
+public class ApiResponse {
     private String message;
     private boolean success;
 

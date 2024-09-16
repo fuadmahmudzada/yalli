@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
     private ModelMapper modelMapper;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;  // Now autowire should work
+    private PasswordEncoder passwordEncoder;
     @Autowired
     private RoleRepository roleRepository;
     @Autowired
@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
         newUser.setConfirmationToken(token);
         newUser.setPassword(hashedPassword);
 
-        // Save the user in the database
+
         User savedUser = userRepository.save(newUser);
 
         // Send confirmation email
@@ -74,10 +74,10 @@ public class UserServiceImpl implements UserService {
         Optional<User> userOptional = userRepository.findByEmail(email);
 
         if (userOptional.isPresent()) {
-            User user = userOptional.get();  // Unwrap Optional
+            User user = userOptional.get();
             if (user.getConfirmationToken().equals(token)) {
                 user.setEmailConfirmed(true);
-                user.setConfirmationToken(null);  // Clear token after confirmation
+                user.setConfirmationToken(null);
                 userRepository.save(user);
                 return true;
             }
@@ -103,7 +103,7 @@ public class UserServiceImpl implements UserService {
         newUser.setPassword(passwordEncoder.encode(registerDto.getPassword()));
         newUser.setEmailConfirmed(true);  // Assume admin-created users are pre-confirmed
 
-        // Assign default role (e.g., "USER")
+
         Role userRole = roleRepository.findByName("USER")
                 .orElseThrow(() -> new RuntimeException("Default role not found"));
         newUser.setRoles(Collections.singletonList(userRole));

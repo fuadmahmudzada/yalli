@@ -55,7 +55,7 @@ public class AuthController {
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(loginDto.getEmail());
 
-            // You might want to generate and return a JWT token here for stateless authentication
+
 
             return ResponseEntity.ok().body(new ApiResponse("Login successful for user: " + userDetails.getUsername(), true));
 
