@@ -8,13 +8,19 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.yalli.wah.dtos.RegisterDto;
 import org.yalli.wah.dtos.UserDto;
+import org.yalli.wah.models.Role;
 import org.yalli.wah.models.User;
+import org.yalli.wah.repositories.RoleRepository;
 import org.yalli.wah.repositories.UserRepository;
 import org.yalli.wah.services.EmailService;
 import org.yalli.wah.services.UserService;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -26,7 +32,8 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;  // Now autowire should work
-
+    @Autowired
+    private RoleRepository roleRepository;
     @Autowired
     private EmailService emailService;
 
@@ -82,5 +89,27 @@ public class UserServiceImpl implements UserService {
         return UUID.randomUUID().toString();
     }
 
+    @Override
+    public List<UserDto> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return users.stream()
+                .map(user -> modelMapper.map(user, UserDto.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public UserDto createUser(RegisterDto registerDto) {
+        User newUser = modelMapper.map(registerDto, User.class);
+        newUser.setPassword(passwordEncoder.encode(registerDto.getPassword()));
+        newUser.setEmailConfirmed(true);  // Assume admin-created users are pre-confirmed
+
+        // Assign default role (e.g., "USER")
+        Role userRole = roleRepository.findByName("USER")
+                .orElseThrow(() -> new RuntimeException("Default role not found"));
+        newUser.setRoles(Collections.singletonList(userRole));
+
+        User savedUser = userRepository.save(newUser);
+        return modelMapper.map(savedUser, UserDto.class);
+    }
 
 }
