@@ -1,4 +1,4 @@
-package org.yalli.wah.dtos;
+package org.yalli.wah.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
