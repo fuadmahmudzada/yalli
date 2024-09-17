@@ -2,6 +2,8 @@ package org.yalli.wah.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,5 +31,10 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     public void register(@RequestBody RegisterDto registerDto) {
         userService.register(registerDto);
+    }
+
+    @PatchMapping("/refresh/token")
+    public HashMap<String,String> refreshToken(@RequestHeader(value = "access-token") String accessToken) {
+        return userService.refreshToken(accessToken);
     }
 }
