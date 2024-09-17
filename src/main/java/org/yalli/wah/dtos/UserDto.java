@@ -8,4 +8,5 @@ public class UserDto {
     private String firstName;
     private String lastName;
     private List<Long> roleIds;
+    private String otp;
 }

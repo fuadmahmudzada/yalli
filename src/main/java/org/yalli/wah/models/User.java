@@ -32,7 +32,8 @@ public class User {
 
     @Column(nullable = false)
     private Boolean emailConfirmed = false;
-
+    @Column(name = "otp", nullable = true)  // You can set nullable depending on your business logic
+    private String otp;
     private String confirmationToken;
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(

@@ -15,19 +15,24 @@ public class EmailServiceImpl implements EmailService {
     public void sendConfirmationEmail(String email, String token) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("your-email@domain.com");
-        message.setTo(email);  // Recipient email
+        message.setTo(email);
 
-        message.setSubject("Email Confirmation - Please verify your email");
+        message.setSubject("Email Confirmation - Your OTP Code");
 
-
-        String confirmationUrl = "http://localhost:2100/api/auth/confirm?email=" + email + "&token=" + token;
-
-        // Email body message
-        String emailBody = String.format("Dear User,\n\nPlease confirm your email by clicking the link below:\n%s\n\nThanks,\nYour Team", confirmationUrl);
+        // Email body with OTP token instead of a link
+        String emailBody = String.format("Dear User,\n\nYour OTP for email verification is: %s\n\nPlease enter this code in the app to verify your email.\n\nThanks,\nYour Team", token);
 
         message.setText(emailBody);
 
         // Send the email
+        mailSender.send(message);
+    }
+    @Override
+    public void sendOtpEmail(String email, String otp) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(email);
+        message.setSubject("Password Reset OTP");
+        message.setText("Your OTP code is: " + otp);
         mailSender.send(message);
     }
 }

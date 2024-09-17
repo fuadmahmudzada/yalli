@@ -2,6 +2,7 @@ package org.yalli.wah.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -10,6 +11,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
+import org.yalli.wah.dtos.ConfirmEmailRequest;
 import org.yalli.wah.dtos.LoginDto;
 import org.yalli.wah.dtos.RegisterDto;
 import org.yalli.wah.models.User;
@@ -32,13 +34,14 @@ public class AuthController {
         return ResponseEntity.ok(new ApiResponse("User registered successfully. Check your email for confirmation link.", true));
     }
 
-    @GetMapping("/confirm")
-    public ResponseEntity<ApiResponse> confirmEmail(@RequestParam String email, @RequestParam String token) {
-        boolean isConfirmed = userService.confirmEmail(email, token);
-        if (!isConfirmed) {
-            return ResponseEntity.badRequest().body(new ApiResponse("Invalid confirmation link", false));
+    @PostMapping("/confirm")
+    public ResponseEntity<ApiResponse> confirmEmail(@RequestBody ConfirmEmailRequest confirmEmailRequest) {
+        boolean isConfirmed = userService.confirmEmail(confirmEmailRequest.getEmail(), confirmEmailRequest.getOtp());
+        if (isConfirmed) {
+            return ResponseEntity.ok(new ApiResponse("Email successfully confirmed.", true));
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse("Invalid OTP. Please try again.", false));
         }
-        return ResponseEntity.ok(new ApiResponse("Email confirmed successfully", true));
     }
     @Autowired
     private AuthenticationManager authenticationManager;
