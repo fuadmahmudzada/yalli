@@ -1,14 +1,14 @@
 package org.yalli.wah.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class EmailService {
-    @Autowired
-    JavaMailSender mailSender;
+    private final JavaMailSender mailSender;
 
     public void sendConfirmationEmail(String email,String otp){
         SimpleMailMessage message = new SimpleMailMessage();
@@ -20,6 +20,7 @@ public class EmailService {
         message.setText(emailBody);
         mailSender.send(message);
     }
+
     public void sendOtp(String email, String otp) {
 
         SimpleMailMessage message = new SimpleMailMessage();
