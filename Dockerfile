@@ -15,7 +15,9 @@ RUN ./gradlew build --no-daemon
 
 FROM eclipse-temurin:21-jre-alpine
 
-COPY --from=build /build/libs/yalli-0.0.1-SNAPSHOT.jar app.jar
+WORKDIR /app
+
+COPY --from=build /app/build/libs/yalli-0.0.1-SNAPSHOT.jar app.jar
 
 EXPOSE 8080
 
