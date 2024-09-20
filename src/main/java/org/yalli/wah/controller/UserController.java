@@ -27,50 +27,48 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/login")
-    @Operation(summary = "Get greeting message")
-
+    @Operation(summary = "login")
     public HashMap<String, String> login(@RequestBody LoginDto loginDto) {
         return userService.login(loginDto);
     }
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Get greeting message")
-
+    @Operation(summary = "signup and sending mail for otp verification")
     public void register(@RequestBody RegisterDto registerDto) {
         userService.register(registerDto);
     }
 
     @PatchMapping("/refresh/token")
-    @Operation(summary = "Get greeting message")
+    @Operation(summary = "refresh access token")
     public HashMap<String, String> refreshToken(@RequestHeader(value = "access-token") String accessToken) {
         return userService.refreshToken(accessToken);
     }
 
     @PostMapping("/confirm")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(summary = "Get greeting message")
+    @Operation(summary = "confirming mail with otp verification")
     public void confirm(@RequestBody ConfirmDto confirmDto) {
         userService.confirmEmail(confirmDto);
     }
 
     @PostMapping("/reset-password/request")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(summary = "Get greeting message")
+    @Operation(summary = "send otp for password reset")
     public void requestPasswordReset(String email) {
         userService.requestPasswordReset(email);
     }
 
     @PostMapping("/reset-password/verify")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(summary = "Get greeting message")
+    @Operation(summary = "verify otp for password reset")
     public void verifyOtp(@RequestBody ConfirmDto confirmDto) {
         userService.verifyOtp(confirmDto);
     }
 
 
     @PostMapping("/reset-password")
-    @Operation(summary = "Get greeting message")
+    @Operation(summary = "change user password")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void resetPassword(@RequestBody PasswordResetDto passwordResetDto) {
         userService.resetPassword(passwordResetDto);

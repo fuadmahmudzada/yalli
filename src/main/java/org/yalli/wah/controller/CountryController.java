@@ -1,5 +1,6 @@
 package org.yalli.wah.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,7 @@ public class CountryController {
     private final CountryService countryService;
 
     @GetMapping
+    @Operation(summary = "Get all countries")
     public List<CountryDto> getCountries() {
         return countryService.getCountries();
     }
