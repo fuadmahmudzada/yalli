@@ -6,3 +6,17 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+  mail:
+    host: smtp.gmail.com
+    username: texnoera.academy@gmail.com
+    password: sjqmzjnzbyxxlusr
+    port: 587
+    properties:
+      mail.smtp:
+        auth: true
+        starttls:
+          enable: true
+          required: true
+springdoc:
+  swagger-ui:
+    path: /api-docs
