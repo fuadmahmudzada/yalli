@@ -17,7 +17,6 @@ import org.yalli.wah.model.dto.RegisterDto;
 import org.yalli.wah.service.UserService;
 
 import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/v1/users")
