@@ -1,8 +1,10 @@
 spring:
   datasource:
-    username: postgres
-    password: mysecretpassword
-    url: jdbc:postgresql://localhost:5432/postgres
+    username:
+    password:
+    url:
   jpa:
     hibernate:
       ddl-auto: update
+server:
+  port: 8085

@@ -1,10 +1,6 @@
 package org.yalli.wah.dao.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -34,4 +30,13 @@ public class UserEntity {
     private LocalDateTime createdAt;
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    private String otp;
+    private LocalDateTime otpExpiration;
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean otpVerified;
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean emailConfirmed = false;
+
+
 }
