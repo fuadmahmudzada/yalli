@@ -2,8 +2,6 @@ package org.yalli.wah.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.yalli.wah.dao.entity.UserEntity;
 import org.yalli.wah.dao.repository.UserRepository;
@@ -58,6 +56,9 @@ public class UserService {
 
     public void register(RegisterDto registerDto) {
         log.info("ActionLog.register.start email {}", registerDto.getEmail());
+        userRepository.findByEmail(registerDto.getEmail()).ifPresent((user) -> {
+            throw new InvalidInputException("EMAIL_ALREADY_EXISTS");
+        });
         UserEntity userEntity = UserMapper.INSTANCE.mapRegisterDtoToUser(registerDto);
         userEntity.setPassword(passwordUtil.encode(userEntity.getPassword()));
 

@@ -1,8 +1,9 @@
 package org.yalli.wah.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -17,14 +18,13 @@ import org.yalli.wah.model.dto.RegisterDto;
 import org.yalli.wah.service.UserService;
 
 import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/v1/users")
+@CrossOrigin
+@RequiredArgsConstructor
 public class UserController {
-
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
     @PostMapping("/login")
     @Operation(summary = "login")
