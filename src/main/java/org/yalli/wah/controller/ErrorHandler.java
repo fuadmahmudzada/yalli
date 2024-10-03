@@ -12,6 +12,7 @@ import org.yalli.wah.model.exception.ResourceNotFoundException;
 
 @RestControllerAdvice
 public class ErrorHandler {
+
     @ExceptionHandler(InvalidInputException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ExceptionResponse handle(InvalidInputException e) {

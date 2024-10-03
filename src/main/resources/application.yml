@@ -17,6 +17,15 @@ spring:
         starttls:
           enable: true
           required: true
+  servlet:
+    multipart:
+      max-request-size: 10MB
+      max-file-size: 10MB
 springdoc:
   swagger-ui:
     path: /api-docs
+minio:
+  url: https://minio-server-4oyt.onrender.com
+  access-key: 9yziQu2sw0MTnK0xIeN6
+  secret-key: uOKm2IdEIdSZKxQWTTRy6O6IO3oDXCFvpzwRzYzl
+  name: yalli

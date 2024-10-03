@@ -6,8 +6,10 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.yalli.wah.model.enums.SocialMedia;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -23,4 +25,5 @@ public class RegisterDto {
     private String country;
     @NotNull
     private LocalDate birthDate;
+    private Map<SocialMedia,String>socialMediaLinks;
 }
