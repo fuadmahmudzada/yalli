@@ -1,14 +1,25 @@
 package org.yalli.wah.dao.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.type.SqlTypes;
+import org.yalli.wah.enums.SocialMedia;
+
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @Entity
 @Table(name = "users")
@@ -30,13 +41,16 @@ public class UserEntity {
     private LocalDateTime createdAt;
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+    private String profilePictureUrl;
 
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "account_urls")
+    private Map<SocialMedia, String> socialMediaAccounts = new HashMap<>();
     private String otp;
     private LocalDateTime otpExpiration;
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean otpVerified;
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean emailConfirmed = false;
-
 
 }

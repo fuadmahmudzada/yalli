@@ -2,7 +2,13 @@ package org.yalli.wah.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import org.yalli.wah.model.dto.*;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -24,6 +30,7 @@ import java.util.HashMap;
 @CrossOrigin
 @RequiredArgsConstructor
 public class UserController {
+
     private final UserService userService;
 
     @PostMapping("/login")
@@ -72,5 +79,15 @@ public class UserController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void resetPassword(@RequestBody PasswordResetDto passwordResetDto) {
         userService.resetPassword(passwordResetDto);
+    }
+
+    @GetMapping("/search")
+    @ResponseStatus(HttpStatus.OK)
+    public Page<MemberDto> searchUsers(
+            @RequestParam(name = "fullName", required = false) String fullName,
+            @RequestParam(name = "country", required = false) String country,
+            Pageable pageable
+    ) {
+        return userService.searchUsers(fullName, country, pageable);
     }
 }
