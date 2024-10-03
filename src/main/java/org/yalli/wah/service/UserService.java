@@ -14,7 +14,6 @@ import org.yalli.wah.model.dto.LoginDto;
 import org.yalli.wah.model.dto.MemberDto;
 import org.yalli.wah.model.dto.PasswordResetDto;
 import org.yalli.wah.model.dto.RegisterDto;
-import org.yalli.wah.model.dto.UserSearchDto;
 import org.yalli.wah.model.exception.InvalidInputException;
 import org.yalli.wah.model.exception.InvalidOtpException;
 import org.yalli.wah.model.exception.PermissionException;
@@ -189,10 +188,8 @@ public class UserService {
 
     public Page<MemberDto> searchUsers(String fullName, String country, Pageable pageable) {
         log.info("ActionLog.searchUsers.start fullName {}, country {}", fullName, country);
-
         Specification<UserEntity> spec = Specification.where(UserSpecification.hasFullName(fullName))
                 .and(UserSpecification.hasCountry(country));
-
 
         Page<UserEntity> userEntities = userRepository.findAll(spec, pageable);
         log.info("ActionLog.searchUsers.end fullName {}, country {}", fullName, country);

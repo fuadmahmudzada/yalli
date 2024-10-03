@@ -3,7 +3,7 @@ package org.yalli.wah.model.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.yalli.wah.enums.SocialMedia;
+import org.yalli.wah.model.enums.SocialMedia;
 
 import java.util.Map;
 
