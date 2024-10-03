@@ -1,4 +1,4 @@
-package org.yalli.wah.enums;
+package org.yalli.wah.model.enums;
 
 public enum SocialMedia {
     FACEBOOK,

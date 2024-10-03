@@ -5,6 +5,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,12 +16,13 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
-import org.yalli.wah.enums.SocialMedia;
+import org.yalli.wah.model.enums.SocialMedia;
 
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Entity
@@ -42,6 +46,13 @@ public class UserEntity {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
     private String profilePictureUrl;
+    @ManyToMany
+    @JoinTable(
+            name = "user_saved_events",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "event_id")
+    )
+    private List<EventEntity> savedEvents;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "account_urls")
@@ -52,5 +63,4 @@ public class UserEntity {
     private boolean otpVerified;
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean emailConfirmed = false;
-
 }

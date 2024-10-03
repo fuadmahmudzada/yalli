@@ -2,7 +2,7 @@ package org.yalli.wah.dao.repository;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.yalli.wah.dao.entity.MentorEntity;
-import org.yalli.wah.enums.MentorCategory;
+import org.yalli.wah.model.enums.MentorCategory;
 
 public class MentorSpecification {
 

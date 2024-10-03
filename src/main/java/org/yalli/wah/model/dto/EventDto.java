@@ -3,13 +3,15 @@ package org.yalli.wah.model.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.yalli.wah.model.enums.GroupCategory;
 
-@NoArgsConstructor
+import java.time.LocalDate;
+
 @AllArgsConstructor
+@NoArgsConstructor
 @Data
-public class GroupSearchRequest {
+public class EventDto {
     private String title;
+    private LocalDate date;
     private String country;
-    private GroupCategory category;
+    private String link;
 }

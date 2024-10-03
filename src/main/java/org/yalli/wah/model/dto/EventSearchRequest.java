@@ -3,13 +3,13 @@ package org.yalli.wah.model.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.yalli.wah.model.enums.GroupCategory;
+import org.yalli.wah.model.enums.EventCategory;
 
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Data
-public class GroupSearchRequest {
+public class EventSearchRequest {
     private String title;
     private String country;
-    private GroupCategory category;
+    private EventCategory category;
 }

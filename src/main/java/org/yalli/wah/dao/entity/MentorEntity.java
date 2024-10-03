@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.yalli.wah.enums.MentorCategory;
+import org.yalli.wah.model.enums.MentorCategory;
 
 import java.time.LocalDateTime;
 

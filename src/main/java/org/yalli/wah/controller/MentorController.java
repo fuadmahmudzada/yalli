@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.yalli.wah.enums.MentorCategory;
+import org.yalli.wah.model.enums.MentorCategory;
 import org.yalli.wah.model.dto.MentorSearchDto;
 import org.yalli.wah.service.MentorService;
 
