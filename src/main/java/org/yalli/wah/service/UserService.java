@@ -2,12 +2,16 @@ package org.yalli.wah.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.yalli.wah.dao.entity.UserEntity;
 import org.yalli.wah.dao.repository.UserRepository;
 import org.yalli.wah.mapper.UserMapper;
 import org.yalli.wah.model.dto.ConfirmDto;
 import org.yalli.wah.model.dto.LoginDto;
+import org.yalli.wah.model.dto.MemberDto;
 import org.yalli.wah.model.dto.PasswordResetDto;
 import org.yalli.wah.model.dto.RegisterDto;
 import org.yalli.wah.model.exception.InvalidInputException;
@@ -16,6 +20,7 @@ import org.yalli.wah.model.exception.PermissionException;
 import org.yalli.wah.model.exception.ResourceNotFoundException;
 import org.yalli.wah.util.PasswordUtil;
 import org.yalli.wah.util.TokenUtil;
+import org.yalli.wah.util.UserSpecification;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -179,6 +184,16 @@ public class UserService {
                 }
         );
 
+    }
+
+    public Page<MemberDto> searchUsers(String fullName, String country, Pageable pageable) {
+        log.info("ActionLog.searchUsers.start fullName {}, country {}", fullName, country);
+        Specification<UserEntity> spec = Specification.where(UserSpecification.hasFullName(fullName))
+                .and(UserSpecification.hasCountry(country));
+
+        Page<UserEntity> userEntities = userRepository.findAll(spec, pageable);
+        log.info("ActionLog.searchUsers.end fullName {}, country {}", fullName, country);
+        return userEntities.map(UserMapper.INSTANCE::mapUserEntityToMemberDto);
     }
 }
 
