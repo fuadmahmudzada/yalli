@@ -15,5 +15,5 @@ public abstract class GroupMapper {
 
     public abstract GroupDto mapEntityToDto(GroupEntity group);
 
-    public abstract GroupEntity mapDtoToEntity(GroupRequest groupRequest, String imageId);
+    public abstract GroupEntity mapDtoToEntity(GroupRequest groupRequest);
 }

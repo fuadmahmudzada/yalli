@@ -26,10 +26,9 @@ public class FileController {
 
     @PostMapping("/upload")
     @ResponseStatus(HttpStatus.CREATED)
-    public void upload(
-            @RequestPart("file") MultipartFile file,
-            @RequestPart("fileName") String fileName) throws Exception {
-        minioService.uploadFile(fileName, file);
+    public String upload(
+            @RequestPart("file") MultipartFile file) throws Exception {
+        return minioService.uploadFile(file);
     }
 
     @GetMapping("/{fileName}")

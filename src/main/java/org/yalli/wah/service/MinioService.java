@@ -1,6 +1,5 @@
 package org.yalli.wah.service;
 
-import io.minio.BucketExistsArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.GetObjectArgs;
@@ -11,6 +10,8 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
+
 @Service
 public class MinioService {
 
@@ -20,14 +21,19 @@ public class MinioService {
     @Value("${minio.name}")
     private String bucketName;
 
-    public void uploadFile(String objectName, MultipartFile stream) throws Exception {
+    private final static String IMAGE_URL = "yalli";
+
+    public String uploadFile(MultipartFile stream) throws Exception {
+        var imageUrl = IMAGE_URL + LocalDateTime.now();
+
         minioClient.putObject(
                 PutObjectArgs.builder()
                         .bucket(bucketName)
-                        .object(objectName)
+                        .object(imageUrl)
                         .stream(stream.getInputStream(), stream.getSize(), -1)
                         .contentType("application/octet-stream")
                         .build()).bucket();
+        return imageUrl;
     }
 
     public InputStreamResource downloadFile(String objectName) throws Exception {
