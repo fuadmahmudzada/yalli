@@ -157,7 +157,7 @@ public class UserService {
     }
 
     private String generateOtp() {
-        return String.valueOf(new Random().nextInt(999999));
+        return String.valueOf(new Random().nextInt(900000) + 100000);
     }
 
     public void confirmEmail(ConfirmDto confirmDto) {
