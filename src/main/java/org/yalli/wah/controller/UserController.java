@@ -89,4 +89,9 @@ public class UserController {
     ) {
         return userService.searchUsers(fullName, country, pageable);
     }
+
+    @GetMapping("/send-otp")
+    public void sendOtp(String email) {
+        userService.sendOtp(email);
+    }
 }
