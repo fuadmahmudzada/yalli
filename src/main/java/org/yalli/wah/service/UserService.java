@@ -58,6 +58,15 @@ public class UserService {
         }};
     }
 
+    public void sendOtp(String email) {
+        log.info("ActionLog.sendOtp.start email {}", email);
+        var userEntity = getUserByEmail(email);
+        var otp = generateOtp();
+        userEntity.setOtp(otp);
+        emailService.sendOtp(email, otp);
+        userRepository.save(userEntity);
+        log.info("ActionLog.sendOtp.end email {}", email);
+    }
 
     public void register(RegisterDto registerDto) {
         log.info("ActionLog.register.start email {}", registerDto.getEmail());
