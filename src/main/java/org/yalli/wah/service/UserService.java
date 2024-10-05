@@ -56,6 +56,8 @@ public class UserService {
         return new HashMap<>() {{
             put("access-token", userEntity.getAccessToken());
             put("fullName", userEntity.getFullName());
+            put("country", userEntity.getCountry());
+            put("image", userEntity.getProfilePictureUrl());
         }};
     }
 
