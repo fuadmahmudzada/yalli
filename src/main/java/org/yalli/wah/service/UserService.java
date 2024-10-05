@@ -55,6 +55,9 @@ public class UserService {
         log.info("ActionLog.login.end email {}", loginDto.getEmail());
         return new HashMap<>() {{
             put("access-token", userEntity.getAccessToken());
+            put("fullName", userEntity.getFullName());
+            put("country", userEntity.getCountry());
+            put("image", userEntity.getProfilePictureUrl());
         }};
     }
 
