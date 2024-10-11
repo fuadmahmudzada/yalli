@@ -9,11 +9,7 @@ import org.springframework.stereotype.Service;
 import org.yalli.wah.dao.entity.UserEntity;
 import org.yalli.wah.dao.repository.UserRepository;
 import org.yalli.wah.mapper.UserMapper;
-import org.yalli.wah.model.dto.ConfirmDto;
-import org.yalli.wah.model.dto.LoginDto;
-import org.yalli.wah.model.dto.MemberDto;
-import org.yalli.wah.model.dto.PasswordResetDto;
-import org.yalli.wah.model.dto.RegisterDto;
+import org.yalli.wah.model.dto.*;
 import org.yalli.wah.model.exception.InvalidInputException;
 import org.yalli.wah.model.exception.InvalidOtpException;
 import org.yalli.wah.model.exception.PermissionException;
@@ -92,22 +88,26 @@ public class UserService {
     }
 
 
-    public void requestPasswordReset(String email) {
-        log.info("ActionLog.requestPasswordReset.start email {}", email);
-        var user = userRepository.findByEmail(email).orElseThrow(
+    public void requestPasswordReset(RequestResetDto requestResetDto) {
+        log.info("ActionLog.requestPasswordReset.start email {}", requestResetDto.getEmail());
+        UserEntity user = userRepository.findByEmail(requestResetDto.getEmail()).orElseThrow(
                 () -> {
-                    log.info("ActionLog.requestPasswordReset.error email {} not found", email);
+                    log.info("ActionLog.requestPasswordReset.error email {} not found", requestResetDto.getEmail());
                     return new ResourceNotFoundException("EMAIL_NOT_FOUND");
                 }
         );
 
+
+        user.setOtpExpiration(null);
+        user.setOtpVerified(false);
+
         String otp = generateOtp();
         user.setOtp(otp);
-        user.setOtpExpiration(LocalDateTime.now().plusMinutes(3));
+        user.setOtpExpiration(LocalDateTime.now().plusMinutes(1));
         userRepository.save(user);
 
         emailService.sendOtp(user.getEmail(), otp);
-        log.info("ActionLog.requestPasswordReset.success OTP sent email {}", email);
+        log.info("ActionLog.requestPasswordReset.success OTP sent email {}", requestResetDto.getEmail());
     }
 
     public void verifyOtp(ConfirmDto confirmDto) {

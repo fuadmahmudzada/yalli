@@ -61,8 +61,8 @@ public class UserController {
     @PostMapping("/reset-password/request")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "send otp for password reset")
-    public void requestPasswordReset(String email) {
-        userService.requestPasswordReset(email);
+    public void requestPasswordReset(@RequestBody RequestResetDto requestResetDto) {
+        userService.requestPasswordReset(requestResetDto);
     }
 
     @PostMapping("/reset-password/verify")
