@@ -51,9 +51,21 @@ public class UserService {
         log.info("ActionLog.login.end email {}", loginDto.getEmail());
         return new HashMap<>() {{
             put("access-token", userEntity.getAccessToken());
+            put("fullName", userEntity.getFullName());
+            put("country", userEntity.getCountry());
+            put("image", userEntity.getProfilePictureUrl());
         }};
     }
 
+    public void sendOtp(String email) {
+        log.info("ActionLog.sendOtp.start email {}", email);
+        var userEntity = getUserByEmail(email);
+        var otp = generateOtp();
+        userEntity.setOtp(otp);
+        emailService.sendOtp(email, otp);
+        userRepository.save(userEntity);
+        log.info("ActionLog.sendOtp.end email {}", email);
+    }
 
     public void register(RegisterDto registerDto) {
         log.info("ActionLog.register.start email {}", registerDto.getEmail());

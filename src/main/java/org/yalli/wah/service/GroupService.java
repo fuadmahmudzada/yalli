@@ -8,7 +8,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import org.yalli.wah.dao.entity.GroupEntity;
 import org.yalli.wah.dao.repository.GroupRepository;
 import org.yalli.wah.mapper.GroupMapper;
@@ -18,7 +17,6 @@ import org.yalli.wah.model.dto.GroupRequest;
 import org.yalli.wah.model.dto.GroupSearchRequest;
 import org.yalli.wah.model.exception.ResourceNotFoundException;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,8 +25,6 @@ import java.util.List;
 public class GroupService {
     private static final Logger log = LoggerFactory.getLogger(GroupService.class);
     private final GroupRepository groupRepository;
-    private final MinioService minioService;
-    private final static String IMAGE_URL = "group";
 
     public Page<GroupLightDto> getAllGroupsLight(Pageable pageable, GroupSearchRequest groupSearchRequest) {
         Specification<GroupEntity> specification = Specification.where((root, query, criteriaBuilder) -> {
@@ -65,15 +61,9 @@ public class GroupService {
         }));
     }
 
-    public void createGroup(GroupRequest groupDto, MultipartFile multipartFile) {
+    public void createGroup(GroupRequest groupDto) {
         log.info("ActionLog.createGroup.start groupDto {}", groupDto);
-        var imageUrl = IMAGE_URL + LocalDateTime.now();
-        try {
-            minioService.uploadFile(imageUrl, multipartFile);
-        } catch (Exception e) {
-            log.error("ActionLog.createGroup.error cannot upload image", e);
-        }
-        groupRepository.save(GroupMapper.INSTANCE.mapDtoToEntity(groupDto, imageUrl));
+        groupRepository.save(GroupMapper.INSTANCE.mapDtoToEntity(groupDto));
         log.info("ActionLog.createGroup.start groupDto {}", groupDto);
     }
 }
