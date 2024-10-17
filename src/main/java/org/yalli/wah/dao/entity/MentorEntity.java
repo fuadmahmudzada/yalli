@@ -10,6 +10,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.yalli.wah.model.enums.MentorCategory;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Entity
@@ -24,8 +25,11 @@ public class MentorEntity {
     private String country;
     private String email;
     private String profilePicture;
+    private String description;
     @Enumerated(EnumType.STRING)
     private MentorCategory mentorCategory;
+    @OneToMany(mappedBy = "mentor")
+    private List<CommentEntity> comments;
     @CreationTimestamp
     private LocalDateTime createdAt;
     @UpdateTimestamp
