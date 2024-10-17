@@ -14,8 +14,10 @@ import org.yalli.wah.dao.entity.UserEntity;
 import org.yalli.wah.dao.repository.EventRepository;
 import org.yalli.wah.dao.repository.UserRepository;
 import org.yalli.wah.mapper.EventMapper;
+import org.yalli.wah.model.dto.EventDetailDto;
 import org.yalli.wah.model.dto.EventDto;
 import org.yalli.wah.model.dto.EventSearchRequest;
+import org.yalli.wah.model.exception.ResourceNotFoundException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -68,6 +70,14 @@ public class EventService {
             }
         });
         return eventRepository.findAll(spec, pageable).map(EventMapper.INSTANCE::mapEntityToDto);
+    }
+
+    public EventDetailDto getEventById(Long id){
+        return EventMapper.INSTANCE.manEntityToEventDetailDto(eventRepository.findById(id).orElseThrow(()->
+        {
+            log.error("ActionLog.getEventById.error event not found with id {}", id);
+            return new ResourceNotFoundException("EVENT_NOT_FOUND");
+        }));
     }
 }
 

@@ -1,17 +1,15 @@
 package org.yalli.wah.controller;
 
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.yalli.wah.model.dto.EventDetailDto;
 import org.yalli.wah.model.dto.EventDto;
 import org.yalli.wah.model.dto.EventSearchRequest;
 import org.yalli.wah.service.EventService;
+
 
 
 @RestController
@@ -27,5 +25,10 @@ public class EventController {
             @ModelAttribute EventSearchRequest searchRequest,
             Pageable pageable) {
         return eventService.getAllEvents(searchRequest, pageable, token);
+    }
+
+    @GetMapping("/{id}")
+    public EventDetailDto getEvent(@PathVariable Long id){
+        return eventService.getEventById(id);
     }
 }
