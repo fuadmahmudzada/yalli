@@ -30,10 +30,8 @@ public class GroupService {
         Specification<GroupEntity> specification = Specification.where((root, query, criteriaBuilder) -> {
             if (groupSearchRequest != null) {
                 List<Predicate> predicates = new ArrayList<>();
-                if (groupSearchRequest.getCategory() != null) {
-                    predicates.add(
-                            criteriaBuilder.equal(root.get("category"), groupSearchRequest.getCategory().name())
-                    );
+                if (groupSearchRequest.getCategory() != null && !groupSearchRequest.getCategory().isEmpty()) {
+                    predicates.add(root.get("category").in(groupSearchRequest.getCategory()));
                 }
                 if (groupSearchRequest.getTitle() != null && !groupSearchRequest.getTitle().isEmpty()) {
                     predicates.add(
