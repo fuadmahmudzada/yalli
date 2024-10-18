@@ -1,14 +1,6 @@
 package org.yalli.wah.dao.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -55,6 +47,8 @@ public class UserEntity {
     )
     private List<EventEntity> savedEvents;
 
+    @OneToMany(mappedBy = "user")
+    private List<CommentEntity> comments;
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "account_urls")
     private Map<SocialMedia, String> socialMediaAccounts = new HashMap<>();
