@@ -13,6 +13,7 @@ public class GroupRequest {
     private String title;
     private String description;
     private String country;
+    private String imageId;
     private Long memberCount;
     private String link;
     private GroupCategory category;

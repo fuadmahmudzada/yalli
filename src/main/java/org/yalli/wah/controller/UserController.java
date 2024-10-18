@@ -94,4 +94,9 @@ public class UserController {
     public void updateUser(@RequestBody MemberInfoDto memberInfoDto){
          userService.updateUser(memberInfoDto);
     }
+  
+    @GetMapping("/send-otp")
+    public void sendOtp(String email) {
+        userService.sendOtp(email);
+    }
 }

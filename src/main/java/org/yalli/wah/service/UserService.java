@@ -52,16 +52,22 @@ public class UserService {
         log.info("ActionLog.login.end email {}", loginDto.getEmail());
         return new HashMap<>() {{
             put("access-token", userEntity.getAccessToken());
+            put("fullName", userEntity.getFullName());
+            put("country", userEntity.getCountry());
+            put("image", userEntity.getProfilePictureUrl());
         }};
     }
 
-// metoda cixardib sadelesdire bilerik
-//        public void senConfirmation(String email, UserEntity userEntity){
-//        String otp = generateOtp();
-//        userEntity.setOtp(otp);
-//        userEntity.setOtpExpiration(LocalDateTime.now().plusSeconds(60));
-//        emailService.sendConfirmationEmail(email, otp);
-//    }
+    public void sendOtp(String email) {
+        log.info("ActionLog.sendOtp.start email {}", email);
+        var userEntity = getUserByEmail(email);
+        var otp = generateOtp();
+        userEntity.setOtp(otp);
+        emailService.sendOtp(email, otp);
+        userRepository.save(userEntity);
+        log.info("ActionLog.sendOtp.end email {}", email);
+    }
+  
     public void register(RegisterDto registerDto) {
         log.info("ActionLog.register.start email {}", registerDto.getEmail());
         userRepository.findByEmail(registerDto.getEmail()).ifPresent((user) -> {
