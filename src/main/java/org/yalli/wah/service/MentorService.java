@@ -21,6 +21,8 @@ import org.yalli.wah.mapper.MentorMapper;
 import org.yalli.wah.model.dto.MentorSearchDto;
 import org.yalli.wah.model.exception.ResourceNotFoundException;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class MentorService {
@@ -30,22 +32,37 @@ public class MentorService {
 
     private final MentorMapper mentorMapper;
 
-    public Page<MentorSearchDto> searchMembers(String fullName, String country, MentorCategory mentorCategory, Pageable pageable) {
-        Specification<MentorEntity> specification = Specification.where(null);
+    public Page<MentorSearchDto> searchMembers(String fullName, String country, List<MentorCategory> mentorCategory, Pageable pageable) {
 
+        Specification<MentorEntity> specification1 = Specification.where(null);
         if (StringUtils.hasLength(fullName)) {
-            specification = specification.and(MentorSpecification.hasFullName(fullName));
+            specification1 = specification1.and(MentorSpecification.hasFullName(fullName));
         }
 
         if (StringUtils.hasLength(country)) {
-            specification = specification.and(MentorSpecification.hasCountry(country));
+            specification1 = specification1.and(MentorSpecification.hasCountry(country));
         }
+//bunu morterizesiz sadelesdirmek
 
+        Specification<MentorEntity> specification = Specification.where(null);
+        System.out.println(mentorCategory);
         if (mentorCategory != null) {
-            specification = specification.and(MentorSpecification.containsCategory(mentorCategory));
+            for(int i=0;i<mentorCategory.size();i++){
+                if(i==0){
+                    specification = specification.or(MentorSpecification.containsCategory(mentorCategory.get(i)));
+                }
+                else{
+                    specification = specification.or(MentorSpecification.containsCategory(mentorCategory.get(i)));
+                }
+
+            }
+
         }
 
-        Page<MentorEntity> mentorEntities = mentorRepository.findAll(specification, pageable);
+
+
+
+        Page<MentorEntity> mentorEntities = mentorRepository.findAll(specification1.and(specification), pageable);
         return mentorEntities.map(mentorMapper::mapMentorEntityToMentorDto);
     }
 

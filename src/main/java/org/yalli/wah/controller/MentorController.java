@@ -14,7 +14,7 @@ import org.yalli.wah.model.dto.MentorSearchDto;
 import org.yalli.wah.service.CommentService;
 import org.yalli.wah.service.MentorService;
 
-
+import java.util.List;
 @RestController
 @RequestMapping("/v1/mentors")
 @CrossOrigin
@@ -28,7 +28,7 @@ public class MentorController {
     @ResponseStatus(HttpStatus.OK)
     public Page<MentorSearchDto> search(@RequestParam(required = false) String fullName,
                                         @RequestParam(required = false) String country,
-                                        @RequestParam(required = false) MentorCategory mentorCategory,
+                                        @RequestParam(required = false) List<MentorCategory> mentorCategory,
                                         Pageable pageable) {
         return mentorService.searchMembers(fullName, country, mentorCategory, pageable);
     }

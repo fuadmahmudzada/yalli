@@ -17,6 +17,7 @@ import org.yalli.wah.mapper.EventMapper;
 import org.yalli.wah.model.dto.EventDetailDto;
 import org.yalli.wah.model.dto.EventDto;
 import org.yalli.wah.model.dto.EventSearchRequest;
+import org.yalli.wah.model.enums.EventCategory;
 import org.yalli.wah.model.exception.ResourceNotFoundException;
 
 import java.time.LocalDate;
@@ -32,52 +33,64 @@ public class EventService {
     private final UserRepository userRepository;
 
     public Page<EventDto> getAllEvents(EventSearchRequest eventSearchRequest, Pageable pageable, String token) {
+
         UserEntity userEntity = userRepository.findByAccessToken(token).orElse(null);
+
         Specification<EventEntity> spec = Specification.where((root, query, criteriaBuilder) -> {
-            if (eventSearchRequest != null) {
-                List<Predicate> predicates = new ArrayList<>();
-                if (eventSearchRequest.getCategory() != null) {
-                    switch (eventSearchRequest.getCategory()) {
-                        case POPULAR:
-                            predicates.add(criteriaBuilder.isTrue(root.get("isPopular")));
-                            break;
+            List<Predicate> predicates = new ArrayList<>();
+
+
+            if (eventSearchRequest.getCategory() != null && !eventSearchRequest.getCategory().isEmpty()) {
+                List<Predicate> categoryPredicates = new ArrayList<>();
+                for (EventCategory category : eventSearchRequest.getCategory()) {
+                    switch (category) {
                         case EXPIRED:
-                            predicates.add(criteriaBuilder.lessThan(root.get("date"), LocalDate.now()));
+                            categoryPredicates.add(criteriaBuilder.lessThan(root.get("date"), LocalDate.now()));
                             break;
+
                         case UPCOMING:
-                            predicates.add(criteriaBuilder.between(root.get("date"), LocalDate.now(), LocalDate.now().plusDays(7)));
+                            categoryPredicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("date"), LocalDate.now()));
                             break;
+
+                        case POPULAR:
+                            categoryPredicates.add(criteriaBuilder.isTrue(root.get("isPopular")));
+                            break;
+
                         case SAVED:
-                            if(userEntity != null) {
+                            if (userEntity != null) {
                                 Join<EventEntity, UserEntity> userJoin = root.join("users", JoinType.INNER);
-                                predicates.add(criteriaBuilder.equal(userJoin.get("id"), userEntity.getId()));
+                                categoryPredicates.add(criteriaBuilder.equal(userJoin.get("id"), userEntity.getId()));
                             }
+                            break;
                     }
                 }
-                if (eventSearchRequest.getTitle() != null && !eventSearchRequest.getTitle().isEmpty()) {
-                    predicates.add(
-                            criteriaBuilder.like(root.get("title"), "%" + eventSearchRequest.getTitle() + "%")
-                    );
-                }
-                if (eventSearchRequest.getCountry() != null && !eventSearchRequest.getCountry().isEmpty()) {
-                    predicates.add(
-                            criteriaBuilder.equal(root.get("country"), eventSearchRequest.getCountry())
-                    );
-                }
-                return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-            } else {
-                return criteriaBuilder.conjunction();
+
+                predicates.add(criteriaBuilder.or(categoryPredicates.toArray(new Predicate[0])));
             }
+
+
+            if (eventSearchRequest.getTitle() != null && !eventSearchRequest.getTitle().isEmpty()) {
+                predicates.add(criteriaBuilder.like(root.get("title"), "%" + eventSearchRequest.getTitle() + "%"));
+            }
+
+
+            if (eventSearchRequest.getCountry() != null && !eventSearchRequest.getCountry().isEmpty()) {
+                predicates.add(criteriaBuilder.equal(root.get("country"), eventSearchRequest.getCountry()));
+            }
+
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         });
+
+
         return eventRepository.findAll(spec, pageable).map(EventMapper.INSTANCE::mapEntityToDto);
     }
-
-    public EventDetailDto getEventById(Long id){
-        return EventMapper.INSTANCE.manEntityToEventDetailDto(eventRepository.findById(id).orElseThrow(()->
-        {
-            log.error("ActionLog.getEventById.error event not found with id {}", id);
-            return new ResourceNotFoundException("EVENT_NOT_FOUND");
-        }));
-    }
+public EventDetailDto getEventById(Long id) {
+    return EventMapper.INSTANCE.manEntityToEventDetailDto(eventRepository.findById(id).orElseThrow(() ->
+    {
+        log.error("ActionLog.getEventById.error event not found with id {}", id);
+        return new ResourceNotFoundException("EVENT_NOT_FOUND");
+    }));
+}
 }
 
