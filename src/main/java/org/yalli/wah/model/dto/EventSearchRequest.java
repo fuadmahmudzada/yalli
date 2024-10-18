@@ -5,11 +5,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.yalli.wah.model.enums.EventCategory;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class EventSearchRequest {
     private String title;
     private String country;
-    private EventCategory category;
+    private List<EventCategory> category;
 }
