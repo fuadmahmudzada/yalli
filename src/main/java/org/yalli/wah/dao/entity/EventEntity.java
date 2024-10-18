@@ -29,7 +29,7 @@ public class EventEntity {
     private String country;
     private String city;
     private String description;
-    private int imageId;
+    private String imageId;
     private LocalDate date;
     private Boolean isPopular;
     private String link;
