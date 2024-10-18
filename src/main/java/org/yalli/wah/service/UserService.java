@@ -20,6 +20,7 @@ import org.yalli.wah.util.UserSpecification;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Random;
 
 @Service
@@ -66,7 +67,7 @@ public class UserService {
         userRepository.save(userEntity);
         log.info("ActionLog.sendOtp.end email {}", email);
     }
-
+  
     public void register(RegisterDto registerDto) {
         log.info("ActionLog.register.start email {}", registerDto.getEmail());
         userRepository.findByEmail(registerDto.getEmail()).ifPresent((user) -> {
@@ -74,6 +75,7 @@ public class UserService {
         });
         UserEntity userEntity = UserMapper.INSTANCE.mapRegisterDtoToUser(registerDto);
         userEntity.setPassword(passwordUtil.encode(userEntity.getPassword()));
+
 
         //send otp
         String otp = generateOtp();
@@ -207,5 +209,37 @@ public class UserService {
         log.info("ActionLog.searchUsers.end fullName {}, country {}", fullName, country);
         return userEntities.map(UserMapper.INSTANCE::mapUserEntityToMemberDto);
     }
+
+    public MemberInfoDto getUserById(Long id) {
+        return UserMapper.INSTANCE.mapUserEntityToMemberInfoDto(userRepository.findById(id).orElseThrow(() ->
+        {
+
+            log.error("ActionLog.getUserById.error user not found with id {}", id);
+            return new ResourceNotFoundException("MEMBER_NOT_FOUND");
+        }));
+    }
+
+    public void updateUser(MemberInfoDto memberInfoDto) {
+
+        String oldEmail = getUserById(memberInfoDto.getId()).getEmail();
+        UserEntity userEntity = UserMapper.INSTANCE.updateMember(userRepository.findById(memberInfoDto.getId()).orElseThrow(()->
+        {
+            log.error("ActionLog.findById.error user not found with id {}", memberInfoDto.getId());
+            return new ResourceNotFoundException("MEMBER_NOT_FOUND");
+        }), memberInfoDto);
+
+
+        String newEmail = memberInfoDto.getEmail();
+        if (!Objects.equals(oldEmail, newEmail)) {
+            String otp = generateOtp();
+            userEntity.setOtp(otp);
+            userEntity.setOtpExpiration(LocalDateTime.now().plusSeconds(60));
+            userEntity.setEmailConfirmed(false);
+            emailService.sendConfirmationEmail(newEmail, otp);
+        }
+        userRepository.save(userEntity);
+
+    }
+
 }
 

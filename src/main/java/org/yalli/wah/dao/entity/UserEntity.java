@@ -39,6 +39,7 @@ public class UserEntity {
     private String password;
     private LocalDate birthDate;
     private String country;
+    private String city;
     private String accessToken;
     private LocalDateTime tokenExpire;
     @CreationTimestamp

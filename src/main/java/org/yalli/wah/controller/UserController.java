@@ -5,18 +5,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.bind.annotation.RequestParam;
+import org.yalli.wah.dao.entity.UserEntity;
 import org.yalli.wah.model.dto.*;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.yalli.wah.model.dto.ConfirmDto;
 import org.yalli.wah.model.dto.LoginDto;
 import org.yalli.wah.model.dto.PasswordResetDto;
@@ -90,6 +82,19 @@ public class UserController {
         return userService.searchUsers(fullName, country, pageable);
     }
 
+
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public MemberInfoDto getUser(@PathVariable Long id){
+        return userService.getUserById(id);
+    }
+
+    @PatchMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void updateUser(@RequestBody MemberInfoDto memberInfoDto){
+         userService.updateUser(memberInfoDto);
+    }
+  
     @GetMapping("/send-otp")
     public void sendOtp(String email) {
         userService.sendOtp(email);
