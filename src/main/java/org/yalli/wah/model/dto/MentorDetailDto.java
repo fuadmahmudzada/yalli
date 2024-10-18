@@ -1,12 +1,8 @@
 package org.yalli.wah.model.dto;
 
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.*;
-import org.yalli.wah.dao.entity.CommentEntity;
+import org.springframework.data.domain.Page;
 import org.yalli.wah.model.enums.MentorCategory;
-
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -17,5 +13,5 @@ public class MentorDetailDto {
     private String description;
     private String profilePicture;
     private MentorCategory mentorCategory;
-    private List<CommentDto> comments;
+    private Page<CommentDto> comments;
 }
