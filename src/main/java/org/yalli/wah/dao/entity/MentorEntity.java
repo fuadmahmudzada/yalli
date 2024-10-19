@@ -25,7 +25,7 @@ public class MentorEntity {
     private String country;
     private String email;
     private String profilePicture;
-    @Column(columnDefinition = "TEXT")
+    @Column(length = 5000)
     private String description;
     @Enumerated(EnumType.STRING)
     private MentorCategory mentorCategory;

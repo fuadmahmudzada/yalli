@@ -30,7 +30,7 @@ public class GroupEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
-    @Column(columnDefinition = "TEXT")
+    @Column(length = 10000)
     private String description;
     private String imageId;
     private String country;
@@ -45,5 +45,6 @@ public class GroupEntity {
     private LocalDateTime createdAt;
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+    @Column(length = 20000)
     private String about;
 }

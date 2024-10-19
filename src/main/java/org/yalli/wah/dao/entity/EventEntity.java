@@ -23,7 +23,7 @@ public class EventEntity {
     private String title;
     private String country;
     private String city;
-    @Column(length = 2000)
+    @Column(length = 10000)
     private String description;
     private String imageId;
     private LocalDate date;
