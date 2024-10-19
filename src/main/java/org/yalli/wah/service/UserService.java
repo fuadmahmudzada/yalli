@@ -52,7 +52,7 @@ public class UserService {
         userRepository.save(userEntity);
         log.info("ActionLog.login.end email {}", loginDto.getEmail());
         return new HashMap<>() {{
-            put("access-token", userEntity.getAccessToken());
+            put("accessToken", userEntity.getAccessToken());
             put("fullName", userEntity.getFullName());
             put("country", userEntity.getCountry());
             put("image", userEntity.getProfilePictureUrl());
@@ -98,7 +98,7 @@ public class UserService {
         userEntity.setTokenExpire(LocalDateTime.now().plusMinutes(30));
         userRepository.save(userEntity);
         return new HashMap<>() {{
-            put("access-token", userEntity.getAccessToken());
+            put("accessToken", userEntity.getAccessToken());
         }};
     }
 
