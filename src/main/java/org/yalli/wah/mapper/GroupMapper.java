@@ -1,6 +1,7 @@
 package org.yalli.wah.mapper;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 import org.yalli.wah.dao.entity.GroupEntity;
 import org.yalli.wah.model.dto.GroupDto;
@@ -11,6 +12,7 @@ import org.yalli.wah.model.dto.GroupRequest;
 public abstract class GroupMapper {
     public static final GroupMapper INSTANCE = Mappers.getMapper(GroupMapper.class);
 
+    @Mapping(source = "category", target = "groupCategory")
     public abstract GroupLightDto mapEntityToGroupLightDto(GroupEntity group);
 
     public abstract GroupDto mapEntityToDto(GroupEntity group);
