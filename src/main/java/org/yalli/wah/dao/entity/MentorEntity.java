@@ -34,4 +34,5 @@ public class MentorEntity {
     private LocalDateTime createdAt;
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+    private String link;
 }
