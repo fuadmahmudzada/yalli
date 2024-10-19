@@ -14,4 +14,5 @@ public class MentorDetailDto {
     private String profilePicture;
     private MentorCategory mentorCategory;
     private Page<CommentDto> comments;
+    private String link;
 }
