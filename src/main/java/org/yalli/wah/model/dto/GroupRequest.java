@@ -17,4 +17,5 @@ public class GroupRequest {
     private Long memberCount;
     private String link;
     private GroupCategory category;
+    private String about;
 }

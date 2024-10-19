@@ -19,4 +19,5 @@ public class GroupDto {
     private Long memberCount;
     private String link;
     private GroupCategory category;
+    private String about;
 }
