@@ -44,4 +44,5 @@ public class GroupEntity {
     private LocalDateTime createdAt;
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+    private String about;
 }

@@ -56,6 +56,7 @@ public class UserService {
             put("fullName", userEntity.getFullName());
             put("country", userEntity.getCountry());
             put("image", userEntity.getProfilePictureUrl());
+            put("id", String.valueOf(userEntity.getId()));
         }};
     }
 
