@@ -1,6 +1,7 @@
 package org.yalli.wah.service;
 
 
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,19 +9,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
+import org.yalli.wah.dao.entity.CommentEntity;
+import org.yalli.wah.dao.entity.GroupEntity;
 import org.yalli.wah.dao.entity.MentorEntity;
 import org.yalli.wah.dao.repository.CommentRepository;
 import org.yalli.wah.dao.repository.MentorRepository;
-import org.yalli.wah.dao.repository.MentorSpecification;
-import org.yalli.wah.dao.repository.UserRepository;
-import org.yalli.wah.mapper.CommentMapper;
-import org.yalli.wah.model.dto.MentorDetailDto;
-import org.yalli.wah.model.enums.MentorCategory;
 import org.yalli.wah.mapper.MentorMapper;
+import org.yalli.wah.model.dto.MentorDetailDto;
+import org.yalli.wah.model.dto.MentorSearchRequest;
+import org.yalli.wah.model.enums.MentorCategory;
 import org.yalli.wah.model.dto.MentorSearchDto;
 import org.yalli.wah.model.exception.ResourceNotFoundException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -30,45 +31,34 @@ public class MentorService {
     private final MentorRepository mentorRepository;
     private final CommentRepository commentRepository;
 
-    private final MentorMapper mentorMapper;
-
-    public Page<MentorSearchDto> searchMembers(String fullName, String country, List<MentorCategory> mentorCategory, Pageable pageable) {
-
-        Specification<MentorEntity> specification1 = Specification.where(null);
-        if (StringUtils.hasLength(fullName)) {
-            specification1 = specification1.and(MentorSpecification.hasFullName(fullName));
-        }
-
-        if (StringUtils.hasLength(country)) {
-            specification1 = specification1.and(MentorSpecification.hasCountry(country));
-        }
-//bunu morterizesiz sadelesdirmek
-
-        Specification<MentorEntity> specification = Specification.where(null);
-        System.out.println(mentorCategory);
-        if (mentorCategory != null) {
-            for(int i=0;i<mentorCategory.size();i++){
-                if(i==0){
-                    specification = specification.or(MentorSpecification.containsCategory(mentorCategory.get(i)));
-                }
-                else{
-                    specification = specification.or(MentorSpecification.containsCategory(mentorCategory.get(i)));
-                }
-
+    public Page<MentorSearchDto> searchMentors(MentorSearchRequest mentorSearchRequest, Pageable pageable) {
+        Specification<MentorEntity> specification = Specification.where((root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (mentorSearchRequest.getFullName() != null && !mentorSearchRequest.getFullName().isEmpty()) {
+                predicates.add(criteriaBuilder.like(root.get("fullName"), "%" + mentorSearchRequest.getFullName() + "%"));
             }
-
-        }
-
-
-
-
-        Page<MentorEntity> mentorEntities = mentorRepository.findAll(specification1.and(specification), pageable);
-        return mentorEntities.map(mentorMapper::mapMentorEntityToMentorDto);
+            if (mentorSearchRequest.getCategory() != null && !mentorSearchRequest.getCategory().isEmpty()) {
+                predicates.add(root.get("category").in(mentorSearchRequest.getCategory()));
+            }
+            if (mentorSearchRequest.getCountry() != null && !mentorSearchRequest.getCountry().isEmpty()) {
+                predicates.add(
+                        criteriaBuilder.equal(root.get("country"), mentorSearchRequest.getCountry())
+                );
+            }
+            predicates.add(criteriaBuilder.conjunction());
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        });
+        return mentorRepository.findAll(specification, pageable).map(MentorMapper.INSTANCE::mapMentorEntityToMentorSearchDto);
     }
 
-    public MentorDetailDto getMentorById(Long id, Pageable pageable) {
+    public MentorDetailDto getMentorById(Long id) {
         commentRepository.findAllByMentorId(id);
-        return mentorMapper.mapMentorToMentorDetailDto(mentorRepository.findById(id).orElseThrow(()
-        -> new ResourceNotFoundException("MENTOR_ENTITY_NOT_FOUND")), pageable);
+        var mentor = mentorRepository.findById(id).orElseThrow(()
+                -> new ResourceNotFoundException("MENTOR_ENTITY_NOT_FOUND"));
+        return MentorMapper.INSTANCE.mapMentorToMentorDetailDto(mentor, calcAverageRating(mentor.getComments()));
+    }
+
+    private Double calcAverageRating(List<CommentEntity> comments) {
+        return comments.stream().map(CommentEntity::getRate).mapToInt(Integer::intValue).average().orElse(0);
     }
 }

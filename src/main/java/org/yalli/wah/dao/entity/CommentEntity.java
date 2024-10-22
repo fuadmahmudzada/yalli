@@ -5,9 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "comments")
@@ -19,13 +19,11 @@ public class CommentEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String content;
-    private String rate;
-    @ManyToOne
-    @JoinColumn(name = "users_id")
-    private UserEntity user;
+    private Integer rate;
+    private String userName;
     @ManyToOne
     @JoinColumn(name = "mentors_id")
     private MentorEntity mentor;
     @CreationTimestamp
-    private Date createdAt;
+    private LocalDateTime createdAt;
 }

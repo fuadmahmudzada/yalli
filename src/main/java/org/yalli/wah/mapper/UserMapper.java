@@ -5,10 +5,10 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
-import org.springframework.security.core.userdetails.User;
 import org.yalli.wah.dao.entity.UserEntity;
 import org.yalli.wah.model.dto.MemberDto;
 import org.yalli.wah.model.dto.MemberInfoDto;
+import org.yalli.wah.model.dto.MemberUpdateDto;
 import org.yalli.wah.model.dto.RegisterDto;
 
 @Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE )
@@ -32,5 +32,5 @@ public abstract class  UserMapper {
     public abstract MemberInfoDto mapUserEntityToMemberInfoDto(UserEntity userEntity);
 
 
-    public abstract UserEntity updateMember(@MappingTarget UserEntity userEntity, MemberInfoDto memberInfoDto);
+    public abstract UserEntity updateMember(@MappingTarget UserEntity userEntity, MemberUpdateDto memberInfoDto);
 }

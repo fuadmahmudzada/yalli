@@ -4,14 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class CommentDto {
     private String content;
-    private String rate;
+    private Integer rate;
     private String userName;
-    private Date createdAt;
+    private LocalDateTime createdAt;
 }

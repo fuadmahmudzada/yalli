@@ -7,6 +7,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,12 +34,18 @@ public class GroupEntity {
     private String title;
     @Column(length = 10000)
     private String description;
+    @Column(columnDefinition = "TEXT")
+    private String about;
     private String imageId;
     private String country;
+    private Short renameCount;
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
     private List<String> gallery;
     private Long memberCount;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private UserEntity userEntity;
     private String link;
     @Enumerated(EnumType.STRING)
     private GroupCategory category;
@@ -45,6 +53,5 @@ public class GroupEntity {
     private LocalDateTime createdAt;
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-    @Column(length = 20000)
-    private String about;
+
 }

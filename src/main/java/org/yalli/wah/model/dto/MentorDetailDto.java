@@ -1,8 +1,9 @@
 package org.yalli.wah.model.dto;
 
 import lombok.*;
-import org.springframework.data.domain.Page;
 import org.yalli.wah.model.enums.MentorCategory;
+
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -13,6 +14,7 @@ public class MentorDetailDto {
     private String description;
     private String profilePicture;
     private MentorCategory mentorCategory;
-    private Page<CommentDto> comments;
+    private List<CommentDto> comments;
+    private Double averageRating;
     private String link;
 }

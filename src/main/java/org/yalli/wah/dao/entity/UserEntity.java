@@ -46,9 +46,6 @@ public class UserEntity {
             inverseJoinColumns = @JoinColumn(name = "event_id")
     )
     private List<EventEntity> savedEvents;
-
-    @OneToMany(mappedBy = "user")
-    private List<CommentEntity> comments;
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "account_urls")
     private Map<SocialMedia, String> socialMediaAccounts = new HashMap<>();
