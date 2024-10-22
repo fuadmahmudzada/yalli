@@ -9,7 +9,7 @@ import org.yalli.wah.model.dto.CommentAddDto;
 public interface CommentMapper {
 
 
-    @Mapping(source = "mentorId", target = "mentor.id")
+    @Mapping(target = "mentor.id", source = "commentAddDto.mentorId")
     CommentEntity mapCommentAddDtoToComment(CommentAddDto commentAddDto, String userName);
 
 
