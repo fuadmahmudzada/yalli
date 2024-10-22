@@ -7,12 +7,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import org.yalli.wah.dao.entity.UserEntity;
-import org.yalli.wah.model.dto.*;
 import org.yalli.wah.model.dto.ConfirmDto;
 import org.yalli.wah.model.dto.LoginDto;
+import org.yalli.wah.model.dto.MemberDto;
+import org.yalli.wah.model.dto.MemberInfoDto;
+import org.yalli.wah.model.dto.MemberUpdateDto;
 import org.yalli.wah.model.dto.PasswordResetDto;
 import org.yalli.wah.model.dto.RegisterDto;
+import org.yalli.wah.model.dto.RequestResetDto;
 import org.yalli.wah.service.UserService;
 
 import java.util.HashMap;
@@ -85,18 +87,20 @@ public class UserController {
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public MemberInfoDto getUser(@PathVariable Long id){
+    public MemberInfoDto getUser(@PathVariable Long id) {
         return userService.getUserById(id);
     }
 
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void updateUser(@RequestBody MemberInfoDto memberInfoDto){
-         userService.updateUser(memberInfoDto);
+    public void updateUser(@RequestBody MemberUpdateDto memberUpdateDto, @PathVariable Long id) {
+        userService.updateUser(memberUpdateDto, id);
     }
-  
+
     @GetMapping("/send-otp")
     public void sendOtp(String email) {
         userService.sendOtp(email);
     }
+
+
 }

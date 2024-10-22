@@ -15,6 +15,8 @@ import org.yalli.wah.model.dto.GroupDto;
 import org.yalli.wah.model.dto.GroupLightDto;
 import org.yalli.wah.model.dto.GroupRequest;
 import org.yalli.wah.model.dto.GroupSearchRequest;
+import org.yalli.wah.model.dto.GroupUpdateDto;
+import org.yalli.wah.model.exception.InvalidInputException;
 import org.yalli.wah.model.exception.ResourceNotFoundException;
 
 import java.util.ArrayList;
@@ -52,16 +54,57 @@ public class GroupService {
     }
 
     public GroupDto getGroupById(Long id) {
-        return GroupMapper.INSTANCE.mapEntityToDto(groupRepository.findById(id).orElseThrow(() ->
-        {
-            log.error("ActionLog.getGroupById.error group not found with id {}", id);
-            return new ResourceNotFoundException("GROUP_NOT_FOUND");
-        }));
+        return GroupMapper.INSTANCE.mapEntityToDto(getGroupEntityById(id));
     }
 
     public void createGroup(GroupRequest groupDto) {
         log.info("ActionLog.createGroup.start groupDto {}", groupDto);
         groupRepository.save(GroupMapper.INSTANCE.mapDtoToEntity(groupDto));
         log.info("ActionLog.createGroup.start groupDto {}", groupDto);
+    }
+
+    public Page<GroupLightDto> getGroupsByUserId(Long userId, Pageable pageable) {
+        log.info("ActionLog.getGroupsByUserId.start userId = {}", userId);
+        var groups = groupRepository.findByUserEntity_Id(userId, pageable);
+        log.info("ActionLog.getGroupsByUserId.end userId = {}", userId);
+        return groups.map(GroupMapper.INSTANCE::mapEntityToGroupLightDto);
+    }
+
+    public GroupDto getGroupByUserId(Long groupId, Long userId) {
+        log.info("ActionLog.getGroupByUserId.start groupId = {}", groupId);
+        var group = groupRepository.findByIdAndUserEntity_Id(groupId, userId).orElseThrow(() -> {
+            log.error("ActionLog.getGroupByUserId.error group not found with id {} and user id {}", groupId, userId);
+            return new ResourceNotFoundException("GROUP_NOT_FOUND");
+        });
+        log.info("ActionLog.getGroupByUserId.end groupId = {}", groupId);
+        return GroupMapper.INSTANCE.mapEntityToDto(group);
+    }
+
+    public void updateGroup(Long id, GroupUpdateDto groupUpdateDto) {
+        log.info("ActionLog.updateGroup.start groupId = {}", id);
+        var group = getGroupEntityById(id);
+        log.info("ActionLog.updateGroup.info images {}", group.getGallery());
+        if (groupUpdateDto.getTitle() != null && !groupUpdateDto.getTitle().isBlank()) {
+            if (group.getRenameCount().intValue() + 1 < 3) {
+                throw new InvalidInputException("GROUP_RENAME_LIMIT_EXCEEDED");
+            }
+        }
+        var updatedEntity = GroupMapper.INSTANCE.updateEntity(group, groupUpdateDto);
+        groupRepository.save(updatedEntity);
+        log.info("ActionLog.updateGroup.end updatedEntity {}", updatedEntity);
+    }
+
+    public void deleteGroup(List<Long> groupIds, Long userId) {
+        log.info("ActionLog.deleteGroup.start groupId = {} user id {}", groupIds, userId);
+        groupRepository.deleteByUserEntity_IdAndIdIn(userId, groupIds);
+        log.info("ActionLog.deleteGroup.start groupId = {}", groupIds);
+    }
+
+    private GroupEntity getGroupEntityById(Long id) {
+        return groupRepository.findById(id).orElseThrow(() ->
+        {
+            log.error("ActionLog.getGroupById.error group not found with id {}", id);
+            return new ResourceNotFoundException("GROUP_NOT_FOUND");
+        });
     }
 }

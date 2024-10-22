@@ -5,13 +5,12 @@ import org.mapstruct.Mapping;
 import org.yalli.wah.dao.entity.CommentEntity;
 import org.yalli.wah.model.dto.CommentAddDto;
 
-@Mapper(componentModel ="spring", uses = {MapperService.class})
-public interface  CommentMapper {
+@Mapper(componentModel = "spring", uses = {MapperService.class})
+public interface CommentMapper {
 
 
-    @Mapping(target = "user", source = "userId")
-    @Mapping(source = "mentorId", target = "mentor")
-    CommentEntity mapCommentAddDtoToComment(CommentAddDto commentAddDto);
+    @Mapping(source = "mentorId", target = "mentor.id")
+    CommentEntity mapCommentAddDtoToComment(CommentAddDto commentAddDto, String userName);
 
 
 }

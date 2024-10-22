@@ -69,7 +69,7 @@ public class UserService {
         userRepository.save(userEntity);
         log.info("ActionLog.sendOtp.end email {}", email);
     }
-  
+
     public void register(RegisterDto registerDto) {
         log.info("ActionLog.register.start email {}", registerDto.getEmail());
         userRepository.findByEmail(registerDto.getEmail()).ifPresent((user) -> {
@@ -221,24 +221,13 @@ public class UserService {
         }));
     }
 
-    public void updateUser(MemberInfoDto memberInfoDto) {
-
-        String oldEmail = getUserById(memberInfoDto.getId()).getEmail();
-        UserEntity userEntity = UserMapper.INSTANCE.updateMember(userRepository.findById(memberInfoDto.getId()).orElseThrow(()->
+    public void updateUser(MemberUpdateDto memberUpdateDto, Long id) {
+        var user = userRepository.findById(id).orElseThrow(() ->
         {
-            log.error("ActionLog.findById.error user not found with id {}", memberInfoDto.getId());
-            return new ResourceNotFoundException("MEMBER_NOT_FOUND");
-        }), memberInfoDto);
-
-
-        String newEmail = memberInfoDto.getEmail();
-        if (!Objects.equals(oldEmail, newEmail)) {
-            String otp = generateOtp();
-            userEntity.setOtp(otp);
-            userEntity.setOtpExpiration(LocalDateTime.now().plusSeconds(60));
-            userEntity.setEmailConfirmed(false);
-            emailService.sendConfirmationEmail(newEmail, otp);
-        }
+            log.error("ActionLog.getUserById.error user not found with id {}", id);
+            return new ResourceNotFoundException("USER_NOT_FOUND");
+        });
+        UserEntity userEntity = UserMapper.INSTANCE.updateMember(user, memberUpdateDto);
         userRepository.save(userEntity);
 
     }

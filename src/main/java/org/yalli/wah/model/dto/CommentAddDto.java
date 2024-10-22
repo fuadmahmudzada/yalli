@@ -9,6 +9,6 @@ import org.yalli.wah.dao.entity.UserEntity;
 public class CommentAddDto {
     private String content;
     private String rate;
-    private int userId;
-    private int mentorId;
+    private Long userId;
+    private Long mentorId;
 }
