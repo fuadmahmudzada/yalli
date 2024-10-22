@@ -20,7 +20,7 @@ public abstract class GroupMapper {
     public abstract GroupDto mapEntityToDto(GroupEntity group);
 
     @Mapping(target = "userEntity.id", source = "userId")
-    @Mapping(target = "renameCount", expression = "Short.valueOf(\"0\")")
+    @Mapping(target = "renameCount", expression = "java(Short.valueOf(\"0\"))")
     public abstract GroupEntity mapDtoToEntity(GroupRequest groupRequest);
 
     public abstract GroupEntity updateEntity(@MappingTarget GroupEntity groupEntity, GroupUpdateDto groupUpdateDto);
