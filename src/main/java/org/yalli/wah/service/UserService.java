@@ -22,6 +22,7 @@ import org.yalli.wah.util.UserSpecification;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -73,9 +74,12 @@ public class UserService {
     public void register(RegisterDto registerDto) {
         log.info("ActionLog.register.start email {}", registerDto.getEmail());
         userRepository.findByEmail(registerDto.getEmail()).ifPresent((user) -> {
-            throw new InvalidInputException("EMAIL_ALREADY_EXISTS");
+            if (user.isEmailConfirmed()) {
+                throw new InvalidInputException("EMAIL_ALREADY_EXISTS");
+            }
         });
-        UserEntity userEntity = UserMapper.INSTANCE.mapRegisterDtoToUser(registerDto);
+        UserEntity userEntity = userRepository.findByEmail(registerDto.getEmail()).orElse(new UserEntity());
+        userEntity = UserMapper.INSTANCE.mapRegisterDtoToUser(registerDto,userEntity);
         userEntity.setPassword(passwordUtil.encode(userEntity.getPassword()));
 
 

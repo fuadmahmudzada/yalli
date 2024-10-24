@@ -12,7 +12,7 @@ public class EmailService {
 
     public void sendConfirmationEmail(String email,String otp){
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("tina.hilpert73@ethereal.email");
+        message.setFrom("delmer.dubuque81@ethereal.email");
         message.setTo(email);
 
         message.setSubject("Confirm Email - OTP");
