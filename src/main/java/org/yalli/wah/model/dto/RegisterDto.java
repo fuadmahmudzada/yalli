@@ -9,7 +9,8 @@ import lombok.NoArgsConstructor;
 import org.yalli.wah.model.enums.SocialMedia;
 
 import java.time.LocalDate;
-import java.util.Map;
+import java.util.HashMap;
+
 
 @Data
 @NoArgsConstructor
@@ -27,6 +28,5 @@ public class RegisterDto {
     private String password;
     @NotBlank
     private String country;
-    private LocalDate birthDate;
-    private Map<SocialMedia,String>socialMediaLinks;
+    private HashMap<SocialMedia, String> socialMediaLinks;
 }
