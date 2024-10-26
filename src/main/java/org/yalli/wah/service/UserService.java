@@ -1,6 +1,5 @@
 package org.yalli.wah.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -9,6 +8,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.yalli.wah.dao.entity.UserEntity;
 import org.yalli.wah.dao.repository.UserRepository;
+import org.yalli.wah.mapper.ProfileMapper;
 import org.yalli.wah.mapper.UserMapper;
 import org.yalli.wah.model.dto.*;
 import org.yalli.wah.model.exception.InvalidInputException;
@@ -20,9 +20,14 @@ import org.yalli.wah.util.TokenUtil;
 import org.yalli.wah.util.UserSpecification;
 
 import java.time.LocalDateTime;
+
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
+
+import java.util.*;
+
 
 @Service
 @RequiredArgsConstructor
@@ -48,6 +53,15 @@ public class UserService {
             log.info("ActionLog.login.error email {} not confirmed", loginDto.getEmail());
             throw new InvalidInputException("EMAIL_NOT_CONFIRMED");
         }
+        userEntity.setNotCompletedFields(0);
+        MemberUpdateDto memberUpdateDto = ProfileMapper.INSTANCE.toMemberUpdateDto(userEntity);
+        String[] fields = memberUpdateDto.toString().split(",");
+        for (String field : fields) {
+            if (field.contains("null")) {
+                userEntity.setNotCompletedFields(userEntity.getNotCompletedFields() + 1);
+            }
+        }
+        System.out.println(Arrays.toString(fields));
 
         userRepository.save(userEntity);
         log.info("ActionLog.login.end email {}", loginDto.getEmail());
@@ -73,9 +87,12 @@ public class UserService {
     public void register(RegisterDto registerDto) {
         log.info("ActionLog.register.start email {}", registerDto.getEmail());
         userRepository.findByEmail(registerDto.getEmail()).ifPresent((user) -> {
-            throw new InvalidInputException("EMAIL_ALREADY_EXISTS");
+            if (user.isEmailConfirmed()) {
+                throw new InvalidInputException("EMAIL_ALREADY_EXISTS");
+            }
         });
-        UserEntity userEntity = UserMapper.INSTANCE.mapRegisterDtoToUser(registerDto);
+        UserEntity userEntity = userRepository.findByEmail(registerDto.getEmail()).orElse(new UserEntity());
+        userEntity = UserMapper.INSTANCE.mapRegisterDtoToUser(registerDto,userEntity);
         userEntity.setPassword(passwordUtil.encode(userEntity.getPassword()));
 
 
@@ -228,6 +245,13 @@ public class UserService {
             return new ResourceNotFoundException("USER_NOT_FOUND");
         });
         UserEntity userEntity = UserMapper.INSTANCE.updateMember(user, memberUpdateDto);
+        userEntity.setNotCompletedFields(0);
+        String[] fields = memberUpdateDto.toString().split(",");
+        for (String field : fields) {
+            if (field.contains("null")) {
+                userEntity.setNotCompletedFields(userEntity.getNotCompletedFields() + 1);
+            }
+        }
         userRepository.save(userEntity);
 
     }

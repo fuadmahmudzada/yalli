@@ -17,8 +17,8 @@ import org.yalli.wah.dao.repository.MentorRepository;
 import org.yalli.wah.mapper.MentorMapper;
 import org.yalli.wah.model.dto.MentorDetailDto;
 import org.yalli.wah.model.dto.MentorSearchRequest;
-import org.yalli.wah.model.enums.MentorCategory;
 import org.yalli.wah.model.dto.MentorSearchDto;
+import org.yalli.wah.model.enums.MentorStatus;
 import org.yalli.wah.model.exception.ResourceNotFoundException;
 
 import java.util.ArrayList;
@@ -45,6 +45,7 @@ public class MentorService {
                         criteriaBuilder.equal(root.get("country"), mentorSearchRequest.getCountry())
                 );
             }
+            predicates.add(criteriaBuilder.equal(root.get("mentorStatus"), MentorStatus.ACCEPTED));
             predicates.add(criteriaBuilder.conjunction());
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         });
