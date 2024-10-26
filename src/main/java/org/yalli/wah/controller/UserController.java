@@ -15,9 +15,13 @@ import org.yalli.wah.model.dto.MemberUpdateDto;
 import org.yalli.wah.model.dto.PasswordResetDto;
 import org.yalli.wah.model.dto.RegisterDto;
 import org.yalli.wah.model.dto.RequestResetDto;
+import org.yalli.wah.model.enums.Country;
 import org.yalli.wah.service.UserService;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/v1/users")
@@ -31,6 +35,16 @@ public class UserController {
     public HashMap<String, String> login(@RequestBody LoginDto loginDto) {
         return userService.login(loginDto);
     }
+
+    @GetMapping("/countries")
+    @Operation(summary = "get all countries")
+    @ResponseStatus(HttpStatus.OK)
+    public List<String> getCountries() {
+        return Arrays.stream(Country.values())
+                .map(Country::getCountryName)
+                .collect(Collectors.toList());
+    }
+
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
