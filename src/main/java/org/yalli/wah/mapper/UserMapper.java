@@ -20,7 +20,7 @@ public abstract class UserMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    public abstract UserEntity mapRegisterDtoToUser(RegisterDto registerDto);
+    public abstract UserEntity mapRegisterDtoToUser(RegisterDto registerDto, @MappingTarget UserEntity userEntity);
 
 
     @Mapping(source = "profilePictureUrl", target = "profilePicture")
