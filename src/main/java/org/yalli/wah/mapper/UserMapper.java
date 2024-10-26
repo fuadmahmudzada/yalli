@@ -11,9 +11,10 @@ import org.yalli.wah.model.dto.MemberInfoDto;
 import org.yalli.wah.model.dto.MemberUpdateDto;
 import org.yalli.wah.model.dto.RegisterDto;
 
-@Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE )
-public abstract class  UserMapper {
+@Mapper
+public abstract class UserMapper {
     public static final UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
+
     @Mapping(target = "socialMediaAccounts", source = "socialMediaLinks")
     @Mapping(target = "accessToken", ignore = true)
     @Mapping(target = "id", ignore = true)
@@ -27,7 +28,7 @@ public abstract class  UserMapper {
     public abstract MemberDto mapUserEntityToMemberDto(UserEntity userEntity);
 
 
-//    @Mapping(target = "id", ignore = true)
+    //    @Mapping(target = "id", ignore = true)
 //    @Mapping(target = "updatedAt", ignore = true)
     public abstract MemberInfoDto mapUserEntityToMemberInfoDto(UserEntity userEntity);
 

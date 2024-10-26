@@ -15,7 +15,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Entity
 @Table(name = "users")
@@ -48,11 +47,13 @@ public class UserEntity {
     private List<EventEntity> savedEvents;
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "account_urls")
-    private Map<SocialMedia, String> socialMediaAccounts = new HashMap<>();
+    private HashMap<SocialMedia, String> socialMediaAccounts;
     private String otp;
     private LocalDateTime otpExpiration;
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean otpVerified;
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean emailConfirmed = false;
+    @Column(name = "number_of_not_completed_fields")
+    private Integer notCompletedFields = 0;
 }
