@@ -2,7 +2,6 @@ package org.yalli.wah.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import org.yalli.wah.dao.repository.NotificationRepository;
 import org.yalli.wah.model.dto.NotificationDto;
 import org.yalli.wah.service.NotificationService;
 
@@ -14,18 +13,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NotificationController {
 
-    private final NotificationRepository notificationRepository;
     private final NotificationService notificationService;
 
 
 
     @GetMapping("/getAll")
-    public List<NotificationDto> getAll(@RequestParam Long userId){
-        return notificationService.getAll(userId);
+    public List<NotificationDto> getAll(@RequestParam Long userId,
+                                        @RequestParam String country){
+        return notificationService.getAll(userId, country);
     }
 
-    @PostMapping("/getAll")
-    public void getAll(@RequestBody List<NotificationDto> notificationDto){
-        notificationService.setRead(notificationDto);
-    }
 }

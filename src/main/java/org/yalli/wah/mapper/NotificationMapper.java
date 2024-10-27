@@ -15,6 +15,5 @@ public abstract class NotificationMapper {
     @Mapping(target = "List<NotificationDto>", expression = "java(toNotificationDto(notificationEntity))")
     public abstract List<NotificationDto> toNotificationDtoList(List<NotificationEntity> notificationEntity);
     public abstract NotificationDto toNotificationDto(NotificationEntity notificationEntity);
-    public abstract NotificationEntity toNotificationEntity(NotificationDto notificationDto);
 
 }

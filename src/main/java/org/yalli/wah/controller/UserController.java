@@ -20,7 +20,6 @@ import org.yalli.wah.service.NotificationService;
 import org.yalli.wah.service.UserService;
 
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,12 +30,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    private final NotificationService notificationService;
 
     @PostMapping("/login")
     @Operation(summary = "login")
     public HashMap<String, String> login(@RequestBody LoginDto loginDto) {
-        notificationService.sendNotification();
         return userService.login(loginDto);
     }
 

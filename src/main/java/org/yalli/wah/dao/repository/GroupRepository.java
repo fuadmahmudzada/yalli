@@ -14,6 +14,4 @@ public interface GroupRepository extends JpaRepository<GroupEntity, Long>, JpaSp
     Page<GroupEntity> findByUserEntity_Id(Long id, Pageable pageable);
     Optional<GroupEntity> findByIdAndUserEntity_Id(Long id, Long id1);
     long deleteByUserEntity_IdAndIdIn(Long id, Collection<Long> ids);
-    Optional<List<String>> findAllGroupEntity_Country();
-    Optional<GroupEntity> findAllByCountry(String country);
 }

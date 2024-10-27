@@ -23,6 +23,6 @@ public class NotificationEntity {
     @CreationTimestamp
     private LocalDateTime sentTime;
     @ManyToMany(mappedBy="notifications")
-    List<UserEntity> users;
-    private Boolean isRead=false;
+    private List<UserEntity> users;
+    private Boolean forAllUsers=false;
 }
