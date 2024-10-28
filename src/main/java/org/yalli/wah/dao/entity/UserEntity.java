@@ -56,4 +56,10 @@ public class UserEntity {
     private boolean emailConfirmed = false;
     @Column(name = "number_of_not_completed_fields")
     private Integer notCompletedFields = 0;
+    @ManyToMany
+    @JoinTable(name = "user_notifications",
+                joinColumns = @JoinColumn(name = "user_id"),
+               inverseJoinColumns = @JoinColumn(name = "notifications_id")
+    )
+    private List<NotificationEntity> notifications;
 }
