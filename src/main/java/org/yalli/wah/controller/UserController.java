@@ -16,6 +16,7 @@ import org.yalli.wah.model.dto.PasswordResetDto;
 import org.yalli.wah.model.dto.RegisterDto;
 import org.yalli.wah.model.dto.RequestResetDto;
 import org.yalli.wah.model.enums.Country;
+import org.yalli.wah.service.NotificationService;
 import org.yalli.wah.service.UserService;
 
 import java.util.Arrays;
