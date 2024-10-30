@@ -1,5 +1,6 @@
 package org.yalli.wah.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,7 @@ import org.yalli.wah.util.PasswordUtil;
 import org.yalli.wah.util.TokenUtil;
 import org.yalli.wah.util.UserSpecification;
 
+import javax.swing.*;
 import java.time.LocalDateTime;
 
 import java.util.HashMap;
@@ -254,6 +256,15 @@ public class UserService {
         }
         userRepository.save(userEntity);
 
+    }
+
+    public void deleteUser(Long id){
+        log.info("ActionLog.delete.start id {}", id);
+        if(!userRepository.existsById(id)){
+            throw new EntityNotFoundException("User not found with " + id);
+        }
+        userRepository.deleteById(id);
+        log.info("ActionLog.delete.end id {}", id);
     }
 
 }
