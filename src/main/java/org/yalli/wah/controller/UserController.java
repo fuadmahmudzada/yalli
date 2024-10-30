@@ -117,5 +117,11 @@ public class UserController {
         userService.sendOtp(email);
     }
 
+    @DeleteMapping("/delete/{id}")
+    @Operation(summary = "Delete user")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteUser(@PathVariable Long id){
+        userService.deleteUser(id);
+    }
 
 }
