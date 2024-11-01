@@ -18,6 +18,7 @@ import org.yalli.wah.model.dto.GroupSearchRequest;
 import org.yalli.wah.model.dto.GroupUpdateDto;
 import org.yalli.wah.model.exception.InvalidInputException;
 import org.yalli.wah.model.exception.ResourceNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,6 +95,7 @@ public class GroupService {
         log.info("ActionLog.updateGroup.end updatedEntity {}", updatedEntity);
     }
 
+    @Transactional
     public void deleteGroup(List<Long> groupIds, Long userId) {
         log.info("ActionLog.deleteGroup.start groupId = {} user id {}", groupIds, userId);
         groupRepository.deleteByUserEntity_IdAndIdIn(userId, groupIds);

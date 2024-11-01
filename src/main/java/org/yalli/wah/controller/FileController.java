@@ -24,7 +24,7 @@ import org.yalli.wah.service.MinioService;
 public class FileController {
     private final MinioService minioService;
 
-    @PostMapping("/upload")
+    @PostMapping(value= "/upload", consumes = "multipart/form-data")
     @ResponseStatus(HttpStatus.CREATED)
     public String upload(
             @RequestPart("file") MultipartFile file) throws Exception {
