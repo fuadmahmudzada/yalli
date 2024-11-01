@@ -18,6 +18,7 @@ import org.yalli.wah.model.dto.GroupSearchRequest;
 import org.yalli.wah.model.dto.GroupUpdateDto;
 import org.yalli.wah.model.exception.InvalidInputException;
 import org.yalli.wah.model.exception.ResourceNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
