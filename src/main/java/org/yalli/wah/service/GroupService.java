@@ -94,6 +94,7 @@ public class GroupService {
         log.info("ActionLog.updateGroup.end updatedEntity {}", updatedEntity);
     }
 
+    @Transactional
     public void deleteGroup(List<Long> groupIds, Long userId) {
         log.info("ActionLog.deleteGroup.start groupId = {} user id {}", groupIds, userId);
         groupRepository.deleteByUserEntity_IdAndIdIn(userId, groupIds);
