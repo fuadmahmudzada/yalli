@@ -10,7 +10,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 import org.yalli.wah.model.enums.SocialMedia;
 
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -58,8 +57,10 @@ public class UserEntity {
     private Integer notCompletedFields = 0;
     @ManyToMany
     @JoinTable(name = "user_notifications",
-                joinColumns = @JoinColumn(name = "user_id"),
-               inverseJoinColumns = @JoinColumn(name = "notifications_id")
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "notifications_id")
     )
     private List<NotificationEntity> notifications;
+    @OneToMany(mappedBy = "userEntity")
+    private List<GroupEntity> groups;
 }
