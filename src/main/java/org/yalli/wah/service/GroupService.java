@@ -2,6 +2,7 @@ package org.yalli.wah.service;
 
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -25,8 +26,9 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class GroupService {
-    private static final Logger log = LoggerFactory.getLogger(GroupService.class);
+
     private final GroupRepository groupRepository;
 
     public Page<GroupLightDto> getAllGroupsLight(Pageable pageable, GroupSearchRequest groupSearchRequest) {
@@ -86,7 +88,10 @@ public class GroupService {
         var group = getGroupEntityById(id);
         log.info("ActionLog.updateGroup.info images {}", group.getGallery());
         if (groupUpdateDto.getTitle() != null && !groupUpdateDto.getTitle().isBlank()) {
-            if (group.getRenameCount().intValue() + 1 < 3) {
+            if (group.getRenameCount().intValue() <= 3) {
+                group.setRenameCount((short) (group.getRenameCount() + 1));
+            }
+            if (group.getRenameCount().intValue() > 3) {
                 throw new InvalidInputException("GROUP_RENAME_LIMIT_EXCEEDED");
             }
         }
