@@ -7,9 +7,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import org.yalli.wah.model.dto.EventDetailDto;
 import org.yalli.wah.model.dto.EventDto;
+import org.yalli.wah.model.dto.EventSaveDto;
 import org.yalli.wah.model.dto.EventSearchRequest;
 import org.yalli.wah.service.EventService;
-
 
 
 @RestController
@@ -28,7 +28,17 @@ public class EventController {
     }
 
     @GetMapping("/{id}")
-    public EventDetailDto getEvent(@PathVariable Long id){
+    public EventDetailDto getEvent(@PathVariable Long id) {
         return eventService.getEventById(id);
+    }
+
+    @PatchMapping("/saveEvent")
+    public void saveEvent(@RequestBody EventSaveDto eventSaveDto) {
+        eventService.saveEvent(eventSaveDto);
+    }
+
+    @PatchMapping("/unsaveEvent")
+    public void unsaveEvent(@RequestBody EventSaveDto eventSaveDto){
+        eventService.unsaveEvent(eventSaveDto);
     }
 }
