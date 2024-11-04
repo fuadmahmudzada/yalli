@@ -4,5 +4,6 @@ public enum SocialMedia {
     FACEBOOK,
     INSTAGRAM,
     TELEGRAM,
-    WHATSAPP
+    WHATSAPP,
+    LINKEDIN
 }

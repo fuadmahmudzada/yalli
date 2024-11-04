@@ -3,7 +3,6 @@ package org.yalli.wah.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 import org.yalli.wah.dao.entity.UserEntity;
 import org.yalli.wah.model.dto.MemberDto;

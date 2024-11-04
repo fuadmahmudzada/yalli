@@ -14,4 +14,5 @@ public class EventDto {
     private LocalDate date;
     private String country;
     private String link;
+    private boolean saved;
 }
