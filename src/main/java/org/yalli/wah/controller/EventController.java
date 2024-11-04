@@ -21,7 +21,7 @@ public class EventController {
 
     @GetMapping
     public Page<EventDto> getEvents(
-            @RequestHeader(value = "token") String token,
+            @RequestHeader(value = "token", required = false) String token,
             @ModelAttribute EventSearchRequest searchRequest,
             Pageable pageable) {
         return eventService.getAllEvents(searchRequest, pageable, token);
@@ -38,7 +38,7 @@ public class EventController {
     }
 
     @PatchMapping("/unsaveEvent")
-    public void unsaveEvent(@RequestBody EventSaveDto eventSaveDto){
+    public void unsaveEvent(@RequestBody EventSaveDto eventSaveDto) {
         eventService.unsaveEvent(eventSaveDto);
     }
 }

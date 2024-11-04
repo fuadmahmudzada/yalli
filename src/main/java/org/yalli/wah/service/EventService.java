@@ -34,9 +34,12 @@ public class EventService {
     private final UserRepository userRepository;
 
     public Page<EventDto> getAllEvents(EventSearchRequest eventSearchRequest, Pageable pageable, String token) {
-
-        UserEntity userEntity = userRepository.findByAccessToken(token).orElse(null);
-
+        UserEntity userEntity;
+        if (token != null) {
+            userEntity = userRepository.findByAccessToken(token).orElse(null);
+        } else {
+            userEntity = null;
+        }
         Specification<EventEntity> spec = Specification.where((root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -61,7 +64,6 @@ public class EventService {
                             if (userEntity != null) {
                                 Join<EventEntity, UserEntity> userJoin = root.join("users", JoinType.INNER);
                                 categoryPredicates.add(criteriaBuilder.equal(userJoin.get("id"), userEntity.getId()));
-                             //categoryPredicates.add(criteriaBuilder.isMember(root.get("users"),userEntity.getSavedEvents()))
                             }
                             break;
                     }
@@ -85,7 +87,8 @@ public class EventService {
         });
 
 
-        return eventRepository.findAll(spec, pageable).map(EventMapper.INSTANCE::mapEntityToDto);
+        return eventRepository.findAll(spec, pageable).map(it -> EventMapper.INSTANCE.mapEntityToDto(it,
+                userEntity == null ? null : userEntity.getId()));
     }
 
     public EventDetailDto getEventById(Long id) {
