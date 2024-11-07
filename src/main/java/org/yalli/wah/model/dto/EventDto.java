@@ -14,5 +14,6 @@ public class EventDto {
     private LocalDate date;
     private String country;
     private String link;
+    private String imageId;
     private boolean saved;
 }
