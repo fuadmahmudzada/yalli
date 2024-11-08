@@ -91,7 +91,7 @@ public class GroupService {
             if (group.getRenameCount().intValue() <= 3) {
                 group.setRenameCount((short) (group.getRenameCount() + 1));
             }
-            if (group.getRenameCount().intValue() > 3) {
+            if (group.getRenameCount().intValue() > 1000) {
                 throw new InvalidInputException("GROUP_RENAME_LIMIT_EXCEEDED");
             }
         }
