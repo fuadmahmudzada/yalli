@@ -14,9 +14,12 @@ public abstract class EventMapper {
     public final static EventMapper INSTANCE = Mappers.getMapper(EventMapper.class);
 
     @Mapping(target = "saved", expression = "java(checkIsSaved(event, userId))")
-    public abstract EventDto mapEntityToDto(EventEntity event,  Long userId);
+    public abstract EventDto mapEntityToDto(EventEntity event, Long userId);
 
     public abstract EventDetailDto manEntityToEventDetailDto(EventEntity event);
+
+    @Mapping(target = "users", ignore = true)
+    public abstract EventEntity mapDtoToEntity(EventDetailDto dto);
 
     @Named("checkIsSaved")
     protected boolean checkIsSaved(EventEntity eventEntity, Long userId) {

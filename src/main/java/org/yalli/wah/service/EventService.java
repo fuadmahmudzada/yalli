@@ -132,5 +132,9 @@ public class EventService {
         userEntity.setSavedEvents(savedEntities);
         userRepository.save(userEntity);
     }
+
+    public void addEvent(EventDetailDto eventDetailDto) {
+        eventRepository.save(EventMapper.INSTANCE.mapDtoToEntity(eventDetailDto));
+    }
 }
 
