@@ -3,6 +3,7 @@ package org.yalli.wah.util;
 import org.springframework.data.jpa.domain.Specification;
 import org.yalli.wah.dao.entity.UserEntity;
 
+import javax.swing.*;
 
 
 public class UserSpecification {
@@ -19,5 +20,10 @@ public class UserSpecification {
                 country == null || country.isEmpty()
                         ? criteriaBuilder.conjunction()
                         : criteriaBuilder.like(criteriaBuilder.lower(root.get("country")), "%" + country.toLowerCase() + "%");
+    }
+
+    public static Specification<UserEntity> isEmailConfirmed(Boolean isEmailConfirmed) {
+        return (root, query, criteriaBuilder) ->
+            criteriaBuilder.equal(root.get("emailConfirmed"), Boolean.TRUE);
     }
 }

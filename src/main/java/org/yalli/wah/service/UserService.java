@@ -223,8 +223,9 @@ public class UserService {
 
     public Page<MemberDto> searchUsers(String fullName, String country, Pageable pageable) {
         log.info("ActionLog.searchUsers.start fullName {}, country {}", fullName, country);
-        Specification<UserEntity> spec = Specification.where(UserSpecification.hasFullName(fullName))
-                .and(UserSpecification.hasCountry(country));
+        Specification<UserEntity> spec = Specification.where(UserSpecification.isEmailConfirmed(true))
+                .and(UserSpecification.hasCountry(country))
+                .and(UserSpecification.hasFullName(fullName));
 
         Page<UserEntity> userEntities = userRepository.findAll(spec, pageable);
         log.info("ActionLog.searchUsers.end fullName {}, country {}", fullName, country);
