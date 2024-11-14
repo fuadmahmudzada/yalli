@@ -11,6 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MentorSearchRequest {
+    private Long id;
     private String fullName;
     private String country;
     private List<MentorCategory> category;

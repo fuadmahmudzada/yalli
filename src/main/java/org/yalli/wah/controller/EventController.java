@@ -41,4 +41,9 @@ public class EventController {
     public void unsaveEvent(@RequestBody EventSaveDto eventSaveDto) {
         eventService.unsaveEvent(eventSaveDto);
     }
+
+    @PostMapping
+    public void addEvent(EventDetailDto eventDetailDto) {
+        eventService.addEvent(eventDetailDto);
+    }
 }
