@@ -22,7 +22,7 @@ import java.util.List;
 public class MentorEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
     private String fullName;
     private String country;
     private String city;
