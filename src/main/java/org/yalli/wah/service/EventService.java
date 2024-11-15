@@ -74,7 +74,7 @@ public class EventService {
 
 
             if (eventSearchRequest.getTitle() != null && !eventSearchRequest.getTitle().isEmpty()) {
-                predicates.add(criteriaBuilder.like(root.get("title"), "%" + eventSearchRequest.getTitle() + "%"));
+                predicates.add(criteriaBuilder.like(root.get("title"), eventSearchRequest.getTitle() + "%"));
             }
 
 

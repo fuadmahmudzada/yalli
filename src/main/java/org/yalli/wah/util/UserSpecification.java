@@ -12,18 +12,18 @@ public class UserSpecification {
         return (root, query, criteriaBuilder) ->
                 fullName == null || fullName.isEmpty()
                         ? criteriaBuilder.conjunction()
-                        : criteriaBuilder.like(criteriaBuilder.lower(root.get("fullName")), "%" + fullName.toLowerCase() + "%");
+                        : criteriaBuilder.like(criteriaBuilder.lower(root.get("fullName")), fullName.toLowerCase() + "%");
     }
 
     public static Specification<UserEntity> hasCountry(String country) {
         return (root, query, criteriaBuilder) ->
                 country == null || country.isEmpty()
                         ? criteriaBuilder.conjunction()
-                        : criteriaBuilder.like(criteriaBuilder.lower(root.get("country")), "%" + country.toLowerCase() + "%");
+                        : criteriaBuilder.like(criteriaBuilder.lower(root.get("country")),  country.toLowerCase());
     }
 
-    public static Specification<UserEntity> isEmailConfirmed(Boolean isEmailConfirmed) {
+    public static Specification<UserEntity> isEmailConfirmed() {
         return (root, query, criteriaBuilder) ->
-            criteriaBuilder.equal(root.get("emailConfirmed"), Boolean.TRUE);
+            criteriaBuilder.isTrue(root.get("emailConfirmed"));
     }
 }
