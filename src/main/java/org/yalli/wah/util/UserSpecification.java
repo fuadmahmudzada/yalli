@@ -19,7 +19,7 @@ public class UserSpecification {
         return (root, query, criteriaBuilder) ->
                 country == null || country.isEmpty()
                         ? criteriaBuilder.conjunction()
-                        : criteriaBuilder.like(criteriaBuilder.lower(root.get("country")),  country.toLowerCase() + "%");
+                        : criteriaBuilder.like(criteriaBuilder.lower(root.get("country")),  country.toLowerCase());
     }
 
     public static Specification<UserEntity> isEmailConfirmed() {
