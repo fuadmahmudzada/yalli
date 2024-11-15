@@ -35,7 +35,7 @@ public class MentorService {
         Specification<MentorEntity> specification = Specification.where((root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
             if (mentorSearchRequest.getFullName() != null && !mentorSearchRequest.getFullName().isEmpty()) {
-                predicates.add(criteriaBuilder.like(root.get("fullName"), "%" + mentorSearchRequest.getFullName() + "%"));
+                predicates.add(criteriaBuilder.like(root.get("fullName"),  mentorSearchRequest.getFullName() + "%"));
             }
             if (mentorSearchRequest.getCategory() != null && !mentorSearchRequest.getCategory().isEmpty()) {
                 predicates.add(root.get("category").in(mentorSearchRequest.getCategory()));

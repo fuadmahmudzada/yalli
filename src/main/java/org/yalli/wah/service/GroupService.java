@@ -40,7 +40,7 @@ public class GroupService {
                 }
                 if (groupSearchRequest.getTitle() != null && !groupSearchRequest.getTitle().isEmpty()) {
                     predicates.add(
-                            criteriaBuilder.like(root.get("title"), "%" + groupSearchRequest.getTitle() + "%")
+                            criteriaBuilder.like(root.get("title"), groupSearchRequest.getTitle() + "%")
                     );
                 }
                 if (groupSearchRequest.getCountry() != null && !groupSearchRequest.getCountry().isEmpty()) {

@@ -223,7 +223,7 @@ public class UserService {
 
     public Page<MemberDto> searchUsers(String fullName, String country, Pageable pageable) {
         log.info("ActionLog.searchUsers.start fullName {}, country {}", fullName, country);
-        Specification<UserEntity> spec = Specification.where(UserSpecification.isEmailConfirmed(true))
+        Specification<UserEntity> spec = Specification.where(UserSpecification.isEmailConfirmed())
                 .and(UserSpecification.hasCountry(country))
                 .and(UserSpecification.hasFullName(fullName));
 
