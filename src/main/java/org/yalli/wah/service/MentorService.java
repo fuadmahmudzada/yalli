@@ -52,7 +52,7 @@ public class MentorService {
                         criteriaBuilder.equal(root.get("country"), mentorSearchRequest.getCountry())
                 );
             }
-            predicates.add(criteriaBuilder.equal(root.get("mentorStatus"), MentorStatus.ACCEPTED));
+            predicates.add(criteriaBuilder.equal(root.get("status"), MentorStatus.ACCEPTED));
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         });
         return mentorRepository.findAll(specification, pageable).map(MentorMapper.INSTANCE::mapMentorEntityToMentorSearchDto);
