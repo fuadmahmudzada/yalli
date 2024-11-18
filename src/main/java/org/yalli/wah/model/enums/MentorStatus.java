@@ -1,7 +1,8 @@
 package org.yalli.wah.model.enums;
 
 public enum MentorStatus {
-    ON_HOLD,
+    APPLIED,
+    REVIEW,
     ACCEPTED,
-    CANCELLED
+    REJECTED
 }
