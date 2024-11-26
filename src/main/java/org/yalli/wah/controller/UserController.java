@@ -120,7 +120,7 @@ public class UserController {
     @Operation(summary = "send otp for registering again")
     @ResponseStatus(HttpStatus.OK)
     public void resendOtp(@RequestBody SendOtpDto sendOtpDto){
-        userService.sendRegisterOtp(sendOtpDto.getEmail());
+        userService.resendRegisterOtp(sendOtpDto.getEmail());
     }
 
 }
