@@ -34,8 +34,8 @@ import java.util.HashMap;
 import java.util.Random;
 
 import java.util.*;
-
 import static org.yalli.wah.model.enums.EmailTemplate.*;
+
 
 
 @Service
@@ -106,11 +106,7 @@ public class UserService {
 
 
         //send otp
-        String otp = generateOtp();
-        userEntity.setOtp(otp);
-        userEntity.setOtpExpiration(LocalDateTime.now().plusSeconds(60));
-        emailService.sendMail(registerDto.getEmail(), CONFIRMATION.getSubject(),
-                formatMessage(CONFIRMATION.getBody(), otp));
+        sendRegisterOtp(userEntity.getEmail());
 
         userRepository.save(userEntity);
         log.info("ActionLog.register.end email {}", registerDto.getEmail());
@@ -267,17 +263,31 @@ public class UserService {
 
     }
 
-    public void deleteUser(Long id) {
+    public void deleteUser(Long id){
         log.info("ActionLog.delete.start id {}", id);
-        if (!userRepository.existsById(id)) {
+        if(!userRepository.existsById(id)){
             throw new EntityNotFoundException("User not found with " + id);
         }
         userRepository.deleteById(id);
         log.info("ActionLog.delete.end id {}", id);
     }
 
+    public void sendRegisterOtp(String email){
+        log.info("ActionLog.sendRegisterOtp.start email {}", email);
+        UserEntity userEntity = getUserByEmail(email);
+        String firstOtp = userEntity.getOtp();
+        String otp = generateOtp();
+        userEntity.setOtp(otp);
+        userEntity.setOtpExpiration(LocalDateTime.now().plusSeconds(60));
+        emailService.sendMail(email,CONFIRMATION.getSubject(),formatMessage(CONFIRMATION.getBody(),otp));
+        if(!firstOtp.isEmpty()){
+            userRepository.save(userEntity);
+        }
+        log.info("ActionLog.sendRegisterOtp.end email {}", email);
+    }
     private String formatMessage(String message, String... values) {
         return MessageFormat.format(message, (Object[]) values);
     }
+
 }
 

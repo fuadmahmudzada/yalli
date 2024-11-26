@@ -7,16 +7,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import org.yalli.wah.model.dto.ConfirmDto;
-import org.yalli.wah.model.dto.LoginDto;
-import org.yalli.wah.model.dto.MemberDto;
-import org.yalli.wah.model.dto.MemberInfoDto;
-import org.yalli.wah.model.dto.MemberUpdateDto;
-import org.yalli.wah.model.dto.PasswordResetDto;
-import org.yalli.wah.model.dto.RegisterDto;
-import org.yalli.wah.model.dto.RequestResetDto;
+import org.yalli.wah.model.dto.*;
 import org.yalli.wah.model.enums.Country;
-import org.yalli.wah.service.NotificationService;
 import org.yalli.wah.service.UserService;
 
 import java.util.Arrays;
@@ -122,6 +114,13 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public void deleteUser(@PathVariable Long id){
         userService.deleteUser(id);
+    }
+
+    @PostMapping("/register/resend-otp")
+    @Operation(summary = "send otp for registering again")
+    @ResponseStatus(HttpStatus.OK)
+    public void resendOtp(@RequestBody SendOtpDto sendOtpDto){
+        userService.sendRegisterOtp(sendOtpDto.getEmail());
     }
 
 }
