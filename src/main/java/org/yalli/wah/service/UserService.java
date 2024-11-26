@@ -11,8 +11,14 @@ import org.yalli.wah.dao.entity.UserEntity;
 import org.yalli.wah.dao.repository.UserRepository;
 import org.yalli.wah.mapper.ProfileMapper;
 import org.yalli.wah.mapper.UserMapper;
-import org.yalli.wah.model.dto.*;
-import org.yalli.wah.model.enums.EmailTemplate;
+import org.yalli.wah.model.dto.ConfirmDto;
+import org.yalli.wah.model.dto.LoginDto;
+import org.yalli.wah.model.dto.MemberDto;
+import org.yalli.wah.model.dto.MemberInfoDto;
+import org.yalli.wah.model.dto.MemberUpdateDto;
+import org.yalli.wah.model.dto.PasswordResetDto;
+import org.yalli.wah.model.dto.RegisterDto;
+import org.yalli.wah.model.dto.RequestResetDto;
 import org.yalli.wah.model.exception.InvalidInputException;
 import org.yalli.wah.model.exception.InvalidOtpException;
 import org.yalli.wah.model.exception.PermissionException;
@@ -21,16 +27,15 @@ import org.yalli.wah.util.PasswordUtil;
 import org.yalli.wah.util.TokenUtil;
 import org.yalli.wah.util.UserSpecification;
 
-import javax.swing.*;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 
 import java.util.HashMap;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.Random;
 
 import java.util.*;
+import static org.yalli.wah.model.enums.EmailTemplate.*;
+
 import static org.yalli.wah.model.enums.EmailTemplate.*;
 
 
@@ -84,7 +89,7 @@ public class UserService {
         var userEntity = getUserByEmail(email);
         var otp = generateOtp();
         userEntity.setOtp(otp);
-        emailService.sendOtp(email, otp);
+        emailService.sendMail(email, RESET_PASSWORD.getSubject(), formatMessage(RESET_PASSWORD.getBody(), otp));
         userRepository.save(userEntity);
         log.info("ActionLog.sendOtp.end email {}", email);
     }
@@ -97,7 +102,7 @@ public class UserService {
             }
         });
         UserEntity userEntity = userRepository.findByEmail(registerDto.getEmail()).orElse(new UserEntity());
-        userEntity = UserMapper.INSTANCE.mapRegisterDtoToUser(registerDto,userEntity);
+        userEntity = UserMapper.INSTANCE.mapRegisterDtoToUser(registerDto, userEntity);
         userEntity.setPassword(passwordUtil.encode(userEntity.getPassword()));
 
 

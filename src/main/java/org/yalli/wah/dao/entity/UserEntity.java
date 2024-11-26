@@ -37,7 +37,7 @@ public class UserEntity {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
     private String profilePictureUrl;
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "user_saved_events",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -55,12 +55,12 @@ public class UserEntity {
     private boolean emailConfirmed = false;
     @Column(name = "number_of_not_completed_fields")
     private Integer notCompletedFields = 0;
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "user_notifications",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "notifications_id")
     )
     private List<NotificationEntity> notifications;
-    @OneToMany(mappedBy = "userEntity")
+    @OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GroupEntity> groups;
 }
