@@ -107,7 +107,7 @@ public class UserService {
 
 
         //send otp
-        sendRegisterOtp(userEntity);
+        processOtp(userEntity);
 
         userRepository.save(userEntity);
         log.info("ActionLog.register.end email {}", registerDto.getEmail());
@@ -273,22 +273,24 @@ public class UserService {
         log.info("ActionLog.delete.end id {}", id);
     }
 
-    public <T> void sendRegisterOtp(T value){
-        log.info("ActionLog.sendRegisterOtp.start email {}", value);
-         UserEntity userEntity = (UserEntity) value;
-        if(value instanceof String) {
-             userEntity = getUserByEmail((String) value);
-        }
+    public void processOtp(UserEntity userEntity){
+        log.info("ActionLog.sendRegisterOtp.start email {}", userEntity.getEmail());
         String firstOtp = userEntity.getOtp();
         String otp = generateOtp();
         userEntity.setOtp(otp);
         userEntity.setOtpExpiration(LocalDateTime.now().plusSeconds(60));
-       // emailService.sendMail(userEntity.getEmail(),CONFIRMATION.getSubject(),formatMessage(CONFIRMATION.getBody(),otp));
+        emailService.sendMail(userEntity.getEmail(),CONFIRMATION.getSubject(),formatMessage(CONFIRMATION.getBody(),otp));
         if(firstOtp!=null){
             userRepository.save(userEntity);
         }
         log.info("ActionLog.sendRegisterOtp.end email {}", userEntity.getEmail());
     }
+
+    public void resendRegisterOtp(String email){
+        UserEntity userEntity = getUserByEmail(email);
+        processOtp(userEntity);
+    }
+
     private String formatMessage(String message, String... values) {
         return MessageFormat.format(message, (Object[]) values);
     }
