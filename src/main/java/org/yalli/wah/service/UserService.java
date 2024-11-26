@@ -36,7 +36,6 @@ import java.util.Random;
 import java.util.*;
 import static org.yalli.wah.model.enums.EmailTemplate.*;
 
-import static org.yalli.wah.model.enums.EmailTemplate.*;
 
 
 @Service
