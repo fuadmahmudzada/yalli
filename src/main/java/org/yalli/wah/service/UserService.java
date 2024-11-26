@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.yalli.wah.dao.entity.UserEntity;
 import org.yalli.wah.dao.repository.UserRepository;
@@ -95,18 +96,18 @@ public class UserService {
 
     public void register(RegisterDto registerDto) {
         log.info("ActionLog.register.start email {}", registerDto.getEmail());
-        userRepository.findByEmail(registerDto.getEmail()).ifPresent((user) -> {
+        UserEntity userEntity = userRepository.findByEmail(registerDto.getEmail()).map((user) -> {
             if (user.isEmailConfirmed()) {
                 throw new InvalidInputException("EMAIL_ALREADY_EXISTS");
             }
-        });
-        UserEntity userEntity = userRepository.findByEmail(registerDto.getEmail()).orElse(new UserEntity());
+            return user;
+        }).orElse(new UserEntity());
         userEntity = UserMapper.INSTANCE.mapRegisterDtoToUser(registerDto, userEntity);
         userEntity.setPassword(passwordUtil.encode(userEntity.getPassword()));
 
 
         //send otp
-        sendRegisterOtp(userEntity.getEmail());
+        sendRegisterOtp(userEntity);
 
         userRepository.save(userEntity);
         log.info("ActionLog.register.end email {}", registerDto.getEmail());
@@ -272,18 +273,21 @@ public class UserService {
         log.info("ActionLog.delete.end id {}", id);
     }
 
-    public void sendRegisterOtp(String email){
-        log.info("ActionLog.sendRegisterOtp.start email {}", email);
-        UserEntity userEntity = getUserByEmail(email);
+    public <T> void sendRegisterOtp(T value){
+        log.info("ActionLog.sendRegisterOtp.start email {}", value);
+         UserEntity userEntity = (UserEntity) value;
+        if(value instanceof String) {
+             userEntity = getUserByEmail((String) value);
+        }
         String firstOtp = userEntity.getOtp();
         String otp = generateOtp();
         userEntity.setOtp(otp);
         userEntity.setOtpExpiration(LocalDateTime.now().plusSeconds(60));
-        emailService.sendMail(email,CONFIRMATION.getSubject(),formatMessage(CONFIRMATION.getBody(),otp));
-        if(!firstOtp.isEmpty()){
+       // emailService.sendMail(userEntity.getEmail(),CONFIRMATION.getSubject(),formatMessage(CONFIRMATION.getBody(),otp));
+        if(firstOtp!=null){
             userRepository.save(userEntity);
         }
-        log.info("ActionLog.sendRegisterOtp.end email {}", email);
+        log.info("ActionLog.sendRegisterOtp.end email {}", userEntity.getEmail());
     }
     private String formatMessage(String message, String... values) {
         return MessageFormat.format(message, (Object[]) values);
