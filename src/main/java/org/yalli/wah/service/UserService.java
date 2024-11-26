@@ -283,7 +283,7 @@ public class UserService {
         String otp = generateOtp();
         userEntity.setOtp(otp);
         userEntity.setOtpExpiration(LocalDateTime.now().plusSeconds(60));
-       // emailService.sendMail(userEntity.getEmail(),CONFIRMATION.getSubject(),formatMessage(CONFIRMATION.getBody(),otp));
+        emailService.sendMail(userEntity.getEmail(),CONFIRMATION.getSubject(),formatMessage(CONFIRMATION.getBody(),otp));
         if(firstOtp!=null){
             userRepository.save(userEntity);
         }
