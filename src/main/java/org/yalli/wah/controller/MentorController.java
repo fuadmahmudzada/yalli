@@ -14,6 +14,7 @@ import org.yalli.wah.model.dto.MentorshipDto;
 import org.yalli.wah.model.enums.MentorStatus;
 import org.yalli.wah.model.exception.InvalidInputException;
 import org.yalli.wah.service.MentorService;
+import org.yalli.wah.service.PermissionService;
 
 
 @RestController
@@ -22,6 +23,7 @@ import org.yalli.wah.service.MentorService;
 @RequiredArgsConstructor
 public class MentorController {
     private final MentorService mentorService;
+    private final PermissionService permissionService;
 
     @GetMapping("/search")
     @Operation(summary = "search mentors")
@@ -47,12 +49,15 @@ public class MentorController {
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "change request status")
-    public void changeRequestStatus(@PathVariable Long id, @RequestParam MentorStatus operation) {
-        switch (operation) {
-            case REVIEW -> mentorService.assignRequest(id);
-            case REJECTED -> mentorService.rejectMentorship(id);
-            case ACCEPTED -> mentorService.acceptMentorship(id);
-            default -> throw new InvalidInputException("Unexpected value: " + operation);
+    public void changeRequestStatus(@PathVariable Long id, @RequestParam MentorStatus operation,
+                                    @RequestHeader("user-id") Long userId) {
+        if (permissionService.hasPermission(userId,"mentorshipApply")) {
+            switch (operation) {
+                case REVIEW -> mentorService.assignRequest(id);
+                case REJECTED -> mentorService.rejectMentorship(id);
+                case ACCEPTED -> mentorService.acceptMentorship(id);
+                default -> throw new InvalidInputException("Unexpected value: " + operation);
+            }
         }
     }
 }

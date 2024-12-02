@@ -4,13 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class NotificationDto {
-    private String content;
+@Data
+public class NotificationSaveDto {
     private String title;
-    private LocalDateTime sentTime;
+    private String content;
+    private String country;
 }
