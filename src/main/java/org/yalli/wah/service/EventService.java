@@ -110,9 +110,11 @@ public class EventService {
             return new ResourceNotFoundException("USER_NOT_FOUND");
         });
         List<EventEntity> userEvents = userEntity.getSavedEvents();
-        userEvents.add(eventEntity);
-        userEntity.setSavedEvents(userEvents);
-        userRepository.save(userEntity);
+        if (!userEvents.contains(eventEntity)) {
+            userEvents.add(eventEntity);
+            userEntity.setSavedEvents(userEvents);
+            userRepository.save(userEntity);
+        }
 
     }
 
