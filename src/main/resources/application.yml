@@ -8,8 +8,8 @@ spring:
       ddl-auto: update
   mail:
     host: smtp.gmail.com
-    username: texnoera.academy@gmail.com
-    password: sjqmzjnzbyxxlusr
+    username: yalli.org@gmail.com
+    password: buzdocbljwcwmrbe
     port: 587
     properties:
       mail.smtp:
