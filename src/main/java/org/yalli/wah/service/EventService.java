@@ -79,7 +79,7 @@ public class EventService {
 
 
             if (eventSearchRequest.getCountry() != null && !eventSearchRequest.getCountry().isEmpty()) {
-                predicates.add(criteriaBuilder.equal(criteriaBuilder.lower(root.get("country")), eventSearchRequest.getCountry()));
+                predicates.add(criteriaBuilder.equal(criteriaBuilder.lower(root.get("country")), eventSearchRequest.getCountry().toLowerCase()));
             }
 
 
