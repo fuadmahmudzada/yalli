@@ -100,6 +100,7 @@ public class EventService {
     }
 
     public void saveEvent(EventSaveDto eventSaveDto) {
+        log.info("ActionLog.saveEvent.start with dto {}", eventSaveDto);
         EventEntity eventEntity = eventRepository.findById(eventSaveDto.getId()).orElseThrow(() ->
         {
             log.error("ActionLog.findById.error event not found with id {}", eventSaveDto.getId());
@@ -114,11 +115,12 @@ public class EventService {
             userEvents.add(eventEntity);
             userEntity.setSavedEvents(userEvents);
             userRepository.save(userEntity);
+            log.info("ActionLog.saveEvent event saved");
         }
-
     }
 
     public void unsaveEvent(EventSaveDto eventSaveDto) {
+        log.info("ActionLog.unsaveEvent.start with dto {}", eventSaveDto);
         EventEntity eventEntity = eventRepository.findById(eventSaveDto.getId()).orElseThrow(() ->
         {
             log.error("ActionLog.findById.error event not found with id {}", eventSaveDto.getId());
@@ -133,6 +135,7 @@ public class EventService {
         savedEntities.remove(eventEntity);
         userEntity.setSavedEvents(savedEntities);
         userRepository.save(userEntity);
+        log.info("ActionLog.unsaveEvent.end with dto {}", eventSaveDto);
     }
 
     public void addEvent(EventDetailDto eventDetailDto) {
