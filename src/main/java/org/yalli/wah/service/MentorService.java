@@ -42,14 +42,16 @@ public class MentorService {
         Specification<MentorEntity> specification = Specification.where((root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
             if (mentorSearchRequest.getFullName() != null && !mentorSearchRequest.getFullName().isEmpty()) {
-                predicates.add(criteriaBuilder.like(root.get("user").get("fullName"), mentorSearchRequest.getFullName() + "%"));
+                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("user").get("fullName")),
+                        mentorSearchRequest.getFullName().toLowerCase() + "%"));
             }
             if (mentorSearchRequest.getCategory() != null && !mentorSearchRequest.getCategory().isEmpty()) {
                 predicates.add(root.get("category").in(mentorSearchRequest.getCategory()));
             }
             if (mentorSearchRequest.getCountry() != null && !mentorSearchRequest.getCountry().isEmpty()) {
                 predicates.add(
-                        criteriaBuilder.equal(root.get("user").get("country"), mentorSearchRequest.getCountry())
+                        criteriaBuilder.equal(criteriaBuilder.lower(root.get("user").get("country")),
+                                mentorSearchRequest.getCountry().toLowerCase())
                 );
             }
             predicates.add(criteriaBuilder.equal(root.get("status"), MentorStatus.ACCEPTED));
