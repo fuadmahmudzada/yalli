@@ -74,12 +74,12 @@ public class EventService {
 
 
             if (eventSearchRequest.getTitle() != null && !eventSearchRequest.getTitle().isEmpty()) {
-                predicates.add(criteriaBuilder.like(root.get("title"), eventSearchRequest.getTitle() + "%"));
+                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), eventSearchRequest.getTitle() + "%"));
             }
 
 
             if (eventSearchRequest.getCountry() != null && !eventSearchRequest.getCountry().isEmpty()) {
-                predicates.add(criteriaBuilder.equal(root.get("country"), eventSearchRequest.getCountry()));
+                predicates.add(criteriaBuilder.equal(criteriaBuilder.lower(root.get("country")), eventSearchRequest.getCountry()));
             }
 
 
