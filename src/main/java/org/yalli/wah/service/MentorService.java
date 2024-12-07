@@ -46,7 +46,7 @@ public class MentorService {
                         mentorSearchRequest.getFullName().toLowerCase() + "%"));
             }
             if (mentorSearchRequest.getCategory() != null && !mentorSearchRequest.getCategory().isEmpty()) {
-                predicates.add(root.get("category").in(mentorSearchRequest.getCategory()));
+                predicates.add(root.get("mentorCategory").in(mentorSearchRequest.getCategory()));
             }
             if (mentorSearchRequest.getCountry() != null && !mentorSearchRequest.getCountry().isEmpty()) {
                 predicates.add(
