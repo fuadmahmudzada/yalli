@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.yalli.wah.dao.entity.EventEntity;
 import org.yalli.wah.dao.entity.UserEntity;
 import org.yalli.wah.dao.repository.EventRepository;
@@ -99,26 +100,23 @@ public class EventService {
         }));
     }
 
+    @Transactional
     public void saveEvent(EventSaveDto eventSaveDto) {
-        log.info("ActionLog.saveEvent.start with dto {}", eventSaveDto);
-        EventEntity eventEntity = eventRepository.findById(eventSaveDto.getId()).orElseThrow(() ->
-        {
-            log.error("ActionLog.findById.error event not found with id {}", eventSaveDto.getId());
-            return new ResourceNotFoundException("Event_NOT_FOUND");
-        });
-        UserEntity userEntity = userRepository.findById(eventSaveDto.getUserId()).orElseThrow(() -> {
-            log.error("ActionLog.findById.error user not found with id {}", eventSaveDto.getUserId());
-            return new ResourceNotFoundException("USER_NOT_FOUND");
-        });
-        List<EventEntity> userEvents = userEntity.getSavedEvents();
-        if (!userEvents.contains(eventEntity)) {
-            userEvents.add(eventEntity);
-            userEntity.setSavedEvents(userEvents);
+        EventEntity eventEntity = eventRepository.findById(eventSaveDto.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Event_NOT_FOUND"));
+
+        UserEntity userEntity = userRepository.findById(eventSaveDto.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("USER_NOT_FOUND"));
+
+        if (!userEntity.getSavedEvents().contains(eventEntity)) {
+            userEntity.getSavedEvents().add(eventEntity);
+            eventEntity.getUsers().add(userEntity);
             userRepository.save(userEntity);
-            log.info("ActionLog.saveEvent event saved");
+            eventRepository.save(eventEntity);
         }
     }
 
+    @Transactional
     public void unsaveEvent(EventSaveDto eventSaveDto) {
         log.info("ActionLog.unsaveEvent.start with dto {}", eventSaveDto);
         EventEntity eventEntity = eventRepository.findById(eventSaveDto.getId()).orElseThrow(() ->

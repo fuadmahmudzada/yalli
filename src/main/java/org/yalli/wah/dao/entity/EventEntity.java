@@ -9,6 +9,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -30,7 +31,7 @@ public class EventEntity {
     private Boolean isPopular;
     private String link;
     @ManyToMany(mappedBy = "savedEvents")
-    private List<UserEntity> users;
+    private List<UserEntity> users = new ArrayList<>();
     @CreationTimestamp
     private LocalDateTime createdAt;
     @UpdateTimestamp
