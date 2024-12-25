@@ -1,3 +1,4 @@
+# **This Project is on mvp stage, there are some issues and they will be fixed**
 # **Yalli - Connecting Azerbaijani Communities Worldwide** 🌍
 Overview
 Yalli is a community platform designed to connect Azerbaijanis living abroad with each other and provide mentorship opportunities for those in Azerbaijan looking to study or live abroad. The platform facilitates community building, knowledge sharing, and mentorship connections through a robust backend API.
