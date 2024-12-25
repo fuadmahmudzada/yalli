@@ -75,24 +75,24 @@ Gradle 7.0 or higher
 
 Clone the repository
 
-bashCopygit clone https://github.com/your-repository/yalli.git
+git clone https://github.com/fuadmahmudzada/yalli.git
 
 Configure database properties in application.properties
 
-propertiesCopyspring.datasource.url=jdbc:postgresql://localhost:5432/yalli
+spring.datasource.url=jdbc:postgresql://localhost:5432/yalli
 spring.datasource.username=your_username
 spring.datasource.password=your_password
 
 ### Build the project
 
-bashCopy./gradlew build
+./gradlew build
 
 Run the application
 
-bashCopy./gradlew bootRun
+./gradlew bootRun
 ## API Documentation
 Access the Swagger UI documentation at:
-Copyhttp://localhost:8080/swagger-ui.html
+http://localhost:8080/swagger-ui.html
 ## Contributing 
 
  Fork the repository
