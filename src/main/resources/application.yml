@@ -1,8 +1,8 @@
 spring:
   datasource:
-    username: yalli_database_user
-    password: 96wcKHXbang2yV8lmeppDMo7iueFsmK7
-    url: jdbc:postgresql://dpg-crm96mu8ii6s73ambocg-a.frankfurt-postgres.render.com/yalli_database
+    username: postgres
+    password: NoTrbqtRwsrmIEZCqghPhdudRQRGwJeu
+    url: jdbc:postgresql://postgres:NoTrbqtRwsrmIEZCqghPhdudRQRGwJeu@postgres.railway.internal:5432/railway
   jpa:
     hibernate:
       ddl-auto: update
