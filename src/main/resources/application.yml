@@ -2,7 +2,7 @@ spring:
   datasource:
     username: postgres
     password: NoTrbqtRwsrmIEZCqghPhdudRQRGwJeu
-    url: jdbc:postgresql://postgres:postgres.railway.internal:5432/railway
+    url: ${{Postgres.DATABASE_URL}}
   jpa:
     hibernate:
       ddl-auto: update
