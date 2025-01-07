@@ -1,3 +1,6 @@
+server:
+  port: 8080
+  address: 0.0.0.0
 spring:
   datasource:
     username: yalli_database_8aka_user
