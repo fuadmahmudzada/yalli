@@ -26,6 +26,6 @@ springdoc:
     path: /api-docs
 minio:
   url: https://minio-server-4oyt.onrender.com
-  access-key: 9yziQu2sw0MTnK0xIeN6
-  secret-key: uOKm2IdEIdSZKxQWTTRy6O6IO3oDXCFvpzwRzYzl
+  access-key: p6YUJOQerHh0bPoKHC9OwYg502JL5YiGzZYcq+DRjFs=
+  secret-key: ZuwU65NA0FNVjQb4X31XSz1Nk1hic5mRWnkM7KwSNYA=
   name: yalli
