@@ -5,16 +5,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.yalli.wah.dao.entity.AdminEntity;
 import org.yalli.wah.dao.entity.NotificationEntity;
 import org.yalli.wah.dao.repository.AdminRepository;
+import org.yalli.wah.dao.repository.EventRepository;
+import org.yalli.wah.dao.repository.GroupRepository;
 import org.yalli.wah.dao.repository.NotificationRepository;
 import org.yalli.wah.mapper.AdminMapper;
+import org.yalli.wah.mapper.EventMapper;
+import org.yalli.wah.mapper.GroupMapper;
 import org.yalli.wah.mapper.NotificationMapper;
-import org.yalli.wah.model.dto.AdminDto;
-import org.yalli.wah.model.dto.AdminLightDto;
-import org.yalli.wah.model.dto.LoginDto;
-import org.yalli.wah.model.dto.NotificationSaveDto;
+import org.yalli.wah.model.dto.*;
 import org.yalli.wah.model.exception.InvalidInputException;
 import org.yalli.wah.model.exception.ResourceNotFoundException;
 import org.yalli.wah.util.TokenUtil;
@@ -28,6 +30,8 @@ public class AdminService {
     private final AdminRepository adminRepository;
     private final NotificationRepository notificationRepository;
     private final TokenUtil tokenUtil;
+    private final GroupRepository groupRepository;
+    private final EventRepository eventRepository;
 
     public void saveAdmin(AdminDto admin, Long userId) {
         log.info("saveAdmin by admin {}", userId);
@@ -100,5 +104,42 @@ public class AdminService {
     private AdminEntity getAdminById(Long adminId) {
         return adminRepository.findById(adminId)
                 .orElseThrow(() -> new ResourceNotFoundException("ADMIN_NOT_FOUND"));
+    }
+
+
+    public void createGroup(AdminGroupRequestDto adminGroupRequestDto, Long adminId) {
+        log.info("ActionLog.createGroup.start by admin {}", adminId);
+        groupRepository.save(AdminMapper.INSTANCE.ToGroupEntity(adminGroupRequestDto));
+        log.info("ActionLog.createGroup.end by admin {}", adminId);
+    }
+
+    public void updateGroup(GroupUpdateDto groupUpdateDto, Long adminId, Long groupId){
+        log.info("ActionLog.updateGroup.start by admin {}", adminId);
+        var group = groupRepository.findById(groupId).orElseThrow(()->
+                new ResourceNotFoundException("GROUP_NOT_FOUND"));
+
+        var updateEntity = GroupMapper.INSTANCE.updateEntity(group, groupUpdateDto);
+        groupRepository.save(updateEntity);
+        log.info("ActionLog.updateGroup.end by admin {}", adminId);
+    }
+
+    @Transactional
+    public void deleteGroups(List<Long> groupIds, Long adminId){
+        log.info("ActionLog.deleteGroup.start by admin {} ", adminId);
+        groupRepository.deleteAllById(groupIds);
+        log.info("ActionLog.deleteGroup.end by admin {}", adminId);
+    }
+
+    public void updateEvent(EventDetailDto eventDetailDto, Long eventId, Long adminId){
+        log.info("ActionLog.updateEvent.start by admin {}", adminId);
+        var event = eventRepository.findById(eventId).orElseThrow(()-> new ResourceNotFoundException("EVENT_FOUND_NOT"));
+        eventRepository.save(EventMapper.INSTANCE.updateEntity(event, eventDetailDto));
+    }
+
+    @Transactional
+    public void deleteEvent(List<Long> groupIds, Long adminId){
+        log.info("ActionLog.deleteGroup.start by admin {} ", adminId);
+        groupRepository.deleteAllById(groupIds);
+        log.info("ActionLog.deleteGroup.end by admin {}", adminId);
     }
 }
