@@ -1,8 +1,11 @@
+server:
+  port: 8080
+  address: 0.0.0.0
 spring:
   datasource:
-    username: yalli_database_user
-    password: 96wcKHXbang2yV8lmeppDMo7iueFsmK7
-    url: jdbc:postgresql://dpg-crm96mu8ii6s73ambocg-a.frankfurt-postgres.render.com/yalli_database
+    username: yalli_database_8aka_user
+    password: z9pu03Ay1hOqOiOB1s7HRvaqEFuf10H1
+    url: jdbc:postgresql://dpg-ctttsfd2ng1s7398mmd0-a.oregon-postgres.render.com/yalli_database_8aka
   jpa:
     hibernate:
       ddl-auto: update
@@ -25,7 +28,7 @@ springdoc:
   swagger-ui:
     path: /api-docs
 minio:
-  url: https://minio-server-4oyt.onrender.com
-  access-key: 9yziQu2sw0MTnK0xIeN6
-  secret-key: uOKm2IdEIdSZKxQWTTRy6O6IO3oDXCFvpzwRzYzl
+  url: https://minio-server-nlle.onrender.com
+  access-key: p6YUJOQerHh0bPoKHC9OwYg502JL5YiGzZYcq+DRjFs=
+  secret-key: ZuwU65NA0FNVjQb4X31XSz1Nk1hic5mRWnkM7KwSNYA=
   name: yalli
