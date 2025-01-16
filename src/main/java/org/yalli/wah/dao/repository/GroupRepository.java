@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.yalli.wah.dao.entity.GroupEntity;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 public interface GroupRepository extends JpaRepository<GroupEntity, Long>, JpaSpecificationExecutor<GroupEntity> {

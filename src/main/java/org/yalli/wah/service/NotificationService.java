@@ -22,9 +22,8 @@ public class NotificationService {
 
     public List<NotificationDto> getAll(Long id, String country) {
         return NotificationMapper.INSTANCE.toNotificationDtoList(notificationRepository
-                .findNotificationsForUser(id, true,country)
+                .findNotificationsForUser(id, true, country)
                 .orElseThrow(() ->
-                new ResourceNotFoundException("NOTIFICATION_NOT_FOUND")));
+                        new ResourceNotFoundException("NOTIFICATION_NOT_FOUND")));
     }
-
 }

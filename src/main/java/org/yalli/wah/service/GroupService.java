@@ -3,8 +3,6 @@ package org.yalli.wah.service;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -40,12 +38,14 @@ public class GroupService {
                 }
                 if (groupSearchRequest.getTitle() != null && !groupSearchRequest.getTitle().isEmpty()) {
                     predicates.add(
-                            criteriaBuilder.like(root.get("title"), groupSearchRequest.getTitle() + "%")
+                            criteriaBuilder.like(criteriaBuilder.lower(root.get("title")),
+                                    groupSearchRequest.getTitle().toLowerCase() + "%")
                     );
                 }
                 if (groupSearchRequest.getCountry() != null && !groupSearchRequest.getCountry().isEmpty()) {
                     predicates.add(
-                            criteriaBuilder.equal(root.get("country"), groupSearchRequest.getCountry())
+                            criteriaBuilder.equal(criteriaBuilder.lower(root.get("country")),
+                                    groupSearchRequest.getCountry().toLowerCase())
                     );
                 }
                 return criteriaBuilder.and(predicates.toArray(new Predicate[0]));

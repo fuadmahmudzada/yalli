@@ -32,6 +32,7 @@ public class UserEntity {
     private String city;
     private String accessToken;
     private LocalDateTime tokenExpire;
+    private String role;
     @CreationTimestamp
     private LocalDateTime createdAt;
     @UpdateTimestamp

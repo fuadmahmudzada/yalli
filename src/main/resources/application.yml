@@ -1,15 +1,21 @@
+server:
+  port: 8080
+  address: 0.0.0.0
+  servlet:
+    session:
+      timeout: 30m
 spring:
   datasource:
-    username: yalli_database_user
-    password: ${DB_PASSWORD}
+    username: ${DB_USERNAME}
+    password: ${DB_PASS}
     url: ${DB_URL}
   jpa:
     hibernate:
       ddl-auto: update
   mail:
     host: smtp.gmail.com
-    username: ${MAIL_EMAIL}
-    password: ${MAIL_PASSWORD}
+    username: {MAIL_USERNAME}
+    password: ${MAIL_PASS}
     port: 587
     properties:
       mail.smtp:
@@ -25,7 +31,7 @@ springdoc:
   swagger-ui:
     path: /api-docs
 minio:
-  url: https://minio-server-4oyt.onrender.com
-  access-key: ${UPLOAD_PASSWORD}
-  secret-key: ${UPLOAD_SECRET_KEY}
+  url: ${MINIO_URL}
+  access-key: ${MINIO_ACCESS_KEY}
+  secret-key: ${MINIO_SECRET_KEY}
   name: yalli

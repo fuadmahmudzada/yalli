@@ -2,6 +2,7 @@ package org.yalli.wah.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 import org.yalli.wah.dao.entity.EventEntity;
@@ -25,4 +26,6 @@ public abstract class EventMapper {
     protected boolean checkIsSaved(EventEntity eventEntity, Long userId) {
         return eventEntity.getUsers().stream().map(UserEntity::getId).toList().contains(userId);
     }
+
+    public abstract EventEntity updateEntity(@MappingTarget EventEntity event, EventDetailDto eventDetailDto);
 }

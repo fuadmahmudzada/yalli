@@ -5,6 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import org.yalli.wah.model.dto.*;
@@ -22,11 +25,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private Authentication authentication;
 
     @PostMapping("/login")
     @Operation(summary = "login")
-    public HashMap<String, String> login(@RequestBody LoginDto loginDto) {
-        return userService.login(loginDto);
+    public ResponseEntity<LoginResponseDto> login(@RequestHeader(name = "Authorization") String basicAuthorization) {
+        return userService.login();
     }
 
     @GetMapping("/countries")
@@ -112,14 +116,14 @@ public class UserController {
     @DeleteMapping("/delete/{id}")
     @Operation(summary = "Delete user")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteUser(@PathVariable Long id){
+    public void deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
     }
 
     @PostMapping("/register/resend-otp")
     @Operation(summary = "send otp for registering again")
     @ResponseStatus(HttpStatus.OK)
-    public void resendOtp(@RequestBody SendOtpDto sendOtpDto){
+    public void resendOtp(@RequestBody SendOtpDto sendOtpDto) {
         userService.resendRegisterOtp(sendOtpDto.getEmail());
     }
 
