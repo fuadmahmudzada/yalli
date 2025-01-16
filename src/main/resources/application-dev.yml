@@ -8,3 +8,15 @@ spring:
       ddl-auto: update
 server:
   port: 8085
+  servlet:
+    session:
+      timeout: 30m
+      tracking-modes: cookie
+logging:
+  level:
+    org:
+      springframework:
+        security: trace
+springdoc:
+  swagger-ui:
+    path: /api-docs
