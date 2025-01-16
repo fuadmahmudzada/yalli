@@ -11,5 +11,5 @@ import java.util.Optional;
 
 public interface MentorRepository extends JpaRepository<MentorEntity, Long>, JpaSpecificationExecutor<MentorEntity> {
 
-    Optional<MentorEntity> findByUser_IdAndStatusIn(Long id, Collection<MentorStatus> statuses);
+    Optional<MentorEntity> findByEmail(String email);
 }

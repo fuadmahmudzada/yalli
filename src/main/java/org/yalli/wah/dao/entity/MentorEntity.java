@@ -1,6 +1,7 @@
 package org.yalli.wah.dao.entity;
 
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,9 +23,10 @@ public class MentorEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
+    private String fullName;
+    private String country;
+    private String city;
+    private String email;
     private String profilePicture;
     @Column(columnDefinition = "TEXT")
     private String description;
@@ -38,5 +40,5 @@ public class MentorEntity {
     private LocalDateTime updatedAt;
     private String link;
     @Enumerated(EnumType.STRING)
-    private MentorStatus status;
+    private MentorStatus mentorStatus = MentorStatus.ON_HOLD;
 }

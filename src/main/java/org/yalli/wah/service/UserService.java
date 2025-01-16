@@ -57,12 +57,6 @@ public class UserService {
         log.info("ActionLog.login.start email {}",authentication.getName());
         UserEntity userEntity = getUserByEmail(authentication.getName());
 
-//        Authentication authentication = UsernamePasswordAuthenticationToken.unauthenticated(loginDto.getEmail(), loginDto.getPassword());
-//        Authentication authenticationResponse = authenticationManager.authenticate(authentication);
-
-//        if(!authenticationResponse.isAuthenticated()){
-//            throw new InvalidInputException("Password isn't correct for user" + loginDto.getEmail());
-//        }
 
         userEntity.setAccessToken(tokenUtil.generateToken());
         userEntity.setTokenExpire(LocalDateTime.now().plusMinutes(30));
@@ -89,13 +83,7 @@ public class UserService {
         loginResponseDto.setCountry(userEntity.getCountry());
         loginResponseDto.setImage(userEntity.getProfilePictureUrl());
         loginResponseDto.setId(userEntity.getId());
-//        return new HashMap<>() {{
-//            put("accessToken", userEntity.getAccessToken());
-//            put("fullName", userEntity.getFullName());
-//            put("country", userEntity.getCountry());
-//            put("image", userEntity.getProfilePictureUrl());
-//            put("id", String.valueOf(userEntity.getId()));
-//        }};
+
         return ResponseEntity.status(HttpStatus.OK).body(loginResponseDto);
     }
 
