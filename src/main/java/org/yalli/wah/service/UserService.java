@@ -57,7 +57,6 @@ public class UserService {
         log.info("ActionLog.login.start email {}",authentication.getName());
         UserEntity userEntity = getUserByEmail(authentication.getName());
 
-
         userEntity.setAccessToken(tokenUtil.generateToken());
         userEntity.setTokenExpire(LocalDateTime.now().plusMinutes(30));
         if (!userEntity.isEmailConfirmed()) {

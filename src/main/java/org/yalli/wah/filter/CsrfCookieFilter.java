@@ -12,17 +12,16 @@ import java.io.IOException;
 import java.util.List;
 
 public class CsrfCookieFilter extends OncePerRequestFilter {
-    private final List<String> securedEndpoints = List.of("/v1/mentors/search/**", "/v1/users/login",
+    private final List<String> securedEndpoints = List.of("/v1/mentors/search/**",
             "/v1/users/register/**"
             , "/v1/users/reset-password/**"
             , "/v1/users/send-otp"
             , "/v1/users/confirm"
+            , "/v1/users/search"
             , "/v1/events"
             , "/v1/files/{fileName}"
-            , "/v1/admins/login"
-            , "/swagger-ui/**"
-            , "/swagger-config"
-            , "/v3/api-docs/**");
+            , "/v1/admins/login");
+
 
     private final AntPathMatcher antPathMatcher = new AntPathMatcher();
 
