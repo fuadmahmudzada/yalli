@@ -56,7 +56,7 @@ public class UserService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         log.info("ActionLog.login.start email {}",authentication.getName());
         UserEntity userEntity = getUserByEmail(authentication.getName());
-        
+
         userEntity.setAccessToken(tokenUtil.generateToken());
         userEntity.setTokenExpire(LocalDateTime.now().plusMinutes(30));
         if (!userEntity.isEmailConfirmed()) {
@@ -82,13 +82,7 @@ public class UserService {
         loginResponseDto.setCountry(userEntity.getCountry());
         loginResponseDto.setImage(userEntity.getProfilePictureUrl());
         loginResponseDto.setId(userEntity.getId());
-//        return new HashMap<>() {{
-//            put("accessToken", userEntity.getAccessToken());
-//            put("fullName", userEntity.getFullName());
-//            put("country", userEntity.getCountry());
-//            put("image", userEntity.getProfilePictureUrl());
-//            put("id", String.valueOf(userEntity.getId()));
-//        }};
+
         return ResponseEntity.status(HttpStatus.OK).body(loginResponseDto);
     }
 

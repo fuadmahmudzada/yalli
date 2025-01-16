@@ -47,20 +47,6 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.PATCH, "v1/mentors/{id}").authenticated()
                                 .requestMatchers("v1/notifications/getAll").authenticated()
                                 .anyRequest().permitAll()
-//                        .requestMatchers("/v1/mentors/search/**", "v1/users/login",
-//                                "/v1/users/register/**"
-//                                , "v1/users/reset-password/**"
-//                                , "v1/users/send-otp"
-//                                , "v1/users/confirm").permitAll()
-//                        .requestMatchers("v1/events/{id}").permitAll()
-//                        .requestMatchers("v1/files/{fileName}").permitAll()
-//                        .requestMatchers(HttpMethod.GET, "v1/groups/{id}").permitAll()
-//                        .requestMatchers(HttpMethod.GET, "v1/groups").permitAll()
-//                        .requestMatchers(HttpMethod.GET, "v1/mentors/{id}").permitAll()
-//                        .requestMatchers("/v1/admins/login").permitAll()
-//                        .requestMatchers("/swagger-ui/**").permitAll()
-//                        .requestMatchers("/swagger-config").permitAll()
-//                        .requestMatchers("/v3/api-docs/**").permitAll()
 
                 )
                 .securityContext(contextConfig -> contextConfig.requireExplicitSave(false))
@@ -79,12 +65,6 @@ public class SecurityConfig {
                         .ignoringRequestMatchers(request -> request.getMethod().equals(HttpMethod.GET.name())
                         && request.getRequestURI().startsWith("/v1/events/"))
                         .ignoringRequestMatchers("/v1/files/{fileName}")
-//                        .ignoringRequestMatchers(
-//                                "v1/groups/{id}")
-//                        .ignoringRequestMatchers(
-//                                "v1/groups")
-//                        .ignoringRequestMatchers(
-//                                "v1/mentors/{id}")
                         .ignoringRequestMatchers("/v1/admins/login")
                         .ignoringRequestMatchers("/swagger-ui/**")
                         .ignoringRequestMatchers("/swagger-config")
