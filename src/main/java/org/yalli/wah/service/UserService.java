@@ -56,14 +56,7 @@ public class UserService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         log.info("ActionLog.login.start email {}",authentication.getName());
         UserEntity userEntity = getUserByEmail(authentication.getName());
-
-//        Authentication authentication = UsernamePasswordAuthenticationToken.unauthenticated(loginDto.getEmail(), loginDto.getPassword());
-//        Authentication authenticationResponse = authenticationManager.authenticate(authentication);
-
-//        if(!authenticationResponse.isAuthenticated()){
-//            throw new InvalidInputException("Password isn't correct for user" + loginDto.getEmail());
-//        }
-
+        
         userEntity.setAccessToken(tokenUtil.generateToken());
         userEntity.setTokenExpire(LocalDateTime.now().plusMinutes(30));
         if (!userEntity.isEmailConfirmed()) {

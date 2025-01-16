@@ -13,6 +13,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.yalli.wah.filter.CsrfCookieFilter;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -75,6 +76,8 @@ public class SecurityConfig {
                                 , "/v1/users/send-otp"
                                 , "/v1/users/confirm")
                         .ignoringRequestMatchers("/v1/events/{id}")
+                        .ignoringRequestMatchers(request -> request.getMethod().equals(HttpMethod.GET.name())
+                        && request.getRequestURI().startsWith("/v1/events/"))
                         .ignoringRequestMatchers("/v1/files/{fileName}")
 //                        .ignoringRequestMatchers(
 //                                "v1/groups/{id}")
