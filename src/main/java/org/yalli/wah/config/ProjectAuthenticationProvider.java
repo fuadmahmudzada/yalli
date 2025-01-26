@@ -11,12 +11,15 @@ import org.springframework.security.web.authentication.AuthenticationConverter;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
 public class ProjectAuthenticationProvider implements AuthenticationProvider {
 
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
 
+    public ProjectAuthenticationProvider(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) { // Constructor injection
+        this.userDetailsService = userDetailsService;
+        this.passwordEncoder = passwordEncoder;
+    }
     //bu dao authenticaton provider kimi bir seydir ve melumatlarin hardan elde olunacagi haqda melumat verir
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {

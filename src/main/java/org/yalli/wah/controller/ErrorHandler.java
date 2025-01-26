@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.yalli.wah.model.exception.ExcessivePasswordResetAttemptsException;
 import org.yalli.wah.model.dto.ExceptionResponse;
 import org.yalli.wah.model.exception.InvalidInputException;
 import org.yalli.wah.model.exception.InvalidOtpException;
@@ -34,6 +35,12 @@ public class ErrorHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ExceptionResponse handle(ResourceNotFoundException e) {
+        return new ExceptionResponse(e.getMessage());
+    }
+
+    @ExceptionHandler(ExcessivePasswordResetAttemptsException.class)
+    @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
+    public ExceptionResponse handleExcessivePasswordResetAttempts(ExcessivePasswordResetAttemptsException e) {
         return new ExceptionResponse(e.getMessage());
     }
 }

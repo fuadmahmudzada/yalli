@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -56,6 +57,10 @@ public class UserEntity {
     private boolean emailConfirmed = false;
     @Column(name = "number_of_not_completed_fields")
     private Integer notCompletedFields = 0;
+    @Column(nullable = false)
+    @ColumnDefault("0")
+    private Byte resetRequests;
+    private LocalDateTime resetRequestBanExpiration;
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "user_notifications",
             joinColumns = @JoinColumn(name = "user_id"),

@@ -1,27 +1,18 @@
 package org.yalli.wah.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.context.SecurityContextHolderStrategy;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
-import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Service;
 import org.yalli.wah.dao.entity.UserEntity;
 import org.yalli.wah.dao.repository.UserRepository;
+import org.yalli.wah.model.exception.ExcessivePasswordResetAttemptsException;
 import org.yalli.wah.mapper.ProfileMapper;
 import org.yalli.wah.mapper.UserMapper;
 import org.yalli.wah.model.dto.*;
@@ -51,12 +42,13 @@ public class UserService {
     private final TokenUtil tokenUtil;
 
     private final EmailService emailService;
-    private final PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
+
     public ResponseEntity<LoginResponseDto> login () {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         log.info("ActionLog.login.start email {}",authentication.getName());
         UserEntity userEntity = getUserByEmail(authentication.getName());
-        
+
         userEntity.setAccessToken(tokenUtil.generateToken());
         userEntity.setTokenExpire(LocalDateTime.now().plusMinutes(30));
         if (!userEntity.isEmailConfirmed()) {
@@ -92,6 +84,78 @@ public class UserService {
         return ResponseEntity.status(HttpStatus.OK).body(loginResponseDto);
     }
 
+//    public void processOAuthPostLogin(OAuth2AuthenticationToken authToken) {
+//        if (authToken == null) {
+//            log.error("Null OAuth2AuthenticationToken received");
+//            throw new IllegalArgumentException("Authentication token cannot be null");
+//        }
+//
+//        OAuth2User oauth2User = authToken.getPrincipal();
+//        String email = oauth2User.getAttribute("email");
+//
+//        if (email == null) {
+//            log.error("No email found in OAuth2 user attributes");
+//            throw new IllegalStateException("Email is required for OAuth login");
+//        }
+//
+//        UserEntity userEntity = userRepository.findByEmail(email)
+//                .orElseGet(() -> createNewUserFromOAuth(oauth2User));
+//
+//        // Update user details if needed
+//        userEntity.setFullName(oauth2User.getAttribute("name"));
+//        userRepository.save(userEntity);
+//
+//        // Set authentication in SecurityContext
+//        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(userEntity.getRole()));
+//        Authentication authentication = new UsernamePasswordAuthenticationToken(
+//                userEntity.getEmail(),
+//                null,
+//                authorities
+//        );
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
+//    }
+//
+//
+//
+//    private UserEntity createNewUserFromOAuth(OAuth2User oauth2User) {
+//        // Null checks for safety
+//        if (oauth2User == null) {
+//            throw new IllegalArgumentException("OAuth2 user cannot be null");
+//        }
+//
+//        Map<String, Object> attributes = oauth2User.getAttributes();
+//
+//        UserEntity user = new UserEntity();
+//        user.setEmail(
+//                Optional.ofNullable((String) attributes.get("email"))
+//                        .orElseThrow(() -> new IllegalStateException("Email is required for OAuth registration"))
+//        );
+//
+//        user.setFullName(
+//                Optional.ofNullable((String) attributes.get("name"))
+//                        .orElse("Unknown User")
+//        );
+//
+//        // Optional: Set profile picture if available
+//        String profilePictureUrl = (String) attributes.get("picture");
+//        if (profilePictureUrl != null) {
+//            user.setProfilePictureUrl(profilePictureUrl);
+//        }
+//
+//        // Confirmed via OAuth provider
+//        user.setEmailConfirmed(true);
+//
+//        // Generate a secure random password
+//        user.setPassword(passwordEncoder.encode(UUID.randomUUID().toString()));
+//
+//        // Optional: Set default role or derive from OAuth provider
+//        user.setRole("ROLE_USER");
+//
+//
+//
+//        return userRepository.save(user);
+//    }
+
     public void sendOtp(String email) {
         log.info("ActionLog.sendOtp.start email {}", email);
         var userEntity = getUserByEmail(email);
@@ -121,6 +185,8 @@ public class UserService {
         log.info("ActionLog.register.end email {}", registerDto.getEmail());
     }
 
+
+
     public HashMap<String, String> refreshToken(String accessToken) {
         UserEntity userEntity = userRepository.findByAccessToken(accessToken).orElseThrow(() -> {
                     log.info("ActionLog.refreshToken.error accessToken {} not found", accessToken);
@@ -144,6 +210,22 @@ public class UserService {
                     return new ResourceNotFoundException("EMAIL_NOT_FOUND");
                 }
         );
+
+        if(user.getResetRequests()==0){
+            user.setResetRequestBanExpiration(LocalDateTime.now().plusMinutes(5));
+        }
+
+        if(user.getResetRequestBanExpiration().plusMinutes(5).isBefore(LocalDateTime.now())){
+            user.setResetRequests((byte)0);
+        }
+
+        if(user.getResetRequests()>3){
+            throw new ExcessivePasswordResetAttemptsException((int) user.getResetRequests(), 3);
+        }
+
+
+
+        user.setResetRequests((byte) (user.getResetRequests()+(byte)1));
 
 
         user.setOtpExpiration(null);

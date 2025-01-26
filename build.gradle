@@ -30,6 +30,8 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-validation"
     implementation 'org.apache.commons:commons-lang3:3.17.0'
     implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-authorization-server'
     testImplementation 'org.springframework.security:spring-security-test'
     compileOnly 'org.projectlombok:lombok'
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'
@@ -42,4 +44,7 @@ dependencies {
     annotationProcessor "org.mapstruct:mapstruct-processor:1.5.5.Final"
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation('com.mashape.unirest:unirest-java:1.4.9') {
+        exclude group: 'commons-logging', module: 'commons-logging'
+    }
 }
