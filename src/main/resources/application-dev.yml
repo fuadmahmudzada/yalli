@@ -1,4 +1,15 @@
 spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 96313511660-e10km1gc8udkg6qqq9bmslvu59ukvnt8.apps.googleusercontent.com
+            client-secret: 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
+            scope:
+              - email
+              - profile
+              - openid
   datasource:
     username: postgres
     password: 10062005
@@ -8,3 +19,15 @@ spring:
       ddl-auto: update
 server:
   port: 8085
+  servlet:
+    session:
+      timeout: 30m
+      tracking-modes: cookie
+logging:
+  level:
+    org:
+      springframework:
+        security: trace
+springdoc:
+  swagger-ui:
+    path: /api-docs

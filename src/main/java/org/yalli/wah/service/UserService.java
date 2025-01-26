@@ -1,30 +1,26 @@
 package org.yalli.wah.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.http.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.yalli.wah.dao.entity.UserEntity;
 import org.yalli.wah.dao.repository.UserRepository;
+import org.yalli.wah.model.exception.ExcessivePasswordResetAttemptsException;
 import org.yalli.wah.mapper.ProfileMapper;
 import org.yalli.wah.mapper.UserMapper;
-import org.yalli.wah.model.dto.ConfirmDto;
-import org.yalli.wah.model.dto.LoginDto;
-import org.yalli.wah.model.dto.MemberDto;
-import org.yalli.wah.model.dto.MemberInfoDto;
-import org.yalli.wah.model.dto.MemberUpdateDto;
-import org.yalli.wah.model.dto.PasswordResetDto;
-import org.yalli.wah.model.dto.RegisterDto;
-import org.yalli.wah.model.dto.RequestResetDto;
+import org.yalli.wah.model.dto.*;
 import org.yalli.wah.model.exception.InvalidInputException;
 import org.yalli.wah.model.exception.InvalidOtpException;
 import org.yalli.wah.model.exception.PermissionException;
 import org.yalli.wah.model.exception.ResourceNotFoundException;
-import org.yalli.wah.util.PasswordUtil;
+
 import org.yalli.wah.util.TokenUtil;
 import org.yalli.wah.util.UserSpecification;
 
@@ -38,30 +34,27 @@ import java.util.*;
 import static org.yalli.wah.model.enums.EmailTemplate.*;
 
 
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class UserService {
     private final UserRepository userRepository;
-    private final PasswordUtil passwordUtil;
     private final TokenUtil tokenUtil;
 
     private final EmailService emailService;
+    private PasswordEncoder passwordEncoder;
 
-    public HashMap<String, String> login(LoginDto loginDto) {
-        log.info("ActionLog.login.start email {}", loginDto.getEmail());
-        UserEntity userEntity = getUserByEmail(loginDto.getEmail());
-
-        if (!passwordUtil.matches(loginDto.getPassword(), userEntity.getPassword())) {
-            throw new InvalidInputException("INVALID_PASSWORD");
-        }
+    public ResponseEntity<LoginResponseDto> login () {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        log.info("ActionLog.login.start email {}",authentication.getName());
+        UserEntity userEntity = getUserByEmail(authentication.getName());
 
         userEntity.setAccessToken(tokenUtil.generateToken());
         userEntity.setTokenExpire(LocalDateTime.now().plusMinutes(30));
         if (!userEntity.isEmailConfirmed()) {
-            log.info("ActionLog.login.error email {} not confirmed", loginDto.getEmail());
+            log.info("ActionLog.login.error email {} not confirmed", authentication.getName());
             throw new InvalidInputException("EMAIL_NOT_CONFIRMED");
+
         }
         userEntity.setNotCompletedFields(0);
         MemberUpdateDto memberUpdateDto = ProfileMapper.INSTANCE.toMemberUpdateDto(userEntity);
@@ -74,15 +67,94 @@ public class UserService {
         System.out.println(Arrays.toString(fields));
 
         userRepository.save(userEntity);
-        log.info("ActionLog.login.end email {}", loginDto.getEmail());
-        return new HashMap<>() {{
-            put("accessToken", userEntity.getAccessToken());
-            put("fullName", userEntity.getFullName());
-            put("country", userEntity.getCountry());
-            put("image", userEntity.getProfilePictureUrl());
-            put("id", String.valueOf(userEntity.getId()));
-        }};
+        log.info("ActionLog.login.end email {}", authentication.getName());
+        LoginResponseDto loginResponseDto = new LoginResponseDto();
+        loginResponseDto.setAccessToken(userEntity.getAccessToken());
+        loginResponseDto.setFullName(userEntity.getFullName());
+        loginResponseDto.setCountry(userEntity.getCountry());
+        loginResponseDto.setImage(userEntity.getProfilePictureUrl());
+        loginResponseDto.setId(userEntity.getId());
+//        return new HashMap<>() {{
+//            put("accessToken", userEntity.getAccessToken());
+//            put("fullName", userEntity.getFullName());
+//            put("country", userEntity.getCountry());
+//            put("image", userEntity.getProfilePictureUrl());
+//            put("id", String.valueOf(userEntity.getId()));
+//        }};
+        return ResponseEntity.status(HttpStatus.OK).body(loginResponseDto);
     }
+
+//    public void processOAuthPostLogin(OAuth2AuthenticationToken authToken) {
+//        if (authToken == null) {
+//            log.error("Null OAuth2AuthenticationToken received");
+//            throw new IllegalArgumentException("Authentication token cannot be null");
+//        }
+//
+//        OAuth2User oauth2User = authToken.getPrincipal();
+//        String email = oauth2User.getAttribute("email");
+//
+//        if (email == null) {
+//            log.error("No email found in OAuth2 user attributes");
+//            throw new IllegalStateException("Email is required for OAuth login");
+//        }
+//
+//        UserEntity userEntity = userRepository.findByEmail(email)
+//                .orElseGet(() -> createNewUserFromOAuth(oauth2User));
+//
+//        // Update user details if needed
+//        userEntity.setFullName(oauth2User.getAttribute("name"));
+//        userRepository.save(userEntity);
+//
+//        // Set authentication in SecurityContext
+//        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(userEntity.getRole()));
+//        Authentication authentication = new UsernamePasswordAuthenticationToken(
+//                userEntity.getEmail(),
+//                null,
+//                authorities
+//        );
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
+//    }
+//
+//
+//
+//    private UserEntity createNewUserFromOAuth(OAuth2User oauth2User) {
+//        // Null checks for safety
+//        if (oauth2User == null) {
+//            throw new IllegalArgumentException("OAuth2 user cannot be null");
+//        }
+//
+//        Map<String, Object> attributes = oauth2User.getAttributes();
+//
+//        UserEntity user = new UserEntity();
+//        user.setEmail(
+//                Optional.ofNullable((String) attributes.get("email"))
+//                        .orElseThrow(() -> new IllegalStateException("Email is required for OAuth registration"))
+//        );
+//
+//        user.setFullName(
+//                Optional.ofNullable((String) attributes.get("name"))
+//                        .orElse("Unknown User")
+//        );
+//
+//        // Optional: Set profile picture if available
+//        String profilePictureUrl = (String) attributes.get("picture");
+//        if (profilePictureUrl != null) {
+//            user.setProfilePictureUrl(profilePictureUrl);
+//        }
+//
+//        // Confirmed via OAuth provider
+//        user.setEmailConfirmed(true);
+//
+//        // Generate a secure random password
+//        user.setPassword(passwordEncoder.encode(UUID.randomUUID().toString()));
+//
+//        // Optional: Set default role or derive from OAuth provider
+//        user.setRole("ROLE_USER");
+//
+//
+//
+//        return userRepository.save(user);
+//    }
 
     public void sendOtp(String email) {
         log.info("ActionLog.sendOtp.start email {}", email);
@@ -103,7 +175,7 @@ public class UserService {
             return user;
         }).orElse(new UserEntity());
         userEntity = UserMapper.INSTANCE.mapRegisterDtoToUser(registerDto, userEntity);
-        userEntity.setPassword(passwordUtil.encode(userEntity.getPassword()));
+        userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
 
 
         //send otp
@@ -112,6 +184,8 @@ public class UserService {
         userRepository.save(userEntity);
         log.info("ActionLog.register.end email {}", registerDto.getEmail());
     }
+
+
 
     public HashMap<String, String> refreshToken(String accessToken) {
         UserEntity userEntity = userRepository.findByAccessToken(accessToken).orElseThrow(() -> {
@@ -136,6 +210,22 @@ public class UserService {
                     return new ResourceNotFoundException("EMAIL_NOT_FOUND");
                 }
         );
+
+        if(user.getResetRequests()==0){
+            user.setResetRequestBanExpiration(LocalDateTime.now().plusMinutes(5));
+        }
+
+        if(user.getResetRequestBanExpiration().plusMinutes(5).isBefore(LocalDateTime.now())){
+            user.setResetRequests((byte)0);
+        }
+
+        if(user.getResetRequests()>3){
+            throw new ExcessivePasswordResetAttemptsException((int) user.getResetRequests(), 3);
+        }
+
+
+
+        user.setResetRequests((byte) (user.getResetRequests()+(byte)1));
 
 
         user.setOtpExpiration(null);
@@ -182,12 +272,12 @@ public class UserService {
             throw new PermissionException("OTP_NOT_VERIFIED");
         }
 
-        if (passwordUtil.matches(passwordResetDto.getNewPassword(), user.getPassword())) {
+        if (passwordEncoder.matches(passwordResetDto.getNewPassword(), user.getPassword())) {
             log.info("ActionLog.resetPassword.error new password is same as old one email {}", passwordResetDto.getEmail());
             throw new InvalidInputException("SAME_WITH_OLD_PASSWORD");
         }
 
-        user.setPassword(passwordUtil.encode(passwordResetDto.getNewPassword()));
+        user.setPassword(passwordEncoder.encode(passwordResetDto.getNewPassword()));
         user.setOtpVerified(false);
 
         user.setOtpExpiration(null);
@@ -264,29 +354,29 @@ public class UserService {
 
     }
 
-    public void deleteUser(Long id){
+    public void deleteUser(Long id) {
         log.info("ActionLog.delete.start id {}", id);
-        if(!userRepository.existsById(id)){
-            throw new EntityNotFoundException("User not found with " + id);
+        if (!userRepository.existsById(id)) {
+            throw new ResourceNotFoundException("User not found with " + id);
         }
         userRepository.deleteById(id);
         log.info("ActionLog.delete.end id {}", id);
     }
 
-    public void processOtp(UserEntity userEntity){
+    public void processOtp(UserEntity userEntity) {
         log.info("ActionLog.sendRegisterOtp.start email {}", userEntity.getEmail());
         String firstOtp = userEntity.getOtp();
         String otp = generateOtp();
         userEntity.setOtp(otp);
         userEntity.setOtpExpiration(LocalDateTime.now().plusSeconds(60));
-        emailService.sendMail(userEntity.getEmail(),CONFIRMATION.getSubject(),formatMessage(CONFIRMATION.getBody(),otp));
-        if(firstOtp!=null){
+        emailService.sendMail(userEntity.getEmail(), CONFIRMATION.getSubject(), formatMessage(CONFIRMATION.getBody(), otp));
+        if (firstOtp != null) {
             userRepository.save(userEntity);
         }
         log.info("ActionLog.sendRegisterOtp.end email {}", userEntity.getEmail());
     }
 
-    public void resendRegisterOtp(String email){
+    public void resendRegisterOtp(String email) {
         UserEntity userEntity = getUserByEmail(email);
         processOtp(userEntity);
     }

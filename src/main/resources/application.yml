@@ -1,7 +1,17 @@
 server:
   port: 8080
   address: 0.0.0.0
+  servlet:
+    session:
+      timeout: 30m
 spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 795022314333-7pqo4hij4bngjktk6ph58vfvc9t2932b.apps.googleusercontent.com
+            client-secret: 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
   datasource:
     username: yalli_database_8aka_user
     password: z9pu03Ay1hOqOiOB1s7HRvaqEFuf10H1
