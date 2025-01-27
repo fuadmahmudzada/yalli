@@ -176,7 +176,7 @@ public class UserService {
         }).orElse(new UserEntity());
         userEntity = UserMapper.INSTANCE.mapRegisterDtoToUser(registerDto, userEntity);
         userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
-
+        userEntity.setRole("user");
 
         //send otp
         processOtp(userEntity);
