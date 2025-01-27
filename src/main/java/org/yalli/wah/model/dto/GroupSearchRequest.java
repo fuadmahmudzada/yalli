@@ -12,6 +12,7 @@ import java.util.List;
 @Data
 public class GroupSearchRequest {
     private String title;
-    private String country;
+    private List<String> country;
     private List<GroupCategory> category;
+    private List<String> city;
 }

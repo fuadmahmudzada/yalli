@@ -20,4 +20,5 @@ public class GroupDto {
     private String link;
     private GroupCategory category;
     private String about;
+    private String city;
 }
