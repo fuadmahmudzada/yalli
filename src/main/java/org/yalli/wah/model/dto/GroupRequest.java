@@ -18,4 +18,5 @@ public class GroupRequest {
     private String link;
     private GroupCategory category;
     private Long userId;
+    private String city;
 }
