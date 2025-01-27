@@ -25,6 +25,7 @@ import org.yalli.wah.model.exception.ResourceNotFoundException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -73,18 +74,34 @@ public class EventService {
                 predicates.add(criteriaBuilder.or(categoryPredicates.toArray(new Predicate[0])));
             }
 
+            List<Predicate> otherPredicates = new ArrayList<>();
 
             if (eventSearchRequest.getTitle() != null && !eventSearchRequest.getTitle().isEmpty()) {
-                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), eventSearchRequest.getTitle() + "%"));
+                otherPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), eventSearchRequest.getTitle() + "%"));
             }
 
 
             if (eventSearchRequest.getCountry() != null && !eventSearchRequest.getCountry().isEmpty()) {
-                predicates.add(criteriaBuilder.equal(criteriaBuilder.lower(root.get("country")), eventSearchRequest.getCountry().toLowerCase()));
+                otherPredicates.add(criteriaBuilder.lower(root.get("country"))
+                        .in(eventSearchRequest.getCountry().stream()
+                                .map(String::toLowerCase)
+                                .collect(Collectors.toList())));
             }
 
+            if(eventSearchRequest.getCity() != null && !eventSearchRequest.getCity().isEmpty()){
+                otherPredicates.add(
+                        root.get("city").in(eventSearchRequest.getCity())
+                );
+            }
+            if (!otherPredicates.isEmpty()) {
+                predicates.add(criteriaBuilder.or(otherPredicates.toArray(new Predicate[0])));
+            }
 
-            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+            if (predicates.isEmpty()) {
+                return criteriaBuilder.conjunction(); // Match all
+            } else {
+                return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+            }
         });
 
 

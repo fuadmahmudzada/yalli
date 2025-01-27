@@ -111,12 +111,8 @@ public class UserController {
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "signup and sending mail for otp verification")
-    public void register(@RequestBody RegisterDto registerDto, Authentication authentication) {
-        if (authentication instanceof UsernamePasswordAuthenticationToken) {
-            userService.register(registerDto);
-        } else if(authentication instanceof OAuth2AuthenticationToken oAuth2AuthenticationToken){
-            System.out.println("");
-        }
+    public void register(@RequestBody RegisterDto registerDto) {
+        userService.register(registerDto);
     }
 
     @PatchMapping("/refresh/token")

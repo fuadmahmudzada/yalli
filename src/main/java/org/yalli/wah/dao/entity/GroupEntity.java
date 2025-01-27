@@ -27,6 +27,7 @@ public class GroupEntity {
     private String about;
     private String imageId;
     private String country;
+    private String city;
     private Short renameCount;
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")

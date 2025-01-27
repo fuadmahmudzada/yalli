@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +32,7 @@ public class GroupService {
 
     public Page<GroupLightDto> getAllGroupsLight(Pageable pageable, GroupSearchRequest groupSearchRequest) {
         Specification<GroupEntity> specification = Specification.where((root, query, criteriaBuilder) -> {
+
             if (groupSearchRequest != null) {
                 List<Predicate> predicates = new ArrayList<>();
                 if (groupSearchRequest.getCategory() != null && !groupSearchRequest.getCategory().isEmpty()) {
@@ -42,13 +44,29 @@ public class GroupService {
                                     groupSearchRequest.getTitle().toLowerCase() + "%")
                     );
                 }
+                List<Predicate> groupPredicates = new ArrayList<>();
+
                 if (groupSearchRequest.getCountry() != null && !groupSearchRequest.getCountry().isEmpty()) {
-                    predicates.add(
-                            criteriaBuilder.equal(criteriaBuilder.lower(root.get("country")),
-                                    groupSearchRequest.getCountry().toLowerCase())
+                    groupPredicates.add(criteriaBuilder.lower(root.get("country"))
+                                    .in(groupSearchRequest.getCountry().stream()
+                                            .map(String::toLowerCase)
+                                            .collect(Collectors.toList())));
+                }
+
+                if(groupSearchRequest.getCity() != null && !groupSearchRequest.getCity().isEmpty()){
+                    groupPredicates.add(
+                            root.get("city").in(groupSearchRequest.getCity())
                     );
                 }
-                return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+                if (!groupPredicates.isEmpty()) {
+                    predicates.add(criteriaBuilder.or(groupPredicates.toArray(new Predicate[0])));
+                }
+
+                if (predicates.isEmpty()) {
+                    return criteriaBuilder.conjunction(); // Match all
+                } else {
+                    return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+                }
             } else {
                 return criteriaBuilder.conjunction();
             }

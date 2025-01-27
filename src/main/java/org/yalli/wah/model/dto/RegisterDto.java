@@ -29,4 +29,5 @@ public class RegisterDto {
     @NotBlank
     private String country;
     private HashMap<SocialMedia, String> socialMediaLinks;
+    private String city;
 }

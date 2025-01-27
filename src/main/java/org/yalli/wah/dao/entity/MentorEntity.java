@@ -30,6 +30,7 @@ public class MentorEntity {
     private String description;
     @Enumerated(EnumType.STRING)
     private MentorCategory mentorCategory;
+    private String city;
     @OneToMany(mappedBy = "mentor")
     private List<CommentEntity> comments;
     @CreationTimestamp
