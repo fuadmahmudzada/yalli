@@ -23,6 +23,7 @@ import org.yalli.wah.model.dto.*;
 import org.yalli.wah.model.enums.Country;
 import org.yalli.wah.service.UserService;
 
+import javax.naming.AuthenticationException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -40,7 +41,7 @@ public class UserController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> login() {
+    public ResponseEntity<LoginResponseDto> login() throws AuthenticationException {
 
         return userService.login();
     }
