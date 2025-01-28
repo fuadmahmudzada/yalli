@@ -10,19 +10,19 @@ spring:
       client:
         registration:
           google:
-            client-id: 795022314333-7pqo4hij4bngjktk6ph58vfvc9t2932b.apps.googleusercontent.com
-            client-secret: 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
+            client-id: ${GOOGLE_ID}
+            client-secret: ${GOOGLE_SECRET}
   datasource:
-    username: yalli_database_8aka_user
-    password: z9pu03Ay1hOqOiOB1s7HRvaqEFuf10H1
-    url: jdbc:postgresql://dpg-ctttsfd2ng1s7398mmd0-a.oregon-postgres.render.com/yalli_database_8aka
+    username: ${DB_USERNAME}
+    password: ${DB_PASS}
+    url: ${DB_URL}
   jpa:
     hibernate:
       ddl-auto: update
   mail:
     host: smtp.gmail.com
-    username: yalli.org@gmail.com
-    password: buzdocbljwcwmrbe
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASS}
     port: 587
     properties:
       mail.smtp:
@@ -41,7 +41,7 @@ springdoc:
   swagger-ui:
     path: /api-docs
 minio:
-  url: https://minio-server-nlle.onrender.com
-  access-key: p6YUJOQerHh0bPoKHC9OwYg502JL5YiGzZYcq+DRjFs=
-  secret-key: ZuwU65NA0FNVjQb4X31XSz1Nk1hic5mRWnkM7KwSNYA=
+  url: ${MINIO_URL}
+  access-key: ${MINIO_ACCESS_KEY}
+  secret-key: ${MINIO_SECRET_KEY}
   name: yalli
