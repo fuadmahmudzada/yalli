@@ -3,6 +3,9 @@ package org.yalli.wah.config;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.server.Cookie;
+import org.springframework.boot.web.servlet.server.CookieSameSiteSupplier;
+import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -54,6 +57,9 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http, ClientRegistrationRepository clientRegistrationRepository) throws Exception {
         CsrfTokenRequestAttributeHandler csrfTokenRequestAttributeHandler = new CsrfTokenRequestAttributeHandler();
+        CookieCsrfTokenRepository csrfTokenRepository = new CookieCsrfTokenRepository();
+        csrfTokenRepository.setCookieCustomizer(responseCookieBuilder -> responseCookieBuilder.httpOnly(false).secure(false).sameSite("Lax"));
+
         http.authorizeHttpRequests((requests) -> requests
                                 .requestMatchers(HttpMethod.GET, "/v1/admins").hasAnyRole("ADMIN", "SUPER_ADMIN", "MODERATOR")
                                 .requestMatchers(HttpMethod.GET, "/v1/admins/{adminId}").hasAnyRole("ADMIN", "SUPER_ADMIN", "MODERATOR")
@@ -140,7 +146,7 @@ public class SecurityConfig {
                         .ignoringRequestMatchers("/swagger-ui/**")
                         .ignoringRequestMatchers("/swagger-config")
                         .ignoringRequestMatchers("/v3/api-docs/**")
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+                        .csrfTokenRepository(csrfTokenRepository))
 
 
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
@@ -180,7 +186,10 @@ public class SecurityConfig {
         return providerManager;
     }
 
-
+    @Bean
+    public CookieSameSiteSupplier applicationCookieSameSiteSupplier() {
+        return CookieSameSiteSupplier.ofStrict();
+    }
 //    @Bean
 //    public CustomOAuth2SuccessHandler customOAuth2SuccessHandler() {
 //        return new CustomOAuth2SuccessHandler(userService);
