@@ -22,7 +22,7 @@ public class EventController {
     @GetMapping
     public Page<EventDto> getEvents(
             @RequestHeader(value = "token", required = false) String token,
-            @RequestBody EventSearchRequest searchRequest,
+            @ModelAttribute EventSearchRequest searchRequest,
             Pageable pageable) {
         return eventService.getAllEvents(searchRequest, pageable, token);
     }
