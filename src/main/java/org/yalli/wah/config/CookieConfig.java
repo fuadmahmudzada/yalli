@@ -14,7 +14,7 @@ public class CookieConfig {
         serializer.setCookieName("SESSIONID");
         serializer.setCookiePath("/");
         serializer.setDomainName("yalli-org.vercel.app");
-        serializer.setSameSite("None");
+        serializer.setSameSite("Lax");
         return serializer;
     }
 }
