@@ -2,6 +2,7 @@ package org.yalli.wah.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -25,7 +26,12 @@ public class ProjectAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getName();
         UserDetails dbUser = userDetailsService.loadUserByUsername(username);
-        return new UsernamePasswordAuthenticationToken(username, null, dbUser.getAuthorities());
+        if(passwordEncoder.matches(dbUser.getPassword(), authentication.getCredentials().toString())){
+            return new UsernamePasswordAuthenticationToken(username, authentication.getCredentials().toString(), dbUser.getAuthorities());
+        } else{
+            throw  new BadCredentialsException("Password isn't correct");
+        }
+
     }
 
     @Override

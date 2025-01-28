@@ -50,7 +50,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final UserService userService;
+
 //    private final CustomOAuth2UserService customOAuth2UserService;
 
 
@@ -58,7 +58,7 @@ public class SecurityConfig {
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http, ClientRegistrationRepository clientRegistrationRepository) throws Exception {
         CsrfTokenRequestAttributeHandler csrfTokenRequestAttributeHandler = new CsrfTokenRequestAttributeHandler();
         CookieCsrfTokenRepository csrfTokenRepository = new CookieCsrfTokenRepository();
-        csrfTokenRepository.setCookieCustomizer(responseCookieBuilder -> responseCookieBuilder.httpOnly(false).secure(false).sameSite("Lax"));
+        csrfTokenRepository.setCookieCustomizer(responseCookieBuilder -> responseCookieBuilder.httpOnly(false).secure(false).sameSite("Lax").domain("localhost").domain("yalli-front-end.vercel.app").domain("yalli.org"));
 
         http.authorizeHttpRequests((requests) -> requests
                                 .requestMatchers(HttpMethod.GET, "/v1/admins").hasAnyRole("ADMIN", "SUPER_ADMIN", "MODERATOR")
