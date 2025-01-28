@@ -17,6 +17,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+  session:
+    jdbc:
+      initialize-schema: always
 server:
   port: 8085
   servlet:
