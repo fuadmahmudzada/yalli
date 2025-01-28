@@ -42,7 +42,7 @@ public class UserService {
     private final TokenUtil tokenUtil;
 
     private final EmailService emailService;
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     public ResponseEntity<LoginResponseDto> login () {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
