@@ -13,7 +13,7 @@ public class CookieConfig {
         DefaultCookieSerializer serializer = new DefaultCookieSerializer();
         serializer.setCookieName("SESSIONID");
         serializer.setCookiePath("/");
-        serializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$");
+        serializer.setDomainName("yalli-org.vercel.app");
         serializer.setSameSite("None");
         return serializer;
     }
