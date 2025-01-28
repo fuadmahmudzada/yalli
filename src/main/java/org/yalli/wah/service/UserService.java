@@ -24,6 +24,7 @@ import org.yalli.wah.model.exception.ResourceNotFoundException;
 import org.yalli.wah.util.TokenUtil;
 import org.yalli.wah.util.UserSpecification;
 
+import javax.naming.AuthenticationException;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 
@@ -31,6 +32,7 @@ import java.util.HashMap;
 import java.util.Random;
 
 import java.util.*;
+
 import static org.yalli.wah.model.enums.EmailTemplate.*;
 
 
@@ -44,9 +46,15 @@ public class UserService {
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
 
-    public ResponseEntity<LoginResponseDto> login () {
+    public ResponseEntity<LoginResponseDto> login() throws AuthenticationException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        log.info("ActionLog.login.start email {}",authentication.getName());
+
+        // Check if user is authenticated
+        if (authentication == null || !authentication.isAuthenticated() ||
+                "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new AuthenticationException("User not authenticated");
+        }
+        log.info("ActionLog.login.start email {}", authentication.getName());
         UserEntity userEntity = getUserByEmail(authentication.getName());
 
         userEntity.setAccessToken(tokenUtil.generateToken());
@@ -186,7 +194,6 @@ public class UserService {
     }
 
 
-
     public HashMap<String, String> refreshToken(String accessToken) {
         UserEntity userEntity = userRepository.findByAccessToken(accessToken).orElseThrow(() -> {
                     log.info("ActionLog.refreshToken.error accessToken {} not found", accessToken);
@@ -211,21 +218,20 @@ public class UserService {
                 }
         );
 
-        if(user.getResetRequests()==0){
+        if (user.getResetRequests() == 0) {
             user.setResetRequestBanExpiration(LocalDateTime.now().plusMinutes(5));
         }
 
-        if(user.getResetRequestBanExpiration().plusMinutes(5).isBefore(LocalDateTime.now())){
-            user.setResetRequests((byte)0);
+        if (user.getResetRequestBanExpiration().plusMinutes(5).isBefore(LocalDateTime.now())) {
+            user.setResetRequests((byte) 0);
         }
 
-        if(user.getResetRequests()>3){
+        if (user.getResetRequests() > 3) {
             throw new ExcessivePasswordResetAttemptsException((int) user.getResetRequests(), 3);
         }
 
 
-
-        user.setResetRequests((byte) (user.getResetRequests()+(byte)1));
+        user.setResetRequests((byte) (user.getResetRequests() + (byte) 1));
 
 
         user.setOtpExpiration(null);

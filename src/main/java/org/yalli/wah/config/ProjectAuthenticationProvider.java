@@ -26,7 +26,7 @@ public class ProjectAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getName();
         UserDetails dbUser = userDetailsService.loadUserByUsername(username);
-        if(passwordEncoder.matches(dbUser.getPassword(), authentication.getCredentials().toString())){
+        if(passwordEncoder.matches(authentication.getCredentials().toString(), dbUser.getPassword())){
             return new UsernamePasswordAuthenticationToken(username, authentication.getCredentials().toString(), dbUser.getAuthorities());
         } else{
             throw  new BadCredentialsException("Password isn't correct");
