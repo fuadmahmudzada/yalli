@@ -33,7 +33,7 @@ public class GroupController {
 
     @GetMapping
     public Page<GroupLightDto> getAllGroupsLight(Pageable pageable,
-                                                 @RequestBody GroupSearchRequest filter) {
+                                                 @ModelAttribute GroupSearchRequest filter) {
         return groupService.getAllGroupsLight(pageable, filter);
     }
 

@@ -98,7 +98,7 @@ public class EventService {
             }
 
             if (predicates.isEmpty()) {
-                return criteriaBuilder.conjunction(); // Match all
+                return criteriaBuilder.conjunction();
             } else {
                 return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
             }
