@@ -24,6 +24,7 @@ import org.yalli.wah.model.exception.ResourceNotFoundException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -74,27 +75,36 @@ public class EventService {
                 predicates.add(criteriaBuilder.or(categoryPredicates.toArray(new Predicate[0])));
             }
 
+
+            List<Predicate> answer = new ArrayList<>();
+            if (eventSearchRequest.getTitle() != null && !eventSearchRequest.getTitle().isEmpty()) {
+                answer.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), eventSearchRequest.getTitle() + "%"));
+            }
+
             List<Predicate> otherPredicates = new ArrayList<>();
 
-            if (eventSearchRequest.getTitle() != null && !eventSearchRequest.getTitle().isEmpty()) {
-                otherPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), eventSearchRequest.getTitle() + "%"));
-            }
-
-
             if (eventSearchRequest.getCountry() != null && !eventSearchRequest.getCountry().isEmpty()) {
-                otherPredicates.add(criteriaBuilder.lower(root.get("country"))
+                otherPredicates.add(criteriaBuilder.or(criteriaBuilder.lower(root.get("country"))
                         .in(eventSearchRequest.getCountry().stream()
                                 .map(String::toLowerCase)
-                                .collect(Collectors.toList())));
+                                .collect(Collectors.toList())
+                        )));
             }
 
-            if(eventSearchRequest.getCity() != null && !eventSearchRequest.getCity().isEmpty()){
-                otherPredicates.add(
-                        root.get("city").in(eventSearchRequest.getCity())
+            if (eventSearchRequest.getCity() != null && !eventSearchRequest.getCity().isEmpty()) {
+                List<String> lowerCaseCities = eventSearchRequest.getCity().stream()
+                        .map(String::toLowerCase)
+                        .toList();
+                otherPredicates.add(criteriaBuilder.or(
+                        criteriaBuilder.lower(root.get("city")).in(lowerCaseCities))
                 );
             }
             if (!otherPredicates.isEmpty()) {
-                predicates.add(criteriaBuilder.or(otherPredicates.toArray(new Predicate[0])));
+                if (!answer.isEmpty()) {
+                    predicates.add(criteriaBuilder.and(criteriaBuilder.or(otherPredicates.toArray(new Predicate[0])), answer.getFirst()));
+                } else{
+                    predicates.add(criteriaBuilder.and(criteriaBuilder.or(otherPredicates.toArray(new Predicate[0]))));
+                }
             }
 
             if (predicates.isEmpty()) {
