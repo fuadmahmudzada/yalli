@@ -15,4 +15,5 @@ public class GroupLightDto {
     private String country;
     private Long memberCount;
     private GroupCategory groupCategory;
+    private String link;
 }

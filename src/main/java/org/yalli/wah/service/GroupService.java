@@ -31,6 +31,7 @@ public class GroupService {
     private final GroupRepository groupRepository;
 
     public Page<GroupLightDto> getAllGroupsLight(Pageable pageable, GroupSearchRequest groupSearchRequest) {
+        System.out.println(groupSearchRequest.getCountry());
         Specification<GroupEntity> specification = Specification.where((root, query, criteriaBuilder) -> {
 
             if (groupSearchRequest != null) {
@@ -47,23 +48,25 @@ public class GroupService {
                 List<Predicate> groupPredicates = new ArrayList<>();
 
                 if (groupSearchRequest.getCountry() != null && !groupSearchRequest.getCountry().isEmpty()) {
-                    groupPredicates.add(criteriaBuilder.lower(root.get("country"))
+                    groupPredicates.add(criteriaBuilder.or(criteriaBuilder.lower(root.get("country"))
                                     .in(groupSearchRequest.getCountry().stream()
                                             .map(String::toLowerCase)
-                                            .collect(Collectors.toList())));
+                                            .collect(Collectors.toList()))
+                    ));
                 }
 
                 if(groupSearchRequest.getCity() != null && !groupSearchRequest.getCity().isEmpty()){
-                    groupPredicates.add(
-                            root.get("city").in(groupSearchRequest.getCity())
-                    );
+                    groupPredicates.add(criteriaBuilder.or(
+                            criteriaBuilder.lower(root.get("city"))
+                                    .in(groupSearchRequest.getCity().stream().map(String::toLowerCase).collect(Collectors.toList()))
+                    ));
                 }
                 if (!groupPredicates.isEmpty()) {
                     predicates.add(criteriaBuilder.or(groupPredicates.toArray(new Predicate[0])));
                 }
 
                 if (predicates.isEmpty()) {
-                    return criteriaBuilder.conjunction(); // Match all
+                    return criteriaBuilder.conjunction();
                 } else {
                     return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
                 }

@@ -4,6 +4,7 @@ server:
   servlet:
     session:
       timeout: 30m
+      tracking-modes: cookie
 spring:
   security:
     oauth2:
@@ -36,7 +37,7 @@ spring:
       max-file-size: 10MB
   session:
     jdbc:
-      initialize-schema: always
+      initialize-schema: embedded
 springdoc:
   swagger-ui:
     path: /api-docs

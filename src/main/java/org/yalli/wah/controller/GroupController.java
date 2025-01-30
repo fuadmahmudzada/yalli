@@ -19,9 +19,18 @@ import org.yalli.wah.model.dto.GroupLightDto;
 import org.yalli.wah.model.dto.GroupRequest;
 import org.yalli.wah.model.dto.GroupSearchRequest;
 import org.yalli.wah.model.dto.GroupUpdateDto;
+import org.yalli.wah.model.dto.impl.SearchRequest;
 import org.yalli.wah.service.GroupService;
+import org.yalli.wah.util.TranslateUtil;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.List;
+
+import static org.yalli.wah.controller.EventController.removeCountryOfCity;
 
 
 @RestController
@@ -33,9 +42,14 @@ public class GroupController {
 
     @GetMapping
     public Page<GroupLightDto> getAllGroupsLight(Pageable pageable,
-                                                 @ModelAttribute GroupSearchRequest filter) {
+                                                 @ModelAttribute GroupSearchRequest filter) throws IOException, InterruptedException {
+
+        if(filter.getCity() !=null && !filter.getCity().isEmpty()){
+            removeCountryOfCity(filter);
+        }
         return groupService.getAllGroupsLight(pageable, filter);
     }
+
 
     @GetMapping("/{id}")
     public GroupDto getGroup(@PathVariable Long id) {
