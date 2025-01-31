@@ -69,4 +69,6 @@ public class UserEntity {
     private List<NotificationEntity> notifications;
     @OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GroupEntity> groups;
+    @OneToMany(mappedBy = "userEntity")
+    private List<ExperiencesEntity> experiences;
 }
