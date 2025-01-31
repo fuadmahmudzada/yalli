@@ -1,10 +1,16 @@
 package org.yalli.wah.util;
 
+import org.apache.commons.lang3.RandomStringUtils;
+import org.hibernate.validator.internal.xml.mapping.MappingXmlParser;
+
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 public class TranslateUtil {
-
+    private static final String ALPHANUMERICS= "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
     public static String getTranslation(String word){
         Map<String, String> countryMap = new HashMap<>();
@@ -56,5 +62,29 @@ public class TranslateUtil {
         countryMap.put("Portugal", "Portuqaliya");
         countryMap.put("South Korea", "Cənubi Koreya");
         return countryMap.get(word);
+    }
+
+
+    public static String getLink(String link){
+        String inEnglish =  link.toLowerCase().replaceAll("ə", "e")
+                .replaceAll("ğ", "g")
+                .replaceAll("ı", "i")
+                .replaceAll("ç", "c")
+                .replaceAll("ö", "o")
+                .replaceAll("ü", "u")
+                .replaceAll("q", "g")
+                .replaceAll(" ", "-");
+        StringBuilder suffix = new StringBuilder("-");
+        Random ran = new Random();
+        for(int i=0;i<15;i++){
+            int index = ran.nextInt(0, ALPHANUMERICS.length());
+            if(ran.nextInt(1000)%2==0){
+                suffix.append(Character.toLowerCase(ALPHANUMERICS.charAt(index)));
+            } else {
+                suffix.append(ALPHANUMERICS.charAt(index));
+            }
+        }
+        return inEnglish + suffix;
+
     }
 }
