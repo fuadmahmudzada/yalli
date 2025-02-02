@@ -316,7 +316,7 @@ public class UserService {
     private UserEntity getUserByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(
                 () -> {
-                    log.error("ActionLog.confirmEmail.error User not found for email {}", email);
+                    log.error("ActionLog.getUserByEmail.error User not found for email {}", email);
                     return new ResourceNotFoundException("User not found");
                 }
         );

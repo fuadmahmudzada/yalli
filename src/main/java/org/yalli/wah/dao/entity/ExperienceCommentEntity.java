@@ -1,10 +1,11 @@
 package org.yalli.wah.dao.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,23 +13,21 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class ExperiencesEntity {
+@AllArgsConstructor
+public class ExperienceCommentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(columnDefinition = "TEXT")
     private String content;
-    private String imageLink;
-    private String link;
     @CreationTimestamp
     private LocalDateTime createdAt;
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
     @ManyToOne
     private UserEntity userEntity;
-    @OneToMany(mappedBy = "experiencesEntity")
-    private List<ExperienceCommentEntity> experienceCommentEntity;
-
+    @ManyToOne
+    private ExperiencesEntity experiencesEntity;
+    //parentId
+    @ManyToOne
+    @JoinColumn(unique = false)
+    private ExperienceCommentEntity experienceCommentEntity;
 }

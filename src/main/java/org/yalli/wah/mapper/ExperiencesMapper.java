@@ -19,6 +19,8 @@ public abstract class ExperiencesMapper {
 
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "userEntity.id", source = "userEntity.id" )
+    @Mapping(target = "id", ignore = true )
     public abstract ExperiencesEntity toEntity(ExperiencePostDto experiencePostDto, UserEntity userEntity);
 
 
