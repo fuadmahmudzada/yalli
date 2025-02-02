@@ -33,7 +33,8 @@ public class ExperiencesService {
 
     public void postExperience(ExperiencePostDto experiencePostDto, Authentication authentication){
         log.info("ActionLog.postExperience.start experiencePostDto {}", experiencePostDto);
-        ExperiencesEntity experiencesEntity = ExperiencesMapper.INSTANCE.toEntity(experiencePostDto, userRepository.findByEmail(authentication.getName()).get());
+        ExperiencesEntity experiencesEntity = ExperiencesMapper.INSTANCE.toEntity(experiencePostDto, userRepository.findByEmail(authentication.getName()).orElseThrow(()->
+                new ResourceNotFoundException("User Coulnd't found with" + authentication.getName())));
         String link = experiencesEntity.getContent().substring(0, 11);
         experiencesEntity.setLink(TranslateUtil.getLink(link));
         experiencesRepository.save(experiencesEntity);
@@ -42,13 +43,15 @@ public class ExperiencesService {
 
     public Page<ExperienceDto> getExperiences(Pageable pageable,ExperiencesSearchDto experiencesSearchDto){
         log.info("ActionLog.getExperience.start");
-        Specification<ExperiencesEntity> specification = Specification.where(((root, query, criteriaBuilder) -> {
+        Specification<ExperiencesEntity> specification = Specification.where(   (root, query, criteriaBuilder) -> {
 
 
             List<Predicate> predicates = new ArrayList<>();
+            List<Predicate> experiencePredicates = new ArrayList<>();
+            System.out.println(predicates.isEmpty());
             if(experiencesSearchDto != null){
 
-                List<Predicate> experiencePredicates = new ArrayList<>();
+
                 if(experiencesSearchDto.getKeyWord() != null && !experiencesSearchDto.getKeyWord().isEmpty()){
                     predicates.add(criteriaBuilder.like(root.get("content"),
                             "%" + experiencesSearchDto.getKeyWord() + "%"));
@@ -62,14 +65,14 @@ public class ExperiencesService {
                     experiencePredicates.add(criteriaBuilder.lower(root.get("userEntity").get("city")).in(experiencesSearchDto.getCity().stream().map(String::toLowerCase).collect(Collectors.toList())));
                 }
                 predicates.add(criteriaBuilder.or(experiencePredicates.toArray(Predicate[]::new)));
-
+                System.out.println(predicates.isEmpty());
             }
-            if(predicates.isEmpty()){
+            if(predicates.size()==1 && experiencePredicates.isEmpty() ){
                 return criteriaBuilder.conjunction();
             } else {
                 return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
             }
-        }));
+        });
         return ExperiencesMapper.INSTANCE.toExperienceDto(experiencesRepository.findAll(specification, pageable));
     }
 

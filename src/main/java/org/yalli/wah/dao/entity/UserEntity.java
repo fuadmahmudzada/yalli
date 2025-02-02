@@ -71,4 +71,6 @@ public class UserEntity {
     private List<GroupEntity> groups;
     @OneToMany(mappedBy = "userEntity")
     private List<ExperiencesEntity> experiences;
+    @OneToMany(mappedBy = "userEntity")
+    private List<ExperienceCommentEntity> comments;
 }
