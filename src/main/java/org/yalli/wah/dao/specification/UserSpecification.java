@@ -1,9 +1,7 @@
-package org.yalli.wah.util;
+package org.yalli.wah.dao.specification;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.yalli.wah.dao.entity.UserEntity;
-
-import javax.swing.*;
 
 
 public class UserSpecification {

@@ -4,6 +4,7 @@
 //import org.springframework.security.core.GrantedAuthority;
 //
 //import java.util.Collection;
+//import java.util.List;
 //
 //public class BearerTokenAuthenticaiton implements Authentication {
 //    private String  bearerToken;

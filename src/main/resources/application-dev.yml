@@ -4,8 +4,8 @@ spring:
       client:
         registration:
           google:
-            client-id: 96313511660-e10km1gc8udkg6qqq9bmslvu59ukvnt8.apps.googleusercontent.com
-            client-secret: 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
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_SECRET}
             scope:
               - email
               - profile
@@ -21,7 +21,7 @@ spring:
     jdbc:
       initialize-schema: always
 server:
-  port: 8085
+  port: 8888
   servlet:
     session:
       timeout: 30m

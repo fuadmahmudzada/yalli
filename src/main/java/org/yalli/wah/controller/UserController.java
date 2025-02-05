@@ -26,78 +26,47 @@ import org.yalli.wah.service.UserService;
 import javax.naming.AuthenticationException;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.security.Principal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RestController
-@RequestMapping("/v1/users")
-@CrossOrigin
-@RequiredArgsConstructor
-@Slf4j
-public class UserController {
-    private final UserService userService;
+    @RestController
+    @RequestMapping("/v1/users")
+    @CrossOrigin
+    @RequiredArgsConstructor
+    @Slf4j
+    public class UserController {
+        private final UserService userService;
 
 
-    @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> login() throws AuthenticationException {
+        @GetMapping("/login")
+        public ResponseEntity<LoginResponseDto> login() throws AuthenticationException {
 
-        return userService.login();
-    }
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null || !authentication.isAuthenticated() ||
+                    "anonymousUser".equals(authentication.getPrincipal())) {
+                throw new AuthenticationException("User not authenticated");
+            }
+            if (authentication == null || !authentication.isAuthenticated() ||
+                    "anonymousUser".equals(authentication.getPrincipal())) {
+                throw new AuthenticationException("User not authenticated");
+            }
 
+            if(authentication instanceof OAuth2AuthenticationToken){
+                return userService.googleLogin(authentication);
+            }
+            else {
+                return userService.login(authentication);
+            }
+        }
 
-//    public ResponseEntity<String> googleLogin() {
-//        // Retrieve authentication from SecurityContext
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//
-//        // Log authentication details for debugging
-//        if (authentication == null) {
-//            log.error("No authentication found in SecurityContext");
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No authentication");
-//        }
-//
-//        // Check if it's an OAuth2 authentication
-//        if (authentication instanceof OAuth2AuthenticationToken authToken) {
-//            try {
-//                // Process OAuth login
-//                userService.processOAuthPostLogin(authToken);
-//                return ResponseEntity.ok("Login successful");
-//            } catch (Exception e) {
-//                log.error("OAuth login processing failed", e);
-//                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Login processing failed");
-//            }
-//        }
-//
-//        // If not OAuth2 authentication
-//        log.warn("Unexpected authentication type: {}", authentication.getClass());
-//        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid authentication");
-//    }
+        @GetMapping("/googleLogin")
+        public Object  google(Principal principal) throws AuthenticationException {
 
-
-//    @GetMapping("/secure")
-//    public String securePage( Authentication authentication) {
-//        System.out.println("this is the authentication name" + authentication.getName());
-//        if(authentication instanceof UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken){
-//            System.out.println(usernamePasswordAuthenticationToken);
-//            return usernamePasswordAuthenticationToken.getName();
-//        } else if (authentication instanceof OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-//            System.out.println(oAuth2AuthenticationToken);
-//        }
-//        return "hello";
-//
-//    }
-//
-//    @GetMapping("/print-user-name")
-//    public String printUserName(@AuthenticationPrincipal OAuth2User oauth2User) {
-//        if (oauth2User != null) {
-//            String name = oauth2User.getAttribute("name");
-//            System.out.println("User's Name: " + name);
-//            return "User's Name: " + name;
-//        } else {
-//            return "No authenticated user found!";
-//        }
-//    }
+            return principal;
+        }
 
     @GetMapping("/countries")
     @Operation(summary = "get all countries")

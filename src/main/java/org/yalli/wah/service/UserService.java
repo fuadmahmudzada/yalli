@@ -7,8 +7,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.yalli.wah.dao.entity.UserEntity;
 import org.yalli.wah.dao.repository.UserRepository;
@@ -22,9 +22,8 @@ import org.yalli.wah.model.exception.PermissionException;
 import org.yalli.wah.model.exception.ResourceNotFoundException;
 
 import org.yalli.wah.util.TokenUtil;
-import org.yalli.wah.util.UserSpecification;
+import org.yalli.wah.dao.specification.UserSpecification;
 
-import javax.naming.AuthenticationException;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 
@@ -46,16 +45,21 @@ public class UserService {
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
 
-    public ResponseEntity<LoginResponseDto> login() throws AuthenticationException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public ResponseEntity<LoginResponseDto> login(Authentication authentication){
 
-        // Check if user is authenticated
-        if (authentication == null || !authentication.isAuthenticated() ||
-                "anonymousUser".equals(authentication.getPrincipal())) {
-            throw new AuthenticationException("User not authenticated");
-        }
         log.info("ActionLog.login.start email {}", authentication.getName());
-        UserEntity userEntity = getUserByEmail(authentication.getName());
+
+
+        Optional<UserEntity> user = userRepository.findByEmail(authentication.getName());
+
+        if(user.isPresent() && user.get().getGoogleId()!=null){
+            throw new InvalidInputException("USER_ALREADY_REGISTERED_WITH_GOOGLE");
+        }
+
+        UserEntity userEntity = user.orElseThrow(  () -> {
+            log.error("ActionLog.login.error User not found for email {}", authentication.getName());
+            return new ResourceNotFoundException("User not found");
+        });
 
         userEntity.setAccessToken(tokenUtil.generateToken());
         userEntity.setTokenExpire(LocalDateTime.now().plusMinutes(30));
@@ -90,6 +94,57 @@ public class UserService {
 //            put("id", String.valueOf(userEntity.getId()));
 //        }};
         return ResponseEntity.status(HttpStatus.OK).body(loginResponseDto);
+    }
+
+    public ResponseEntity<LoginResponseDto> googleLogin(Authentication authentication){
+        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+        Map<String, Object> userAttributes =  oAuth2User.getAttributes();
+        String email = (String)userAttributes.get("email");
+        Optional<UserEntity> user = userRepository.findByEmail(email);
+
+
+        if(user.isPresent() && user.get().getGoogleId()==null){
+            throw new InvalidInputException("USER_LOGGED_IN_WITH_EMAIL");
+        }
+
+        if(!user.isPresent()){
+            saveGoogleUser(authentication, userAttributes);
+        }
+        UserEntity userEntity = getUserByEmail(email);
+
+        userEntity.setFullName((String) userAttributes.get("name"));
+        userEntity.setEmail(email);
+        userEntity.setGoogleId(authentication.getName());
+        userEntity.setAccessToken(tokenUtil.generateToken());
+        userEntity.setNotCompletedFields(0);
+        MemberUpdateDto memberUpdateDto = ProfileMapper.INSTANCE.toMemberUpdateDto(userEntity);
+        String[] fields = memberUpdateDto.toString().split(",");
+        for (String field : fields) {
+            if (field.contains("null")) {
+                userEntity.setNotCompletedFields(userEntity.getNotCompletedFields() + 1);
+            }
+        }
+        LoginResponseDto loginResponseDto = new LoginResponseDto();
+        loginResponseDto.setAccessToken(userEntity.getAccessToken());
+        loginResponseDto.setFullName(userEntity.getFullName());
+        loginResponseDto.setCountry(userEntity.getCountry());
+        loginResponseDto.setImage(userEntity.getProfilePictureUrl());
+        loginResponseDto.setId(userEntity.getId());
+
+        return ResponseEntity.status(HttpStatus.OK).body(loginResponseDto);
+
+
+    }
+
+    public void saveGoogleUser(Authentication authentication, Map<?, ?> attributes){
+        UserEntity userEntity = new UserEntity();
+        userEntity.setGoogleId(authentication.getName());
+        userEntity.setFullName((String) attributes.get("name"));
+        userEntity.setEmail((String) attributes.get("email"));
+        userEntity.setEmailConfirmed((boolean) attributes.get("email_verified"));
+        userEntity.setResetRequests((byte)0);
+        userEntity.setRole("user");
+        userRepository.save(userEntity);
     }
 
 //    public void processOAuthPostLogin(OAuth2AuthenticationToken authToken) {
@@ -177,8 +232,11 @@ public class UserService {
     public void register(RegisterDto registerDto) {
         log.info("ActionLog.register.start email {}", registerDto.getEmail());
         UserEntity userEntity = userRepository.findByEmail(registerDto.getEmail()).map((user) -> {
-            if (user.isEmailConfirmed()) {
+            if (user.isEmailConfirmed() && user.getGoogleId()!=null) {
+                throw new InvalidInputException("USER_ALREADY_REGISTERED_WITH_GOOGLE");
+            } else if (user.isEmailConfirmed()) {
                 throw new InvalidInputException("EMAIL_ALREADY_EXISTS");
+
             }
             return user;
         }).orElse(new UserEntity());

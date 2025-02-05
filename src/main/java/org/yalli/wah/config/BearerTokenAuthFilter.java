@@ -1,5 +1,3 @@
-//package org.yalli.wah.config;
-//
 //import com.sallu.entity.OauthToken;
 //import com.sallu.entity.User;
 //import com.sallu.repository.OauthTokenRepository;
@@ -21,10 +19,9 @@
 //
 //import java.io.IOException;
 //import java.time.LocalDateTime;
-//
-//import java.io.IOException;
 //@Component
 //public class BearerTokenAuthFilter extends OncePerRequestFilter {
+//
 //    @Autowired
 //    OauthTokenRepository tokenRepository;
 //
