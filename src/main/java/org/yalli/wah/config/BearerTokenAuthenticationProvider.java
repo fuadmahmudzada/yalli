@@ -1,6 +1,3 @@
-//package org.yalli.wah.config;
-//
-//
 //import jakarta.servlet.http.HttpServletResponse;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.security.authentication.AuthenticationProvider;

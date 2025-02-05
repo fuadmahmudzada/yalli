@@ -39,6 +39,8 @@ public class UserEntity {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
     private String profilePictureUrl;
+    @Column(unique = true)
+    private String googleId;
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "user_saved_events",

@@ -13,6 +13,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.config.oauth2.client.CommonOAuth2Provider;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,20 +24,12 @@ import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
-import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
-import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.yalli.wah.filter.CsrfCookieFilter;
@@ -58,7 +51,7 @@ public class SecurityConfig {
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http, ClientRegistrationRepository clientRegistrationRepository) throws Exception {
         CsrfTokenRequestAttributeHandler csrfTokenRequestAttributeHandler = new CsrfTokenRequestAttributeHandler();
         CookieCsrfTokenRepository csrfTokenRepository = new CookieCsrfTokenRepository();
-        csrfTokenRepository.setCookieCustomizer(responseCookieBuilder -> responseCookieBuilder.httpOnly(false).sameSite("None").domain("yalli-back-end-7v7d.onrender.com"));
+        csrfTokenRepository.setCookieCustomizer(responseCookieBuilder -> responseCookieBuilder.httpOnly(false).sameSite("None").domain("localhost"));
 
         http.authorizeHttpRequests((requests) -> requests
                                 .requestMatchers(HttpMethod.GET, "/v1/admins").hasAnyRole("ADMIN", "SUPER_ADMIN", "MODERATOR")
@@ -81,6 +74,8 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "v1/mentors").authenticated()
                                 .requestMatchers(HttpMethod.PATCH, "v1/mentors/{id}").authenticated()
                                 .requestMatchers("v1/notifications/getAll").authenticated()
+                                .requestMatchers("/api/loginSuccess", "/api/user").authenticated()
+                                .requestMatchers("v1/user/user-info", "/", "/error").permitAll()
 //                                .requestMatchers("/oauth2/**").permitAll()
 //                                .requestMatchers("/oauth/**").permitAll()
 //                                .requestMatchers("/v1/users/login").authenticated()
@@ -145,13 +140,25 @@ public class SecurityConfig {
                         .ignoringRequestMatchers("/v1/files/{fileName}")
                         .ignoringRequestMatchers("/v1/admins/login")
                         .ignoringRequestMatchers("/swagger-ui/**")
+                        .ignoringRequestMatchers("/oauth2/**", "/login/**")
                         .ignoringRequestMatchers("/swagger-config")
                         .ignoringRequestMatchers("/v3/api-docs/**")
+                        .ignoringRequestMatchers("/api/loginSuccess")
+                        .ignoringRequestMatchers("/api/user")
                         .csrfTokenRepository(csrfTokenRepository))
 
 
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
-                .formLogin(withDefaults())
+                .oauth2Login(oauth2 -> oauth2
+                        // After successful login, you can define a default target URL
+                        .defaultSuccessUrl("/api/loginSuccess", true)
+                )
+                .logout(logout -> logout
+                        .logoutSuccessUrl("/")
+                )
+                .formLogin(
+                       withDefaults()
+                )
                 .httpBasic(withDefaults());
 
         return http.build();

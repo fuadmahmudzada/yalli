@@ -15,5 +15,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>, JpaSpec
     Optional<UserEntity> findByAccessToken(String accessToken);
     Page<UserEntity> findAll(Specification<UserEntity> spec, Pageable pageable);
     Optional<UserEntity> findAllByCountry(String country);
-    
+
+    boolean existsByEmail(String email);
 }
