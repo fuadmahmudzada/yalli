@@ -20,7 +20,7 @@ spring:
   datasource:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
-    url: ${DB_URL}
+    url: jdbc:postgresql://dpg-ctttsfd2ng1s7398mmd0-a.oregon-postgres.render.com/yalli_database_8aka
   jpa:
     hibernate:
       ddl-auto: update
