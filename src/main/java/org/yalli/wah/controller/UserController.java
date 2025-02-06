@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
         private final UserService userService;
 
 
-        @GetMapping("/login")
+        @PostMapping("/login")
         public ResponseEntity<LoginResponseDto> login() throws AuthenticationException {
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
