@@ -28,7 +28,8 @@ public class ExperienceCommentController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ExperienceCommentDto> getComments(@RequestHeader("comment-id") Long commentId){
-        return experienceCommentService.getComments(commentId);
+    public List<ExperienceCommentDto> getComments(@RequestHeader("comment-id") Long commentId,
+                                                  @RequestHeader("experience-id") Long experienceId){
+        return experienceCommentService.getComments(commentId, experienceId);
     }
 }
