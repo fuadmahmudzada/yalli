@@ -59,17 +59,17 @@ public class ExperienceCommentService {
         });
         return commentDtoList;
     }
-    public List<ExperienceCommentDto> getComments(Long id){
+    public List<ExperienceCommentDto> getComments(Long id, Long experienceId){
         log.info("ActionLog.getComments.start");
-        ExperienceCommentEntity experienceCommentEntity = new ExperienceCommentEntity();
+        Long experienceCommentEntityId;
         if(id==-1){
-            experienceCommentEntity = null;
+            experienceCommentEntityId = null;
         } else{
-            experienceCommentEntity.setId(id);
+            experienceCommentEntityId = id;
         }
 //her brin comment in ozunun id sini parent id ye qoyub say tapmaliyam
 //        int replyCount = experienceCommentRepository.countAllByExperienceCommentEntity(experienceCommentEntity);
 
-        return toList(experienceCommentRepository.findAllByExperienceCommentEntity(experienceCommentEntity));
+        return toList(experienceCommentRepository.findAllByExperienceCommentEntityIdAndExperiencesEntityId(experienceCommentEntityId, experienceId));
     }
 }

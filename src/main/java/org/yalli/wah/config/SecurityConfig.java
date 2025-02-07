@@ -76,6 +76,8 @@ public class SecurityConfig {
                                 .requestMatchers("v1/notifications/getAll").authenticated()
                                 .requestMatchers("/api/loginSuccess", "/api/user").authenticated()
                                 .requestMatchers("v1/user/user-info", "/", "/error").permitAll()
+                                .requestMatchers("v1/experiences/comments/{link}").authenticated()
+                                .requestMatchers(HttpMethod.POST,"v1/experience").authenticated()
 //                                .requestMatchers("/oauth2/**").permitAll()
 //                                .requestMatchers("/oauth/**").permitAll()
 //                                .requestMatchers("/v1/users/login").authenticated()
