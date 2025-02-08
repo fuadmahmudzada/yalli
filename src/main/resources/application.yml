@@ -18,8 +18,8 @@ spring:
               - profile
               - openid
   datasource:
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    username: yalli_database_8aka_user
+    password: z9pu03Ay1hOqOiOB1s7HRvaqEFuf10H1
     url: jdbc:postgresql://dpg-ctttsfd2ng1s7398mmd0-a.oregon-postgres.render.com/yalli_database_8aka
   jpa:
     hibernate:
@@ -47,6 +47,6 @@ springdoc:
     path: /api-docs
 minio:
   url: https://minio-server-nlle.onrender.com
-  access-key: ${MINIO_ACCESS}
-  secret-key: ${MINIO_SECRET}
+  access-key: p6YUJOQerHh0bPoKHC9OwYg502JL5YiGzZYcq+DRjFs=
+  secret-key: ZuwU65NA0FNVjQb4X31XSz1Nk1hic5mRWnkM7KwSNYA=
   name: yalli
