@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ExperienceDto {
+    private Long id;
     private String fullName;
     private String content;
     private String country;
