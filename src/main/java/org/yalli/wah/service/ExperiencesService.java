@@ -64,10 +64,12 @@ public class ExperiencesService {
                 if(experiencesSearchDto.getCity() != null && !experiencesSearchDto.getCity().isEmpty()){
                     experiencePredicates.add(criteriaBuilder.lower(root.get("userEntity").get("city")).in(experiencesSearchDto.getCity().stream().map(String::toLowerCase).collect(Collectors.toList())));
                 }
-                predicates.add(criteriaBuilder.or(experiencePredicates.toArray(Predicate[]::new)));
+                if(!experiencePredicates.isEmpty()) {
+                    predicates.add(criteriaBuilder.or(experiencePredicates.toArray(Predicate[]::new)));
+                }
                 System.out.println(predicates.isEmpty());
             }
-            if(predicates.size()==1 && experiencePredicates.isEmpty() ){
+            if(predicates.size()==1 && !experiencePredicates.isEmpty() ){
                 return criteriaBuilder.conjunction();
             } else {
                 return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
