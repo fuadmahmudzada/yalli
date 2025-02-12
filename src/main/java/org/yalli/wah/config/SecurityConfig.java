@@ -153,7 +153,6 @@ public class SecurityConfig {
 
 
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
-                .addFilterAfter(new CsrfHeaderFilter(), CsrfFilter.class)
                 .oauth2Login(oauth2 -> oauth2
                         // After successful login, you can define a default target URL
                         .defaultSuccessUrl("/api/loginSuccess", true)
