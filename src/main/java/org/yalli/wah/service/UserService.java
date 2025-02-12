@@ -1,8 +1,10 @@
 package org.yalli.wah.service;
 
+import ch.qos.logback.classic.spi.IThrowableProxy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.*;
@@ -144,6 +146,14 @@ public class UserService {
         userEntity.setEmailConfirmed((boolean) attributes.get("email_verified"));
         userEntity.setResetRequests((byte)0);
         userEntity.setRole("user");
+        userRepository.save(userEntity);
+    }
+
+    public void addUserProvidedGoogleLoginInfo(String country, String city, Authentication authentication){
+        UserEntity userEntity = userRepository.findByEmail(authentication.getName()).orElseThrow(()->
+                new ResourceNotFoundException("User not found with email" + authentication.getName()));
+        userEntity.setCountry(country);
+        userEntity.setCity(city);
         userRepository.save(userEntity);
     }
 
@@ -381,16 +391,38 @@ public class UserService {
 
     }
 
-    public Page<MemberDto> searchUsers(String fullName, String country, Pageable pageable) {
-        log.info("ActionLog.searchUsers.start fullName {}, country {}", fullName, country);
+    public Page<MemberDto> searchUsers(UserSearchDto userSearchDto, Pageable pageable) {
+        String fullName = userSearchDto.getFullName();
+        List<String> country = userSearchDto.getCountry();
+        List<String> city = userSearchDto.getCity();
+        log.info("ActionLog.searchUsers.start fullName {}, country {}, city {}", fullName, country, city);
         Specification<UserEntity> spec = Specification.where(UserSpecification.isEmailConfirmed())
-                .and(UserSpecification.hasCountry(country))
+                .and(Specification.where(UserSpecification.hasCity(city)).or(UserSpecification.hasCountry(country)))
                 .and(UserSpecification.hasFullName(fullName));
 
         Page<UserEntity> userEntities = userRepository.findAll(spec, pageable);
+        userRepository.findAll(spec, pageable);
         log.info("ActionLog.searchUsers.end fullName {}, country {}", fullName, country);
         return userEntities.map(UserMapper.INSTANCE::mapUserEntityToMemberDto);
     }
+
+    public MemberMapDto getUsersOnMap(UserSearchDto userSearchDto){
+        List<String> countryList= userSearchDto.getCountry();
+        List<String> cityList = userSearchDto.getCity();
+        log.info("ActionLog.getUsersOnMap.start country {}, city {}", countryList, cityList);
+        Specification<UserEntity> specificationFindNotNull = Specification.where(UserSpecification.isEmailConfirmed())
+                .and(Specification.where(UserSpecification.hasCountry(countryList)).or(UserSpecification.hasCity(cityList)))
+                .and(UserSpecification.isProfilePictureNotNull());
+        Specification<UserEntity> specificationFindAllEntities = Specification.where(UserSpecification.isEmailConfirmed())
+                .and(Specification.where(UserSpecification.hasCountry(countryList)).or(UserSpecification.hasCity(cityList)));
+        Page<UserEntity> userEntities = userRepository.findAll(specificationFindNotNull, PageRequest.of(0, 3));
+        List<String> profilePictures = userEntities.stream().map(UserEntity::getProfilePictureUrl).toList();
+        long count = userRepository.count(specificationFindAllEntities);
+        log.info("ActionLog.getUsersOnMap.end country {}, city {}", countryList, cityList);
+        return new MemberMapDto(profilePictures, (int) count);
+//burda casting olmalimi yuxarida map ve onun yuxarisindaki pagein ferqli tipine cevirme
+    }
+
 
     public MemberInfoDto getUserById(Long id) {
         return UserMapper.INSTANCE.mapUserEntityToMemberInfoDto(userRepository.findById(id).orElseThrow(() ->

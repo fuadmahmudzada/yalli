@@ -6,8 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.type.SqlTypes;
 import org.yalli.wah.model.enums.MentorCategory;
+import org.yalli.wah.model.enums.MentorExperienceYear;
 import org.yalli.wah.model.enums.MentorStatus;
 
 import java.time.LocalDateTime;
@@ -25,12 +28,10 @@ public class MentorEntity {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
     @JoinColumn(name = "user_id")
     private UserEntity user;
-    private String profilePicture;
     @Column(columnDefinition = "TEXT")
     private String description;
     @Enumerated(EnumType.STRING)
     private MentorCategory mentorCategory;
-    private String city;
     @OneToMany(mappedBy = "mentor")
     private List<CommentEntity> comments;
     @CreationTimestamp
@@ -40,4 +41,8 @@ public class MentorEntity {
     private String link;
     @Enumerated(EnumType.STRING)
     private MentorStatus status;
+    private MentorExperienceYear experienceLevel;
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb")
+    private List<String> skills;
 }

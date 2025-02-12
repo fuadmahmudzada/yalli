@@ -4,11 +4,11 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
+import org.springframework.data.domain.Page;
 import org.yalli.wah.dao.entity.UserEntity;
-import org.yalli.wah.model.dto.MemberDto;
-import org.yalli.wah.model.dto.MemberInfoDto;
-import org.yalli.wah.model.dto.MemberUpdateDto;
-import org.yalli.wah.model.dto.RegisterDto;
+import org.yalli.wah.model.dto.*;
+
+import java.util.List;
 
 @Mapper
 public abstract class UserMapper {

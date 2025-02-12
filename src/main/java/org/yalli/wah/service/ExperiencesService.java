@@ -83,4 +83,10 @@ public class ExperiencesService {
         return ExperiencesMapper.INSTANCE.toDto(experiencesRepository.findByLink(link).orElseThrow(()->
                 new ResourceNotFoundException("EXPERIENCE NOT FOUND FOR LINK"+ link)));
     }
+
+    public ExperienceDto getUserExperience(Long id){
+        log.info("ActionLog.getExperience.start id {}", id);
+        return ExperiencesMapper.INSTANCE.toDto(experiencesRepository.findById(id).orElseThrow(()->
+                new ResourceNotFoundException("EXPERIENCE NOT FOUND FOR USER " + id)));
+    }
 }
