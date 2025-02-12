@@ -24,6 +24,7 @@ import org.yalli.wah.model.exception.ResourceNotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.yalli.wah.model.enums.EmailTemplate.MENTORSHIP_ACCEPT;
 import static org.yalli.wah.model.enums.EmailTemplate.MENTORSHIP_APPLY;
@@ -48,11 +49,24 @@ public class MentorService {
             if (mentorSearchRequest.getCategory() != null && !mentorSearchRequest.getCategory().isEmpty()) {
                 predicates.add(root.get("mentorCategory").in(mentorSearchRequest.getCategory()));
             }
+            List<Predicate> mentorLocPredicates = new ArrayList<>();
             if (mentorSearchRequest.getCountry() != null && !mentorSearchRequest.getCountry().isEmpty()) {
-                predicates.add(
-                        criteriaBuilder.equal(criteriaBuilder.lower(root.get("user").get("country")),
-                                mentorSearchRequest.getCountry().toLowerCase())
+                mentorLocPredicates.add(
+                        criteriaBuilder.lower(root.get("user").get("country")).in(mentorSearchRequest.getCountry()
+                                .stream().map(String::toLowerCase).collect(Collectors.toList()))
                 );
+            }
+
+            List<String> list = new ArrayList<>();
+            list.add("");
+            if (mentorSearchRequest.getCity() != null && !mentorSearchRequest.getCity().isEmpty()) {
+                mentorLocPredicates.add(
+                        criteriaBuilder.lower(root.get("user").get("city")).in(mentorSearchRequest.getCity()
+                                .stream().map(String::toLowerCase).collect(Collectors.toList()))
+                );
+            }
+            if (!mentorLocPredicates.isEmpty()) {
+                predicates.add(criteriaBuilder.or(mentorLocPredicates.toArray(new Predicate[0])));
             }
             predicates.add(criteriaBuilder.equal(root.get("status"), MentorStatus.ACCEPTED));
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));

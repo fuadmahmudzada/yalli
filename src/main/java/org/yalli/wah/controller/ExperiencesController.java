@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 import org.yalli.wah.model.dto.ExperienceDto;
 import org.yalli.wah.model.dto.ExperiencePostDto;
@@ -47,5 +48,11 @@ public class ExperiencesController {
     @ResponseStatus(HttpStatus.OK)
     public ExperienceDto getExperience(@PathVariable String link){
         return experiencesService.getExperience(link);
+    }
+
+    @GetMapping("/user")
+    @ResponseStatus(HttpStatus.OK)
+    public ExperienceDto getUserExperiences(@RequestHeader(name = "user-id") Long userId){
+        return experiencesService.getUserExperience(userId);
     }
 }

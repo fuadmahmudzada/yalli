@@ -16,6 +16,10 @@ import org.yalli.wah.model.exception.InvalidInputException;
 import org.yalli.wah.service.MentorService;
 import org.yalli.wah.service.PermissionService;
 
+import java.io.IOException;
+
+import static org.yalli.wah.controller.EventController.removeCountryOfCity;
+
 
 @RestController
 @RequestMapping("/v1/mentors")
@@ -28,7 +32,11 @@ public class MentorController {
     @GetMapping("/search")
     @Operation(summary = "search mentors")
     @ResponseStatus(HttpStatus.OK)
-    public Page<MentorSearchDto> search(@ModelAttribute MentorSearchRequest mentorSearchRequest, Pageable pageable) {
+    public Page<MentorSearchDto> search(@ModelAttribute MentorSearchRequest mentorSearchRequest, Pageable pageable) throws IOException, InterruptedException {
+        if (mentorSearchRequest.getCity() != null && !mentorSearchRequest.getCity().isEmpty()) {
+
+            removeCountryOfCity(mentorSearchRequest);
+        }
         return mentorService.searchMentors(mentorSearchRequest, pageable);
     }
 
@@ -51,7 +59,7 @@ public class MentorController {
     @Operation(summary = "change request status")
     public void changeRequestStatus(@PathVariable Long id, @RequestParam MentorStatus operation,
                                     @RequestHeader("user-id") Long userId) {
-        if (permissionService.hasPermission(userId,"mentorshipApply")) {
+        if (permissionService.hasPermission(userId, "mentorshipApply")) {
             switch (operation) {
                 case REVIEW -> mentorService.assignRequest(id);
                 case REJECTED -> mentorService.rejectMentorship(id);

@@ -16,7 +16,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-
 @RestController
 @RequestMapping("/v1/events")
 @RequiredArgsConstructor
@@ -48,16 +47,21 @@ public class EventController {
         HttpClient client = HttpClient.newHttpClient();
 
         for(String city : filter.getCity()) {
+            String searchCity = TranslateUtil.getCityTranslation(city);
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("https://countriesnow.space/api/v0.1/countries/population/cities/q?city=" + city))
+                    .uri(URI.create("https://secure.geonames.org/searchJSON?q="+ searchCity+ "&maxRows=1&username=dedatom596minduls.c"))
                     .header("Content-Type", "application/json")
                     .build();
 
             HttpResponse<String> response = client
                     .send(request, HttpResponse.BodyHandlers.ofString());
-            String country = response.body().replaceAll("^.*?country\":\"", "").replaceAll("\",\".*", "");
+            System.out.println(response.body());
+            System.out.println(response.headers());
+            System.out.println(response.statusCode());
+            System.out.println(response);
+            String country = response.body().replaceAll("^.*?countryName\":\"", "").replaceAll("\",\".*", "");
 
-            filter.getCountry().remove(TranslateUtil.getTranslation(country));
+            filter.getCountry().remove(TranslateUtil.getAzerbaijani(country));
         }
     }
 

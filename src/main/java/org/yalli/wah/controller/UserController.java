@@ -13,15 +13,18 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
 import org.yalli.wah.model.dto.*;
 import org.yalli.wah.model.enums.Country;
 import org.yalli.wah.service.UserService;
+import org.yalli.wah.util.TranslateUtil;
 
 import javax.naming.AuthenticationException;
 import java.io.IOException;
@@ -32,41 +35,47 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-    @RestController
-    @RequestMapping("/v1/users")
-    @CrossOrigin
-    @RequiredArgsConstructor
-    @Slf4j
-    public class UserController {
-        private final UserService userService;
+import static org.yalli.wah.controller.EventController.removeCountryOfCity;
+
+@RestController
+@RequestMapping("/v1/users")
+@CrossOrigin
+@RequiredArgsConstructor
+@Slf4j
+public class UserController {
+    private final UserService userService;
 
 
-        @PostMapping("/login")
-        public ResponseEntity<LoginResponseDto> login() throws AuthenticationException {
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponseDto> login() throws AuthenticationException {
 
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication == null || !authentication.isAuthenticated() ||
-                    "anonymousUser".equals(authentication.getPrincipal())) {
-                throw new AuthenticationException("User not authenticated");
-            }
-            if (authentication == null || !authentication.isAuthenticated() ||
-                    "anonymousUser".equals(authentication.getPrincipal())) {
-                throw new AuthenticationException("User not authenticated");
-            }
-
-            if(authentication instanceof OAuth2AuthenticationToken){
-                return userService.googleLogin(authentication);
-            }
-            else {
-                return userService.login(authentication);
-            }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated() ||
+                "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new AuthenticationException("User not authenticated");
         }
 
-        @GetMapping("/googleLogin")
-        public Object  google(Principal principal) throws AuthenticationException {
-
-            return principal;
+        if (authentication instanceof OAuth2AuthenticationToken) {
+            return userService.googleLogin(authentication);
+        } else {
+            return userService.login(authentication);
         }
+    }
+
+    @GetMapping("/googleLogin")
+    public Object google(Principal principal) throws AuthenticationException {
+
+        return principal;
+    }
+
+    @PostMapping("/login/google/info")
+    public void addInfoInGoogleLogin(@RequestParam String country, @RequestParam String city) throws AuthenticationException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated() || (authentication.getPrincipal()).equals("anonymousUser"))
+            throw new AuthenticationException("User is not authenticated");
+        userService.addUserProvidedGoogleLoginInfo(country, city, authentication);
+    }
+
 
     @GetMapping("/countries")
     @Operation(summary = "get all countries")
@@ -123,11 +132,12 @@ import java.util.stream.Collectors;
     @GetMapping("/search")
     @ResponseStatus(HttpStatus.OK)
     public Page<MemberDto> searchUsers(
-            @RequestParam(name = "fullName", required = false) String fullName,
-            @RequestParam(name = "country", required = false) String country,
+            @ModelAttribute UserSearchDto userSearchDto,
             Pageable pageable
-    ) {
-        return userService.searchUsers(fullName, country, pageable);
+    ) throws IOException, InterruptedException {
+        if (userSearchDto.getCity() != null && !userSearchDto.getCity().isEmpty())
+            removeCountryOfCity(userSearchDto);
+        return userService.searchUsers(userSearchDto, pageable);
     }
 
 
@@ -162,4 +172,9 @@ import java.util.stream.Collectors;
         userService.resendRegisterOtp(sendOtpDto.getEmail());
     }
 
+    @GetMapping("/map/users")
+    @ResponseStatus(HttpStatus.OK)
+    public MemberMapDto getUsersOnMap(@ModelAttribute UserSearchDto userSearchDto) {
+        return userService.getUsersOnMap(userSearchDto);
+    }
 }
