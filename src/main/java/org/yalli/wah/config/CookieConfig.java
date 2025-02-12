@@ -13,7 +13,7 @@ public class CookieConfig {
         DefaultCookieSerializer serializer = new DefaultCookieSerializer();
         serializer.setCookieName("SESSIONID");
         serializer.setCookiePath("/");
-        serializer.setDomainName("localhost");
+        serializer.setDomainName("yalli-back-end-7v7d.onrender.com");
         serializer.setSameSite("None");
         serializer.setUseSecureCookie(true);
         return serializer;
