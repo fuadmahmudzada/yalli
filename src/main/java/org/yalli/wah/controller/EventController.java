@@ -1,6 +1,12 @@
 package org.yalli.wah.controller;
 
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimbusds.jose.shaded.gson.JsonArray;
+import com.nimbusds.jose.shaded.gson.JsonObject;
+import io.swagger.v3.core.util.Json;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +21,10 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.sql.SQLOutput;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/v1/events")
@@ -59,6 +69,25 @@ public class EventController {
             System.out.println(response.headers());
             System.out.println(response.statusCode());
             System.out.println(response);
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode rootNode = objectMapper.readTree(response.body());
+            System.out.println("rootNode"+ rootNode);
+            String countryName = "";
+            System.out.println(rootNode.path("geonames").getNodeType());
+            System.out.println(rootNode.path("geonames").fields().toString());
+            for (JsonNode node : rootNode.path("geonames")){
+                System.out.println("a" + node.path("countryName").textValue());
+            }
+            System.out.println("iterator"+countryName);
+//            System.out.println("nodecountry "+ nodeCountry);
+
+//            StreamSupport.stream()
+            System.out.println(rootNode.findValuesAsText("countryName"));
+            System.out.println("path "+ rootNode.findPath("countryName").textValue());
+            System.out.println("resutl "+ rootNode.path("totalResultsCount").intValue());
+            System.out.println("nodecountry "+ rootNode.get("geonames").get("countryName"));
+            System.out.println("nodecountry ");
+            System.out.println("jsonpointer "+ rootNode.at("/geonames/countryName").textValue());
             String country = response.body().replaceAll("^.*?countryName\":\"", "").replaceAll("\",\".*", "");
 
             filter.getCountry().remove(TranslateUtil.getAzerbaijani(country));

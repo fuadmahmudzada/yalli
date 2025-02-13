@@ -18,7 +18,7 @@ public class TranslateUtil {
     private static  Map<String, String> cityMap = new HashMap<>();
 
     static {
-        countryMap.put("Türkiyə", "Turkiye");
+        countryMap.put("Türkiyə", "Türkiye");
         countryMap.put("Rusiya", "Russia");
         countryMap.put("Almaniya", "Germany");
         countryMap.put("ABŞ", "USA");
