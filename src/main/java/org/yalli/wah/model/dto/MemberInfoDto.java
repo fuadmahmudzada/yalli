@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.yalli.wah.model.enums.SocialMedia;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -21,4 +22,6 @@ public class MemberInfoDto {
     private String city;
     private String profilePictureUrl;
     private Map<SocialMedia, String> socialMediaAccounts;
+    private List<String> notCompletedFields;
+    private Float completionPercent;
 }
