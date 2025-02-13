@@ -29,8 +29,11 @@ public abstract class UserMapper {
 
     //    @Mapping(target = "id", ignore = true)
 //    @Mapping(target = "updatedAt", ignore = true)
-    public abstract MemberInfoDto mapUserEntityToMemberInfoDto(UserEntity userEntity);
+    @Mapping(source = "fields", target = "notCompletedFields")
+    public abstract MemberInfoDto mapUserEntityToMemberInfoDto(UserEntity userEntity, List<String> fields, Float completionPercent);
 
 
     public abstract UserEntity updateMember(@MappingTarget UserEntity userEntity, MemberUpdateDto memberInfoDto);
+
+    public abstract LoginResponseDto loginResponseDto(UserEntity user);
 }

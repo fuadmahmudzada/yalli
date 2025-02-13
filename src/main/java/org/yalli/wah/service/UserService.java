@@ -1,6 +1,5 @@
 package org.yalli.wah.service;
 
-import ch.qos.logback.classic.spi.IThrowableProxy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -33,6 +32,7 @@ import java.util.HashMap;
 import java.util.Random;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.yalli.wah.model.enums.EmailTemplate.*;
 
@@ -47,18 +47,18 @@ public class UserService {
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
 
-    public ResponseEntity<LoginResponseDto> login(Authentication authentication){
+    public ResponseEntity<LoginResponseDto> login(Authentication authentication) {
 
         log.info("ActionLog.login.start email {}", authentication.getName());
 
 
         Optional<UserEntity> user = userRepository.findByEmail(authentication.getName());
 
-        if(user.isPresent() && user.get().getGoogleId()!=null){
+        if (user.isPresent() && user.get().getGoogleId() != null) {
             throw new InvalidInputException("USER_ALREADY_REGISTERED_WITH_GOOGLE");
         }
 
-        UserEntity userEntity = user.orElseThrow(  () -> {
+        UserEntity userEntity = user.orElseThrow(() -> {
             log.error("ActionLog.login.error User not found for email {}", authentication.getName());
             return new ResourceNotFoundException("User not found");
         });
@@ -70,24 +70,10 @@ public class UserService {
             throw new InvalidInputException("EMAIL_NOT_CONFIRMED");
 
         }
-        userEntity.setNotCompletedFields(0);
-        MemberUpdateDto memberUpdateDto = ProfileMapper.INSTANCE.toMemberUpdateDto(userEntity);
-        String[] fields = memberUpdateDto.toString().split(",");
-        for (String field : fields) {
-            if (field.contains("null")) {
-                userEntity.setNotCompletedFields(userEntity.getNotCompletedFields() + 1);
-            }
-        }
-        System.out.println(Arrays.toString(fields));
 
         userRepository.save(userEntity);
         log.info("ActionLog.login.end email {}", authentication.getName());
-        LoginResponseDto loginResponseDto = new LoginResponseDto();
-        loginResponseDto.setAccessToken(userEntity.getAccessToken());
-        loginResponseDto.setFullName(userEntity.getFullName());
-        loginResponseDto.setCountry(userEntity.getCountry());
-        loginResponseDto.setImage(userEntity.getProfilePictureUrl());
-        loginResponseDto.setId(userEntity.getId());
+        LoginResponseDto loginResponseDto = UserMapper.INSTANCE.loginResponseDto(userEntity);
 //        return new HashMap<>() {{
 //            put("accessToken", userEntity.getAccessToken());
 //            put("fullName", userEntity.getFullName());
@@ -98,18 +84,38 @@ public class UserService {
         return ResponseEntity.status(HttpStatus.OK).body(loginResponseDto);
     }
 
-    public ResponseEntity<LoginResponseDto> googleLogin(Authentication authentication){
+    private EmptyFieldsDto calcUserEmptyFields(UserEntity user) {
+        log.info("ActionLog.calcUserEmptyFields.start with user email {} ", user.getEmail());
+        ProfileCompleteDto profileCompleteDto = ProfileMapper.INSTANCE.profileCompleteDto(user);
+        Map<String, String> userFields = new HashMap<>();
+        userFields.put("BirthDate", String.valueOf(profileCompleteDto.getBirthDate()));
+        userFields.put("ProfilePicture", String.valueOf(profileCompleteDto.getProfilePicture()));
+        userFields.put("SocialMediaLinks", String.valueOf(profileCompleteDto.getSocialMediaLinks()));
+        userFields.put("Experiences", String.valueOf(profileCompleteDto.getExperienceIds()));
+        List<String> notCompletedFields = new ArrayList<>();
+        userFields.forEach((key, value) -> {
+            if (value.equals("null") || value.equals("[]")) {
+                notCompletedFields.add(key);
+            }
+        });
+        float completionPercent =  (notCompletedFields.size() / 5f) * 100;
+        log.info("ActionLog.calcUserEmptyFields.end with user email {} ", user.getEmail());
+        return new EmptyFieldsDto(completionPercent, notCompletedFields);
+    }
+
+    public ResponseEntity<LoginResponseDto> googleLogin(Authentication authentication) {
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-        Map<String, Object> userAttributes =  oAuth2User.getAttributes();
-        String email = (String)userAttributes.get("email");
+        Map<String, Object> userAttributes = oAuth2User.getAttributes();
+        String email = (String) userAttributes.get("email");
         Optional<UserEntity> user = userRepository.findByEmail(email);
+        log.info("ActionLog.googleLogin.start with user email {} ", email);
 
 
-        if(user.isPresent() && user.get().getGoogleId()==null){
+        if (user.isPresent() && user.get().getGoogleId() == null) {
             throw new InvalidInputException("USER_LOGGED_IN_WITH_EMAIL");
         }
 
-        if(!user.isPresent()){
+        if (!user.isPresent()) {
             saveGoogleUser(authentication, userAttributes);
         }
         UserEntity userEntity = getUserByEmail(email);
@@ -118,39 +124,26 @@ public class UserService {
         userEntity.setEmail(email);
         userEntity.setGoogleId(authentication.getName());
         userEntity.setAccessToken(tokenUtil.generateToken());
-        userEntity.setNotCompletedFields(0);
-        MemberUpdateDto memberUpdateDto = ProfileMapper.INSTANCE.toMemberUpdateDto(userEntity);
-        String[] fields = memberUpdateDto.toString().split(",");
-        for (String field : fields) {
-            if (field.contains("null")) {
-                userEntity.setNotCompletedFields(userEntity.getNotCompletedFields() + 1);
-            }
-        }
-        LoginResponseDto loginResponseDto = new LoginResponseDto();
-        loginResponseDto.setAccessToken(userEntity.getAccessToken());
-        loginResponseDto.setFullName(userEntity.getFullName());
-        loginResponseDto.setCountry(userEntity.getCountry());
-        loginResponseDto.setImage(userEntity.getProfilePictureUrl());
-        loginResponseDto.setId(userEntity.getId());
 
+        LoginResponseDto loginResponseDto = UserMapper.INSTANCE.loginResponseDto(userEntity);
+
+        log.info("ActionLog.googleLogin.end with user email {} ", email);
         return ResponseEntity.status(HttpStatus.OK).body(loginResponseDto);
-
-
     }
 
-    public void saveGoogleUser(Authentication authentication, Map<?, ?> attributes){
+    public void saveGoogleUser(Authentication authentication, Map<?, ?> attributes) {
         UserEntity userEntity = new UserEntity();
         userEntity.setGoogleId(authentication.getName());
         userEntity.setFullName((String) attributes.get("name"));
         userEntity.setEmail((String) attributes.get("email"));
         userEntity.setEmailConfirmed((boolean) attributes.get("email_verified"));
-        userEntity.setResetRequests((byte)0);
+        userEntity.setResetRequests((byte) 0);
         userEntity.setRole("user");
         userRepository.save(userEntity);
     }
 
-    public void addUserProvidedGoogleLoginInfo(String country, String city, Authentication authentication){
-        UserEntity userEntity = userRepository.findByEmail(authentication.getName()).orElseThrow(()->
+    public void addUserProvidedGoogleLoginInfo(String country, String city, Authentication authentication) {
+        UserEntity userEntity = userRepository.findByEmail(authentication.getName()).orElseThrow(() ->
                 new ResourceNotFoundException("User not found with email" + authentication.getName()));
         userEntity.setCountry(country);
         userEntity.setCity(city);
@@ -242,7 +235,7 @@ public class UserService {
     public void register(RegisterDto registerDto) {
         log.info("ActionLog.register.start email {}", registerDto.getEmail());
         UserEntity userEntity = userRepository.findByEmail(registerDto.getEmail()).map((user) -> {
-            if (user.isEmailConfirmed() && user.getGoogleId()!=null) {
+            if (user.isEmailConfirmed() && user.getGoogleId() != null) {
                 throw new InvalidInputException("USER_ALREADY_REGISTERED_WITH_GOOGLE");
             } else if (user.isEmailConfirmed()) {
                 throw new InvalidInputException("EMAIL_ALREADY_EXISTS");
@@ -253,7 +246,7 @@ public class UserService {
         userEntity = UserMapper.INSTANCE.mapRegisterDtoToUser(registerDto, userEntity);
         userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
         userEntity.setRole("user");
-        userEntity.setResetRequests((byte)0);
+        userEntity.setResetRequests((byte) 0);
 
         //send otp
         processOtp(userEntity);
@@ -406,8 +399,8 @@ public class UserService {
         return userEntities.map(UserMapper.INSTANCE::mapUserEntityToMemberDto);
     }
 
-    public MemberMapDto getUsersOnMap(UserSearchDto userSearchDto){
-        List<String> countryList= userSearchDto.getCountry();
+    public MemberMapDto getUsersOnMap(UserSearchDto userSearchDto) {
+        List<String> countryList = userSearchDto.getCountry();
         List<String> cityList = userSearchDto.getCity();
         log.info("ActionLog.getUsersOnMap.start country {}, city {}", countryList, cityList);
         Specification<UserEntity> specificationFindNotNull = Specification.where(UserSpecification.isEmailConfirmed())
@@ -425,28 +418,23 @@ public class UserService {
 
 
     public MemberInfoDto getUserById(Long id) {
-        return UserMapper.INSTANCE.mapUserEntityToMemberInfoDto(userRepository.findById(id).orElseThrow(() ->
+        UserEntity userEntity = userRepository.findById(id).orElseThrow(() ->
         {
 
             log.error("ActionLog.getUserById.error user not found with id {}", id);
             return new ResourceNotFoundException("MEMBER_NOT_FOUND");
-        }));
+        });
+        EmptyFieldsDto emptyFieldsDto = calcUserEmptyFields(userEntity);
+        return UserMapper.INSTANCE.mapUserEntityToMemberInfoDto(userEntity, emptyFieldsDto.getNotCompletedFields(), emptyFieldsDto.getCompletionPercent());
     }
 
     public void updateUser(MemberUpdateDto memberUpdateDto, Long id) {
         var user = userRepository.findById(id).orElseThrow(() ->
         {
-            log.error("ActionLog.getUserById.error user not found with id {}", id);
+            log.error("ActionLog.updateUser.error user not found with id {}", id);
             return new ResourceNotFoundException("USER_NOT_FOUND");
         });
         UserEntity userEntity = UserMapper.INSTANCE.updateMember(user, memberUpdateDto);
-        userEntity.setNotCompletedFields(0);
-        String[] fields = memberUpdateDto.toString().split(",");
-        for (String field : fields) {
-            if (field.contains("null")) {
-                userEntity.setNotCompletedFields(userEntity.getNotCompletedFields() + 1);
-            }
-        }
         userRepository.save(userEntity);
 
     }

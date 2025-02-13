@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -23,6 +24,7 @@ public class CommentEntity {
     private String userName;
     @ManyToOne
     @JoinColumn(name = "mentors_id")
+    @ToString.Exclude
     private MentorEntity mentor;
     @CreationTimestamp
     private LocalDateTime createdAt;

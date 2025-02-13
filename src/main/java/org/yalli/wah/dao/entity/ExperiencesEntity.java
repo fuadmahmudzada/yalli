@@ -27,6 +27,8 @@ public class ExperiencesEntity {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
     @ManyToOne
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private UserEntity userEntity;
     @OneToMany(mappedBy = "experiencesEntity")
     private List<ExperienceCommentEntity> experienceCommentEntity;
