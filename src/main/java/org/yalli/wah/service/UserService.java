@@ -1,5 +1,6 @@
 package org.yalli.wah.service;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -98,7 +99,7 @@ public class UserService {
                 notCompletedFields.add(key);
             }
         });
-        float completionPercent =  (notCompletedFields.size() / 5f) * 100;
+        float completionPercent = (notCompletedFields.size() / 5f) * 100;
         log.info("ActionLog.calcUserEmptyFields.end with user email {} ", user.getEmail());
         return new EmptyFieldsDto(completionPercent, notCompletedFields);
     }
@@ -389,9 +390,16 @@ public class UserService {
         List<String> country = userSearchDto.getCountry();
         List<String> city = userSearchDto.getCity();
         log.info("ActionLog.searchUsers.start fullName {}, country {}, city {}", fullName, country, city);
-        Specification<UserEntity> spec = Specification.where(UserSpecification.isEmailConfirmed())
-                .and(Specification.where(UserSpecification.hasCity(city)).or(UserSpecification.hasCountry(country)))
-                .and(UserSpecification.hasFullName(fullName));
+        Specification<UserEntity> spec = Specification.where(UserSpecification.isEmailConfirmed());
+        if ((country != null && !country.isEmpty()) || (city != null && !city.isEmpty())) {
+            spec = spec.and(UserSpecification.hasCountryOrCity(country, city));
+        }
+        if (fullName != null) {
+            spec = spec.and(UserSpecification.hasFullName(fullName));
+        }
+//                .and()
+//                .and(UserSpecification.hasFullName(fullName));
+
 
         Page<UserEntity> userEntities = userRepository.findAll(spec, pageable);
         userRepository.findAll(spec, pageable);
@@ -404,10 +412,10 @@ public class UserService {
         List<String> cityList = userSearchDto.getCity();
         log.info("ActionLog.getUsersOnMap.start country {}, city {}", countryList, cityList);
         Specification<UserEntity> specificationFindNotNull = Specification.where(UserSpecification.isEmailConfirmed())
-                .and(Specification.where(UserSpecification.hasCountry(countryList)).or(UserSpecification.hasCity(cityList)))
+                .and(UserSpecification.hasCountryOrCity(countryList, cityList))
                 .and(UserSpecification.isProfilePictureNotNull());
         Specification<UserEntity> specificationFindAllEntities = Specification.where(UserSpecification.isEmailConfirmed())
-                .and(Specification.where(UserSpecification.hasCountry(countryList)).or(UserSpecification.hasCity(cityList)));
+                .and(UserSpecification.hasCountryOrCity(countryList, cityList));
         Page<UserEntity> userEntities = userRepository.findAll(specificationFindNotNull, PageRequest.of(0, 3));
         List<String> profilePictures = userEntities.stream().map(UserEntity::getProfilePictureUrl).toList();
         long count = userRepository.count(specificationFindAllEntities);
