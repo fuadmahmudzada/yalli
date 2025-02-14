@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -91,7 +92,7 @@ public class ExperiencesService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
         if(email == null || email.equals("anonymousUser")){
-            throw new AuthenticationException("User is not authenticated");
+            throw new AuthenticationCredentialsNotFoundException("User is not authenticated");
         }
         log.info("ActionLog.getExperience.start email {}", email);
         return experiencesRepository.findAllByUserEntity_Email(email).stream().map(ExperiencesMapper.INSTANCE::toDto).toList();

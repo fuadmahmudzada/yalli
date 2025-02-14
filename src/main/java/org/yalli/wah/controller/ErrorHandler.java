@@ -1,6 +1,7 @@
 package org.yalli.wah.controller;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -42,5 +43,11 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
     public ExceptionResponse handleExcessivePasswordResetAttempts(ExcessivePasswordResetAttemptsException e) {
         return new ExceptionResponse(e.getMessage());
+    }
+
+    @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ExceptionResponse handle(AuthenticationCredentialsNotFoundException ex){
+        return new ExceptionResponse(ex.getMessage());
     }
 }
