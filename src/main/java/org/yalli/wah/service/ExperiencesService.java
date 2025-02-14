@@ -7,8 +7,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.yalli.wah.dao.entity.ExperiencesEntity;
+import org.yalli.wah.dao.entity.UserEntity;
 import org.yalli.wah.dao.repository.ExperiencesRepository;
 import org.yalli.wah.dao.repository.UserRepository;
 import org.yalli.wah.mapper.ExperiencesMapper;
@@ -18,6 +20,7 @@ import org.yalli.wah.model.dto.ExperiencesSearchDto;
 import org.yalli.wah.model.exception.ResourceNotFoundException;
 import org.yalli.wah.util.TranslateUtil;
 
+import javax.naming.AuthenticationException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -84,9 +87,13 @@ public class ExperiencesService {
                 new ResourceNotFoundException("EXPERIENCE NOT FOUND FOR LINK"+ link)));
     }
 
-    public ExperienceDto getUserExperience(Long id){
-        log.info("ActionLog.getExperience.start id {}", id);
-        return ExperiencesMapper.INSTANCE.toDto(experiencesRepository.findById(id).orElseThrow(()->
-                new ResourceNotFoundException("EXPERIENCE NOT FOUND FOR USER " + id)));
+    public List<ExperienceDto> getUserExperience() throws AuthenticationException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        if(email == null || email.equals("anonymousUser")){
+            throw new AuthenticationException("User is not authenticated");
+        }
+        log.info("ActionLog.getExperience.start email {}", email);
+        return experiencesRepository.findAllByUserEntity_Email(email).stream().map(ExperiencesMapper.INSTANCE::toDto).toList();
     }
 }
