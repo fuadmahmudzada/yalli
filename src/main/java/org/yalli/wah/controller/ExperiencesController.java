@@ -13,6 +13,7 @@ import org.yalli.wah.model.dto.ExperiencesSearchDto;
 import org.yalli.wah.service.ExperiencesService;
 import org.yalli.wah.util.TranslateUtil;
 
+import javax.naming.AuthenticationException;
 import java.io.IOException;
 import java.util.List;
 
@@ -52,7 +53,7 @@ public class ExperiencesController {
 
     @GetMapping("/user")
     @ResponseStatus(HttpStatus.OK)
-    public ExperienceDto getUserExperiences(@RequestHeader(name = "user-id") Long userId){
-        return experiencesService.getUserExperience(userId);
+    public List<ExperienceDto> getUserExperiences() throws AuthenticationException {
+        return experiencesService.getUserExperience();
     }
 }

@@ -12,4 +12,7 @@ import java.util.Optional;
 public interface ExperiencesRepository extends JpaRepository<ExperiencesEntity, Long> {
     Page<ExperiencesEntity> findAll(Specification<ExperiencesEntity> specification, Pageable pageable);
     Optional<ExperiencesEntity> findByLink(String link);
+
+    List<ExperiencesEntity> findAllByUserEntity_Id(Long userEntityId);
+    List<ExperiencesEntity> findAllByUserEntity_Email(String userEntityEmail);
 }
