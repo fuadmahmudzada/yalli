@@ -10,7 +10,7 @@ public interface CommentMapper {
 
 
     @Mapping(target = "mentor.id", source = "commentAddDto.mentorId")
-    CommentEntity mapCommentAddDtoToComment(CommentAddDto commentAddDto, String userName);
+    CommentEntity mapCommentAddDtoToComment(CommentAddDto commentAddDto, String userName, String userProfilePicture);
 
 
 }

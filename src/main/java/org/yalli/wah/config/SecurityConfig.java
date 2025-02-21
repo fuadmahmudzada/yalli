@@ -2,27 +2,16 @@ package org.yalli.wah.config;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.server.Cookie;
 import org.springframework.boot.web.servlet.server.CookieSameSiteSupplier;
-import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.config.oauth2.client.CommonOAuth2Provider;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
-import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -34,8 +23,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.yalli.wah.filter.CsrfCookieFilter;
-import org.yalli.wah.filter.CsrfHeaderFilter;
-import org.yalli.wah.service.UserService;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -46,7 +33,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-//    private final CustomOAuth2UserService customOAuth2UserService;
 
 
     @Bean
@@ -79,7 +65,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/loginSuccess", "/api/user").authenticated()
                                 .requestMatchers("v1/user/user-info", "/", "/error").permitAll()
                                 .requestMatchers("v1/experiences/comments/{link}").authenticated()
-                                .requestMatchers(HttpMethod.POST,"v1/experience").authenticated()
+                                .requestMatchers(HttpMethod.POST, "v1/experience").authenticated()
 //                                .requestMatchers("/oauth2/**").permitAll()
 //                                .requestMatchers("/oauth/**").permitAll()
 //                                .requestMatchers("/v1/users/login").authenticated()
@@ -113,11 +99,18 @@ public class SecurityConfig {
 //                        .requestMatchers("/v3/api-docs/**").permitAll()
 
                 )
+                .logout(logoutConfigurer -> logoutConfigurer.logoutUrl("/logout")
+                        .logoutSuccessUrl("/")
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                        .deleteCookies("SESSIONID", "XSRF-TOKEN"))
                 .securityContext(contextConfig -> contextConfig.requireExplicitSave(false))
                 .sessionManagement(sessionConfig ->
-                        sessionConfig.sessionCreationPolicy(SessionCreationPolicy.ALWAYS).maximumSessions(21)
+                        sessionConfig.sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
+                                .sessionFixation().migrateSession()
+                                .maximumSessions(2)
                                 .maxSessionsPreventsLogin(true)
-                                )
+                )
 
                 .cors(corsConfig -> corsConfig.configurationSource(new CorsConfigurationSource() {
                     @Override
@@ -154,14 +147,13 @@ public class SecurityConfig {
 
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
                 .oauth2Login(oauth2 -> oauth2
-                        // After successful login, you can define a default target URL
-                        .defaultSuccessUrl("/api/loginSuccess", true)
+                        .defaultSuccessUrl("/", true)
                 )
                 .logout(logout -> logout
                         .logoutSuccessUrl("/")
                 )
                 .formLogin(
-                       withDefaults()
+                        withDefaults()
                 )
                 .httpBasic(withDefaults());
 
@@ -174,21 +166,6 @@ public class SecurityConfig {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
-//    @Bean
-//    public JwtDecoder jwtDecoder() {
-//        return NimbusJwtDecoder.withJwkSetUri("https://www.googleapis.com/oauth2/v3/certs").build();
-//    }
-
-
-//    @Bean
-//    public OAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2UserService() {
-//        return new CustomOAuth2UserService();
-//    }
-//
-//    @Bean
-//    public AuthenticationSuccessHandler oAuth2LoginSuccessHandler() {
-//        return new OAuth2LoginSuccessHandler();
-//    }
     @Bean
     public AuthenticationManager authenticationManager(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
         ProjectAuthenticationProvider authenticationProvider =
@@ -202,36 +179,6 @@ public class SecurityConfig {
     public CookieSameSiteSupplier applicationCookieSameSiteSupplier() {
         return CookieSameSiteSupplier.ofStrict();
     }
-//    @Bean
-//    public CustomOAuth2SuccessHandler customOAuth2SuccessHandler() {
-//        return new CustomOAuth2SuccessHandler(userService);
-//    }
-//    @Bean
-//    public CustomOAuth2UserService customOAuth2UserService() {
-//        return new CustomOAuth2SuccessHandler(userService);
-//    }
-//
-//    @Bean
-//    public OidcUserService oidcUserService() {
-//        final OidcUserService delegate = new OidcUserService();
-//        return new OidcUserService() {
-//            @Override
-//            public OidcUser loadUser(OidcUserRequest userRequest) throws OAuth2AuthenticationException {
-//                OidcUser oidcUser = delegate.loadUser(userRequest);
-//                SecurityContextHolder.getContext().setAuthentication(
-//                        new OAuth2AuthenticationToken(
-//                                oidcUser,
-//                                oidcUser.getAuthorities(),
-//                                userRequest.getClientRegistration().getRegistrationId()
-//                        )
-//                );
-//                return oidcUser;
-//            }
-//        };
-//    }
-//    @Bean  // Make this a bean in SecurityConfig
-//    public CustomOAuth2SuccessHandler customOAuth2SuccessHandler() {
-//        return new CustomOAuth2SuccessHandler(userService);
-//    }
+
 
 }

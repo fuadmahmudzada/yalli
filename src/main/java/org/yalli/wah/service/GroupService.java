@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,7 +30,7 @@ import java.util.stream.Collectors;
 public class GroupService {
 
     private final GroupRepository groupRepository;
-
+    private static final Locale AZERBAIJANI =  Locale.forLanguageTag("az");
     public Page<GroupLightDto> getAllGroupsLight(Pageable pageable, GroupSearchRequest groupSearchRequest) {
         System.out.println(groupSearchRequest.getCountry());
         Specification<GroupEntity> specification = Specification.where((root, query, criteriaBuilder) -> {
@@ -50,7 +51,7 @@ public class GroupService {
                 if (groupSearchRequest.getCountry() != null && !groupSearchRequest.getCountry().isEmpty()) {
                     groupPredicates.add(criteriaBuilder.or(criteriaBuilder.lower(root.get("country"))
                                     .in(groupSearchRequest.getCountry().stream()
-                                            .map(String::toLowerCase)
+                                            .map(city->city.toLowerCase(AZERBAIJANI))
                                             .collect(Collectors.toList()))
                     ));
                 }
@@ -58,7 +59,7 @@ public class GroupService {
                 if(groupSearchRequest.getCity() != null && !groupSearchRequest.getCity().isEmpty()){
                     groupPredicates.add(criteriaBuilder.or(
                             criteriaBuilder.lower(root.get("city"))
-                                    .in(groupSearchRequest.getCity().stream().map(String::toLowerCase).collect(Collectors.toList()))
+                                    .in(groupSearchRequest.getCity().stream().map(city->city.toLowerCase(AZERBAIJANI)).collect(Collectors.toList()))
                     ));
                 }
                 if (!groupPredicates.isEmpty()) {

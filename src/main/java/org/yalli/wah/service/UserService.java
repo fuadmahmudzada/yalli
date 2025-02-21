@@ -3,6 +3,8 @@ package org.yalli.wah.service;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -12,7 +14,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.yalli.wah.dao.entity.UserCoordinateEntity;
 import org.yalli.wah.dao.entity.UserEntity;
+import org.yalli.wah.dao.repository.UserCoordinateRepository;
 import org.yalli.wah.dao.repository.UserRepository;
 import org.yalli.wah.model.exception.ExcessivePasswordResetAttemptsException;
 import org.yalli.wah.mapper.ProfileMapper;
@@ -23,9 +28,12 @@ import org.yalli.wah.model.exception.InvalidOtpException;
 import org.yalli.wah.model.exception.PermissionException;
 import org.yalli.wah.model.exception.ResourceNotFoundException;
 
+import org.yalli.wah.util.CoordinateUtil;
 import org.yalli.wah.util.TokenUtil;
 import org.yalli.wah.dao.specification.UserSpecification;
 
+import java.io.IOException;
+import java.sql.SQLOutput;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 
@@ -47,9 +55,11 @@ public class UserService {
 
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
+    private final UserCoordinateRepository userCoordinateRepository;
 
-    public ResponseEntity<LoginResponseDto> login(Authentication authentication) {
+    private final GeometryFactory factory = new GeometryFactory(new PrecisionModel(), 4326);
 
+    public ResponseEntity<LoginResponseDto> login(Authentication authentication) throws IOException, InterruptedException {
         log.info("ActionLog.login.start email {}", authentication.getName());
 
 
@@ -63,9 +73,24 @@ public class UserService {
             log.error("ActionLog.login.error User not found for email {}", authentication.getName());
             return new ResourceNotFoundException("User not found");
         });
-
         userEntity.setAccessToken(tokenUtil.generateToken());
         userEntity.setTokenExpire(LocalDateTime.now().plusMinutes(30));
+        CoordinateDto coordinateDto = CoordinateUtil.findCoordinate(userEntity.getCity());
+        UserCoordinateEntity userCoordinate = userEntity.getUserCoordinate();
+        Coordinate[] coordinates = new Coordinate[]{new Coordinate(coordinateDto.getLng(), coordinateDto.getLat())};
+        CoordinateSequence coordinateSequence = new CoordinateArraySequence(coordinates);
+        Point point = factory.createPoint(coordinateSequence);
+        if (userEntity.getUserCoordinate() == null){
+            userCoordinate = new UserCoordinateEntity(point, List.of(userEntity));
+            userEntity.setUserCoordinate(userCoordinate);
+        } else {
+            userCoordinate.setLocation(point);
+            userEntity.setUserCoordinate(userCoordinate);
+        }
+
+        userCoordinateRepository.save(userCoordinate);
+        userEntity.setUserCoordinate(userCoordinate);
+
         if (!userEntity.isEmailConfirmed()) {
             log.info("ActionLog.login.error email {} not confirmed", authentication.getName());
             throw new InvalidInputException("EMAIL_NOT_CONFIRMED");
@@ -99,7 +124,7 @@ public class UserService {
                 notCompletedFields.add(key);
             }
         });
-        float completionPercent = (notCompletedFields.size() / 5f) * 100;
+        float completionPercent = (5f - notCompletedFields.size() / 5f) * 100;
         log.info("ActionLog.calcUserEmptyFields.end with user email {} ", user.getEmail());
         return new EmptyFieldsDto(completionPercent, notCompletedFields);
     }
@@ -143,11 +168,16 @@ public class UserService {
         userRepository.save(userEntity);
     }
 
-    public void addUserProvidedGoogleLoginInfo(String country, String city, Authentication authentication) {
+    public void addUserProvidedGoogleLoginInfo(String country, String city, Authentication authentication) throws IOException, InterruptedException {
         UserEntity userEntity = userRepository.findByEmail(authentication.getName()).orElseThrow(() ->
                 new ResourceNotFoundException("User not found with email" + authentication.getName()));
         userEntity.setCountry(country);
         userEntity.setCity(city);
+        CoordinateDto coordinateDto = CoordinateUtil.findCoordinate(city);
+        Coordinate[] coordinates = new Coordinate[]{new Coordinate(coordinateDto.getLng(), coordinateDto.getLat())};
+        CoordinateSequence coordinateSequence = new CoordinateArraySequence(coordinates);
+        Point point = factory.createPoint(coordinateSequence);
+        userEntity.setUserCoordinate(new UserCoordinateEntity(point, List.of(userEntity)));
         userRepository.save(userEntity);
     }
 
@@ -233,7 +263,7 @@ public class UserService {
         log.info("ActionLog.sendOtp.end email {}", email);
     }
 
-    public void register(RegisterDto registerDto) {
+    public void register(RegisterDto registerDto) throws IOException, InterruptedException {
         log.info("ActionLog.register.start email {}", registerDto.getEmail());
         UserEntity userEntity = userRepository.findByEmail(registerDto.getEmail()).map((user) -> {
             if (user.isEmailConfirmed() && user.getGoogleId() != null) {
@@ -248,6 +278,11 @@ public class UserService {
         userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
         userEntity.setRole("user");
         userEntity.setResetRequests((byte) 0);
+        CoordinateDto coordinateDto = CoordinateUtil.findCoordinate(registerDto.getCity());
+        Coordinate[] coordinates = new Coordinate[]{new Coordinate(coordinateDto.getLng(), coordinateDto.getLat())};
+        CoordinateSequence coordinateSequence = new CoordinateArraySequence(coordinates);
+        Point point = factory.createPoint(coordinateSequence);
+        userEntity.setUserCoordinate(new UserCoordinateEntity(point, List.of(userEntity)));
 
         //send otp
         processOtp(userEntity);
@@ -407,23 +442,43 @@ public class UserService {
         return userEntities.map(UserMapper.INSTANCE::mapUserEntityToMemberDto);
     }
 
-    public MemberMapDto getUsersOnMap(UserSearchDto userSearchDto) {
-        List<String> countryList = userSearchDto.getCountry();
-        List<String> cityList = userSearchDto.getCity();
-        log.info("ActionLog.getUsersOnMap.start country {}, city {}", countryList, cityList);
+    public MemberMapDto getUsersOnMap(CoordinateDto coordinateDto) throws IOException, InterruptedException {
+         Map<String, String> locationMap =  CoordinateUtil.findToponymByCoordinate(coordinateDto);
+         String country = locationMap.keySet().stream().findFirst().get();
+         String city = locationMap.values().stream().findFirst().get();
+
+        log.info("ActionLog.getUsersOnMap.start country {}, city {}", country, city);
         Specification<UserEntity> specificationFindNotNull = Specification.where(UserSpecification.isEmailConfirmed())
-                .and(UserSpecification.hasCountryOrCity(countryList, cityList))
+                .and(UserSpecification.hasCountryOrCity(List.of(country), List.of(city)))
                 .and(UserSpecification.isProfilePictureNotNull());
         Specification<UserEntity> specificationFindAllEntities = Specification.where(UserSpecification.isEmailConfirmed())
-                .and(UserSpecification.hasCountryOrCity(countryList, cityList));
+                .and(UserSpecification.hasCountryOrCity(List.of(country), List.of(city)));
         Page<UserEntity> userEntities = userRepository.findAll(specificationFindNotNull, PageRequest.of(0, 3));
         List<String> profilePictures = userEntities.stream().map(UserEntity::getProfilePictureUrl).toList();
         long count = userRepository.count(specificationFindAllEntities);
-        log.info("ActionLog.getUsersOnMap.end country {}, city {}", countryList, cityList);
+        log.info("ActionLog.getUsersOnMap.end country {}, city {}", country, city);
         return new MemberMapDto(profilePictures, (int) count);
 //burda casting olmalimi yuxarida map ve onun yuxarisindaki pagein ferqli tipine cevirme
     }
 
+    public List<CoordinateDto> getAllCoordinates(Polygon polygon){
+//        List<Coordinate> coordinates = new ArrayList<>();
+//        System.out.println(geometryDto.getGeoPolygon().getCoordinates());
+//        borders.forEach(x->coordinates.add(new Coordinate(Double.parseDouble(x.split(" ")[0]),Double.parseDouble(x.split(" ")[1]))));
+//        Polygon polygon =  factory.createPolygon(borders.toArray(Coordinate[]::new));
+        List<UserCoordinateEntity> list =  userCoordinateRepository.findAllWithinGivenPolygon(polygon);
+        List<CoordinateDto> coordinateDtoList = new ArrayList<>();
+        Float xValue = 0f;
+        Float yValue = 0f;
+
+        if(list != null && !list.isEmpty()  ) {
+            System.out.println("location X "+ list.getFirst().getLocation().getX());
+            System.out.println("location Y "+ list.getFirst().getLocation().getY());
+            list.stream().forEach(x -> coordinateDtoList.add(new CoordinateDto
+                    ((float) x.getLocation().getX(), (float) x.getLocation().getY())));
+        }
+        return coordinateDtoList;
+    }
 
     public MemberInfoDto getUserById(Long id) {
         UserEntity userEntity = userRepository.findById(id).orElseThrow(() ->

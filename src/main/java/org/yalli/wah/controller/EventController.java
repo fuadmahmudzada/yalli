@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import org.yalli.wah.model.dto.*;
 import org.yalli.wah.model.dto.impl.SearchRequest;
+import org.yalli.wah.model.exception.InvalidInputException;
 import org.yalli.wah.service.EventService;
 import org.yalli.wah.util.TranslateUtil;
 
@@ -21,10 +22,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.sql.SQLOutput;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.stream.StreamSupport;
+
 
 @RestController
 @RequestMapping("/v1/events")
@@ -56,6 +54,9 @@ public class EventController {
     static <T extends SearchRequest> void removeCountryOfCity(T filter) throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
 
+        if(filter.getCountry() == null || filter.getCountry().isEmpty()){
+            throw new InvalidInputException("If there is a city country can't be empty");
+        }
         for(String city : filter.getCity()) {
             String searchCity = TranslateUtil.getCityTranslation(city);
             HttpRequest request = HttpRequest.newBuilder()
@@ -85,10 +86,13 @@ public class EventController {
             System.out.println(rootNode.findValuesAsText("countryName"));
             System.out.println("path "+ rootNode.findPath("countryName").textValue());
             System.out.println("resutl "+ rootNode.path("totalResultsCount").intValue());
+            System.out.println("resut with path "+ rootNode.path("geonames").path("population").intValue());
             System.out.println("nodecountry "+ rootNode.get("geonames").get("countryName"));
             System.out.println("nodecountry ");
             System.out.println("jsonpointer "+ rootNode.at("/geonames/countryName").textValue());
             String country = response.body().replaceAll("^.*?countryName\":\"", "").replaceAll("\",\".*", "");
+            for(JsonNode node : rootNode.path("geonames"))
+                country = node.path("countryName").asText();
 
             filter.getCountry().remove(TranslateUtil.getAzerbaijani(country));
         }

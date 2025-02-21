@@ -30,6 +30,8 @@ public class UserEntity {
     private LocalDate birthDate;
     private String country;
     private String city;
+    @ManyToOne
+    private UserCoordinateEntity userCoordinate;
     private String accessToken;
     private LocalDateTime tokenExpire;
     private String role;
@@ -70,7 +72,7 @@ public class UserEntity {
     private List<NotificationEntity> notifications;
     @OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GroupEntity> groups;
-    @OneToMany(mappedBy = "userEntity")
+    @OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ExperiencesEntity> experiences;
     @OneToMany(mappedBy = "userEntity")
     private List<ExperienceCommentEntity> comments;

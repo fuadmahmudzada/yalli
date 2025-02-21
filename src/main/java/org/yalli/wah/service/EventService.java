@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 
@@ -35,7 +36,7 @@ import java.util.stream.Collectors;
 public class EventService {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
-
+    private static final Locale AZERBAIJANI =  Locale.forLanguageTag("az");
     public Page<EventDto> getAllEvents(EventSearchRequest eventSearchRequest, Pageable pageable, String token) {
         UserEntity userEntity;
         if (token != null) {
@@ -86,14 +87,14 @@ public class EventService {
             if (eventSearchRequest.getCountry() != null && !eventSearchRequest.getCountry().isEmpty()) {
                 otherPredicates.add(criteriaBuilder.or(criteriaBuilder.lower(root.get("country"))
                         .in(eventSearchRequest.getCountry().stream()
-                                .map(String::toLowerCase)
+                                .map(country->country.toLowerCase(AZERBAIJANI))
                                 .collect(Collectors.toList())
                         )));
             }
 
             if (eventSearchRequest.getCity() != null && !eventSearchRequest.getCity().isEmpty()) {
                 List<String> lowerCaseCities = eventSearchRequest.getCity().stream()
-                        .map(String::toLowerCase)
+                        .map(city->city.toLowerCase(AZERBAIJANI))
                         .toList();
                 otherPredicates.add(criteriaBuilder.or(
                         criteriaBuilder.lower(root.get("city")).in(lowerCaseCities))

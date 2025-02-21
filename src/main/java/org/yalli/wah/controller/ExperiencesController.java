@@ -47,7 +47,7 @@ public class ExperiencesController {
 
     @GetMapping("/{link}")
     @ResponseStatus(HttpStatus.OK)
-    public ExperienceDto getExperience(@PathVariable String link){
+    public ExperienceDto getExperience(@PathVariable String link) {
         return experiencesService.getExperience(link);
     }
 
@@ -55,5 +55,10 @@ public class ExperiencesController {
     @ResponseStatus(HttpStatus.OK)
     public List<ExperienceDto> getUserExperiences() throws AuthenticationException {
         return experiencesService.getUserExperience();
+    }
+
+    @DeleteMapping("/{link}")
+    public void deleteExperience(@PathVariable String link) {
+        experiencesService.deleteExperience(link);
     }
 }

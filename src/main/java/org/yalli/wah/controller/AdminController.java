@@ -28,8 +28,6 @@ public class AdminController {
     private final AdminService adminService;
     private final PermissionService permissionService;
     private final EventService eventService;
-    private final GroupService groupService;
-    private final UserService userService;
     private final EventRepository eventRepository;
 
     @GetMapping
