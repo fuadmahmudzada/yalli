@@ -15,4 +15,8 @@ public interface ExperiencesRepository extends JpaRepository<ExperiencesEntity, 
 
     List<ExperiencesEntity> findAllByUserEntity_Id(Long userEntityId);
     List<ExperiencesEntity> findAllByUserEntity_Email(String userEntityEmail);
+
+    void deleteByLink(String link);
+
+    boolean existsByLink(String link);
 }

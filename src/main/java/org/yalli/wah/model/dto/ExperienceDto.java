@@ -17,4 +17,5 @@ public class ExperienceDto {
     private LocalDateTime createdAt;
     private String link;
     private String imageLink;
+    private String userProfilePicture;
 }

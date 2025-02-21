@@ -47,4 +47,8 @@ dependencies {
     implementation('com.mashape.unirest:unirest-java:1.4.9') {
         exclude group: 'commons-logging', module: 'commons-logging'
     }
+    implementation("org.locationtech.jts:jts-core:1.19.0")
+    implementation("org.n52.jackson:jackson-datatype-jts:1.2.10")
+    implementation("org.hibernate.orm:hibernate-spatial:6.4.4.Final")
+
 }

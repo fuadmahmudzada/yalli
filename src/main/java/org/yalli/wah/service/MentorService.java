@@ -24,6 +24,7 @@ import org.yalli.wah.model.exception.ResourceNotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import static org.yalli.wah.model.enums.EmailTemplate.MENTORSHIP_ACCEPT;
@@ -38,7 +39,7 @@ public class MentorService {
     private final CommentRepository commentRepository;
     private final EmailService emailService;
     private final UserService userService;
-
+    private static final Locale AZERBAIJANI =  Locale.forLanguageTag("az");
     public Page<MentorSearchDto> searchMentors(MentorSearchRequest mentorSearchRequest, Pageable pageable) {
         Specification<MentorEntity> specification = Specification.where((root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -53,7 +54,7 @@ public class MentorService {
             if (mentorSearchRequest.getCountry() != null && !mentorSearchRequest.getCountry().isEmpty()) {
                 mentorLocPredicates.add(
                         criteriaBuilder.lower(root.get("user").get("country")).in(mentorSearchRequest.getCountry()
-                                .stream().map(String::toLowerCase).collect(Collectors.toList()))
+                                .stream().map(country-> country.toLowerCase(AZERBAIJANI)).collect(Collectors.toList()))
                 );
             }
 
@@ -62,7 +63,7 @@ public class MentorService {
             if (mentorSearchRequest.getCity() != null && !mentorSearchRequest.getCity().isEmpty()) {
                 mentorLocPredicates.add(
                         criteriaBuilder.lower(root.get("user").get("city")).in(mentorSearchRequest.getCity()
-                                .stream().map(String::toLowerCase).collect(Collectors.toList()))
+                                .stream().map(city->city.toLowerCase(AZERBAIJANI)).collect(Collectors.toList()))
                 );
             }
             if (!mentorLocPredicates.isEmpty()) {

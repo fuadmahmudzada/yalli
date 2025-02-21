@@ -22,6 +22,7 @@ public class CommentEntity {
     private String content;
     private Integer rate;
     private String userName;
+    private String userProfilePicture;
     @ManyToOne
     @JoinColumn(name = "mentors_id")
     @ToString.Exclude

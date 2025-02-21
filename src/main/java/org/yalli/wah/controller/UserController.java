@@ -3,6 +3,8 @@ package org.yalli.wah.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Polygon;
 import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import org.yalli.wah.model.dto.*;
 import org.yalli.wah.model.enums.Country;
+import org.yalli.wah.model.exception.InvalidInputException;
 import org.yalli.wah.service.UserService;
 import org.yalli.wah.util.TranslateUtil;
 
@@ -47,7 +50,7 @@ public class UserController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> login() throws AuthenticationException {
+    public ResponseEntity<LoginResponseDto> login() throws AuthenticationException, IOException, InterruptedException {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated() ||
@@ -69,7 +72,7 @@ public class UserController {
     }
 
     @PostMapping("/login/google/info")
-    public void addInfoInGoogleLogin(@RequestParam String country, @RequestParam String city) throws AuthenticationException {
+    public void addInfoInGoogleLogin(@RequestParam String country, @RequestParam String city) throws AuthenticationException, IOException, InterruptedException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated() || (authentication.getPrincipal()).equals("anonymousUser"))
             throw new AuthenticationException("User is not authenticated");
@@ -90,7 +93,7 @@ public class UserController {
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "signup and sending mail for otp verification")
-    public void register(@RequestBody RegisterDto registerDto) {
+    public void register(@RequestBody RegisterDto registerDto) throws IOException, InterruptedException {
         userService.register(registerDto);
     }
 
@@ -174,7 +177,22 @@ public class UserController {
 
     @GetMapping("/map/users")
     @ResponseStatus(HttpStatus.OK)
-    public MemberMapDto getUsersOnMap(@ModelAttribute UserSearchDto userSearchDto) {
-        return userService.getUsersOnMap(userSearchDto);
+    public MemberMapDto getUsersOnMap(@ModelAttribute CoordinateDto coordinateDto) throws IOException, InterruptedException {
+        return userService.getUsersOnMap(coordinateDto);
+    }
+    @GetMapping("/map/coordinates")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> getAllCities(@RequestBody Polygon polygon){
+        try {
+            if (!polygon.isValid()) {
+                throw new InvalidInputException("Data isn't is topologically valid, according to the OGC SFS specification.");
+            }
+            if (!polygon.isRectangle()) {
+                throw new InvalidInputException("Shape should be in rectangle");
+            }
+            return ResponseEntity.ok(userService.getAllCoordinates(polygon));
+        }catch (Exception e){
+            return  ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

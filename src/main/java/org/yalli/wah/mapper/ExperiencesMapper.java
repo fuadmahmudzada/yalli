@@ -27,6 +27,7 @@ public abstract class ExperiencesMapper {
     @Mapping(target = "fullName", source = "userEntity.fullName")
     @Mapping(target = "country", source = "userEntity.country")
     @Mapping(target = "city", source = "userEntity.city")
+    @Mapping(target = "userProfilePicture", source = "userEntity.profilePictureUrl")
     public abstract ExperienceDto toDto(ExperiencesEntity experiencesEntity);
 
 
