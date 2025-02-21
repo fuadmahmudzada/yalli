@@ -1,6 +1,5 @@
 package org.yalli.wah.service;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.locationtech.jts.geom.*;
@@ -14,7 +13,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.yalli.wah.dao.entity.UserCoordinateEntity;
 import org.yalli.wah.dao.entity.UserEntity;
 import org.yalli.wah.dao.repository.UserCoordinateRepository;
@@ -33,7 +31,6 @@ import org.yalli.wah.util.TokenUtil;
 import org.yalli.wah.dao.specification.UserSpecification;
 
 import java.io.IOException;
-import java.sql.SQLOutput;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 
@@ -41,7 +38,6 @@ import java.util.HashMap;
 import java.util.Random;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static org.yalli.wah.model.enums.EmailTemplate.*;
 

@@ -5,7 +5,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.yalli.wah.model.dto.ExperienceCommentAddDto;
 import org.yalli.wah.model.dto.ExperienceCommentDto;
-import org.yalli.wah.model.dto.ExperienceDto;
 import org.yalli.wah.service.ExperienceCommentService;
 
 import java.util.List;

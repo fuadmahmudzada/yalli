@@ -9,15 +9,9 @@ import org.yalli.wah.model.dto.GroupLightDto;
 import org.yalli.wah.model.dto.GroupRequest;
 import org.yalli.wah.model.dto.GroupSearchRequest;
 import org.yalli.wah.model.dto.GroupUpdateDto;
-import org.yalli.wah.model.dto.impl.SearchRequest;
 import org.yalli.wah.service.GroupService;
-import org.yalli.wah.util.TranslateUtil;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.List;
 
 import static org.yalli.wah.controller.EventController.removeCountryOfCity;

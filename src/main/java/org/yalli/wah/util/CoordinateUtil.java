@@ -2,8 +2,6 @@ package org.yalli.wah.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.stereotype.Component;
 import org.yalli.wah.model.dto.CoordinateDto;
 
 import java.io.IOException;
