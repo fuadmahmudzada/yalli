@@ -44,7 +44,7 @@ public class CsrfCookieFilter extends OncePerRequestFilter {
         System.out.println( "pattern matching" + antPathMatcher.match("/v1/users/login", "/login"));
         System.out.println(request.getRequestURI());
         boolean isSecuredApi = securedEndpoints.stream().anyMatch(api -> antPathMatcher.match(api, request.getRequestURI())) && !request.getMethod().equals("GET");
-        if (isSecuredApi && (authentication!=null || authentication.equals("anonymousUser"))) {
+        if (isSecuredApi && authentication!=null && !authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
             CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
             if (csrfToken != null) {
                 csrfToken.getToken();
