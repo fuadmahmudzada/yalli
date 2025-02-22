@@ -140,7 +140,7 @@ public class SecurityConfig {
                         .ignoringRequestMatchers("/swagger-config")
                         .ignoringRequestMatchers("/v3/api-docs/**")
                         .ignoringRequestMatchers("/api/loginSuccess")
-                        .ignoringRequestMatchers("/api/user")
+                        .ignoringRequestMatchers("/api/user").ignoringRequestMatchers("/v1/users/map/coordinates")
                         .csrfTokenRepository(csrfTokenRepository))
 
 
