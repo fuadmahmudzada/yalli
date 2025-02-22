@@ -468,6 +468,7 @@ public class UserService {
 //        Polygon polygon =  factory.createPolygon(borders.toArray(Coordinate[]::new));
         List<UserCoordinateEntity> list =  userCoordinateRepository.findAllWithinGivenPolygon(polygon);
         List<CoordinateDto> coordinateDtoList = new ArrayList<>();
+        list.stream().forEach(System.out::println);
         Float xValue = 0f;
         Float yValue = 0f;
 
