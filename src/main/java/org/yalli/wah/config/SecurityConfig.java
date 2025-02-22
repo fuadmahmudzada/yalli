@@ -111,7 +111,6 @@ public class SecurityConfig {
                                 .maximumSessions(2)
                                 .maxSessionsPreventsLogin(true)
                 )
-
                 .cors(corsConfig -> corsConfig.configurationSource(new CorsConfigurationSource() {
                     @Override
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {

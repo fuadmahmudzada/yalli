@@ -3,6 +3,8 @@ package org.yalli.wah.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
 import org.springframework.beans.factory.annotation.Value;
@@ -180,7 +182,7 @@ public class UserController {
     public MemberMapDto getUsersOnMap(@ModelAttribute CoordinateDto coordinateDto) throws IOException, InterruptedException {
         return userService.getUsersOnMap(coordinateDto);
     }
-    @GetMapping("/map/coordinates")
+    @PostMapping("/map/coordinates")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> getAllCities(@RequestBody Polygon polygon){
         try {
@@ -190,6 +192,8 @@ public class UserController {
             if (!polygon.isRectangle()) {
                 throw new InvalidInputException("Shape should be in rectangle");
             }
+            System.out.println(polygon.getCoordinates());
+            System.out.println(polygon.getCoordinates().getClass());
             return ResponseEntity.ok(userService.getAllCoordinates(polygon));
         }catch (Exception e){
             return  ResponseEntity.badRequest().body(e.getMessage());
