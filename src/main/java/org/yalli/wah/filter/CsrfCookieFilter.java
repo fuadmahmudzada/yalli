@@ -11,6 +11,7 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.sql.SQLOutput;
 import java.util.List;
 import java.util.Map;
 
@@ -40,6 +41,8 @@ public class CsrfCookieFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println( "pattern matching" + antPathMatcher.match("/v1/users/login", "/login"));
+        System.out.println(request.getRequestURI());
         boolean isSecuredApi = securedEndpoints.stream().anyMatch(api -> antPathMatcher.match(api, request.getRequestURI())) && !request.getMethod().equals("GET");
         if (isSecuredApi && (authentication!=null || authentication.equals("anonymousUser"))) {
             CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
