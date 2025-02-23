@@ -35,7 +35,7 @@ public class FileController {
     public ResponseEntity<InputStreamResource> download(@PathVariable String fileName) throws Exception {
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + fileName + "\"")
-                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .contentType(MediaType.IMAGE_PNG)
                 .body(new InputStreamResource(minioService.downloadFile(fileName)));
     }
 }
