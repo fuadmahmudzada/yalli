@@ -160,7 +160,7 @@ public class SecurityConfig {
                                 .successHandler((request, response, authentication) -> response.setStatus(HttpStatus.NO_CONTENT.value()))
                 )
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer -> httpSecurityExceptionHandlingConfigurer.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
-                .httpBasic(httpSecurityHttpBasicConfigurer -> httpSecurityHttpBasicConfigurer.disable());
+                .httpBasic(withDefaults());
 
         return http.build();
     }
