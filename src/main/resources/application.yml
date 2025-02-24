@@ -54,3 +54,8 @@ minio:
   access-key: p6YUJOQerHh0bPoKHC9OwYg502JL5YiGzZYcq+DRjFs=
   secret-key: ZuwU65NA0FNVjQb4X31XSz1Nk1hic5mRWnkM7KwSNYA=
   name: yalli
+logging:
+  level:
+    org:
+      springframework:
+        security: TRACE
