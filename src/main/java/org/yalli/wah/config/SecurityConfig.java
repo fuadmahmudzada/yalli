@@ -112,8 +112,6 @@ public class SecurityConfig {
                 .sessionManagement(sessionConfig ->
                         sessionConfig.sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
                                 .sessionFixation().migrateSession()
-                                .maximumSessions(2)
-                                .maxSessionsPreventsLogin(true)
                 )
                 .cors(corsConfig -> corsConfig.configurationSource(new CorsConfigurationSource() {
                     @Override
