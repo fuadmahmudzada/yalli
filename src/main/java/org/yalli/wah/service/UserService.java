@@ -80,7 +80,7 @@ public class UserService {
         Coordinate[] coordinates = new Coordinate[]{new Coordinate(coordinateDto.getLng(), coordinateDto.getLat())};
         CoordinateSequence coordinateSequence = new CoordinateArraySequence(coordinates);
         Point point = factory.createPoint(coordinateSequence);
-        if (userEntity.getUserCoordinate() == null){
+        if (userEntity.getUserCoordinate() == null) {
             userCoordinate = new UserCoordinateEntity(point, List.of(userEntity));
             userEntity.setUserCoordinate(userCoordinate);
         } else {
@@ -96,7 +96,6 @@ public class UserService {
             throw new InvalidInputException("EMAIL_NOT_CONFIRMED");
 
         }
-
         userRepository.save(userEntity);
         log.info("ActionLog.login.end email {}", authentication.getName());
         LoginResponseDto loginResponseDto = UserMapper.INSTANCE.loginResponseDto(userEntity);
@@ -107,6 +106,7 @@ public class UserService {
 //            put("image", userEntity.getProfilePictureUrl());
 //            put("id", String.valueOf(userEntity.getId()));
 //        }};
+        loginResponseDto.setIsGoogleLogin(false);
         return ResponseEntity.status(HttpStatus.OK).body(loginResponseDto);
     }
 
@@ -152,7 +152,7 @@ public class UserService {
         userEntity.setAccessToken(tokenUtil.generateToken());
 
         LoginResponseDto loginResponseDto = UserMapper.INSTANCE.loginResponseDto(userEntity);
-
+        loginResponseDto.setIsGoogleLogin(true);
         log.info("ActionLog.googleLogin.end with user email {} ", email);
         return ResponseEntity.status(HttpStatus.OK).body(loginResponseDto);
     }
@@ -443,9 +443,9 @@ public class UserService {
     }
 
     public MemberMapDto getUsersOnMap(CoordinateDto coordinateDto) throws IOException, InterruptedException {
-         Map<String, String> locationMap =  CoordinateUtil.findToponymByCoordinate(coordinateDto);
-         String country = locationMap.keySet().stream().findFirst().get();
-         String city = locationMap.values().stream().findFirst().get();
+        Map<String, String> locationMap = CoordinateUtil.findToponymByCoordinate(coordinateDto);
+        String country = locationMap.keySet().stream().findFirst().get();
+        String city = locationMap.values().stream().findFirst().get();
 
         log.info("ActionLog.getUsersOnMap.start country {}, city {}", country, city);
         Specification<UserEntity> specificationFindNotNull = Specification.where(UserSpecification.isEmailConfirmed())
@@ -461,20 +461,20 @@ public class UserService {
 //burda casting olmalimi yuxarida map ve onun yuxarisindaki pagein ferqli tipine cevirme
     }
 
-    public List<CoordinateDto> getAllCoordinates(Polygon polygon){
+    public List<CoordinateDto> getAllCoordinates(Polygon polygon) {
 //        List<Coordinate> coordinates = new ArrayList<>();
 //        System.out.println(geometryDto.getGeoPolygon().getCoordinates());
 //        borders.forEach(x->coordinates.add(new Coordinate(Double.parseDouble(x.split(" ")[0]),Double.parseDouble(x.split(" ")[1]))));
 //        Polygon polygon =  factory.createPolygon(borders.toArray(Coordinate[]::new));
-        List<UserCoordinateEntity> list =  userCoordinateRepository.findAllWithinGivenPolygon(polygon);
+        List<UserCoordinateEntity> list = userCoordinateRepository.findAllWithinGivenPolygon(polygon);
         List<CoordinateDto> coordinateDtoList = new ArrayList<>();
         list.stream().forEach(System.out::println);
         Float xValue = 0f;
         Float yValue = 0f;
 
-        if(list != null && !list.isEmpty()  ) {
-            System.out.println("location X "+ list.getFirst().getLocation().getX());
-            System.out.println("location Y "+ list.getFirst().getLocation().getY());
+        if (list != null && !list.isEmpty()) {
+            System.out.println("location X " + list.getFirst().getLocation().getX());
+            System.out.println("location Y " + list.getFirst().getLocation().getY());
             list.stream().forEach(x -> coordinateDtoList.add(new CoordinateDto
                     ((float) x.getLocation().getX(), (float) x.getLocation().getY())));
         }

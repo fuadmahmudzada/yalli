@@ -104,10 +104,10 @@ public class SecurityConfig {
 
                 )
                 .logout(logoutConfigurer -> logoutConfigurer.logoutUrl("/logout")
-                        .logoutSuccessUrl("/")
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
-                        .deleteCookies("SESSIONID", "XSRF-TOKEN"))
+                        .deleteCookies("SESSIONID", "XSRF-TOKEN")
+                )
                 .securityContext(contextConfig -> contextConfig.requireExplicitSave(false))
                 .sessionManagement(sessionConfig ->
                         sessionConfig.sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
@@ -150,9 +150,7 @@ public class SecurityConfig {
                 .oauth2Login(oauth2 -> oauth2
                         .defaultSuccessUrl("/", true)
                 )
-                .logout(logout -> logout
-                        .logoutSuccessUrl("/")
-                )
+
                 .formLogin(
                         httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer.loginProcessingUrl("v1/users/login")
                                 .successHandler((request, response, authentication) -> response.setStatus(HttpStatus.NO_CONTENT.value()))

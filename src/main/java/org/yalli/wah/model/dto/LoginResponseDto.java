@@ -14,5 +14,6 @@ public class LoginResponseDto {
     private String fullName;
     private String country;
     private String image;
+    private Boolean isGoogleLogin;
     private Long id;
 }
