@@ -11,8 +11,8 @@ spring:
       client:
         registration:
           google:
-            client-id: ${GOOGLE_CLIENT_ID}
-            client-secret: ${GOOGLE_SECRET}
+            client-id: 795022314333-7pqo4hij4bngjktk6ph58vfvc9t2932b.apps.googleusercontent.com
+            client-secret: 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
             scope:
               - email
               - profile
@@ -54,3 +54,8 @@ minio:
   access-key: p6YUJOQerHh0bPoKHC9OwYg502JL5YiGzZYcq+DRjFs=
   secret-key: ZuwU65NA0FNVjQb4X31XSz1Nk1hic5mRWnkM7KwSNYA=
   name: yalli
+logging:
+  level:
+    org:
+      springframework:
+        security: TRACE
