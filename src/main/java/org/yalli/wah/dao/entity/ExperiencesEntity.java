@@ -30,7 +30,7 @@ public class ExperiencesEntity {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private UserEntity userEntity;
-    @OneToMany(mappedBy = "experiencesEntity")
+    @OneToMany(mappedBy = "experiencesEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ExperienceCommentEntity> experienceCommentEntity;
 
 }
