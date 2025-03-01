@@ -74,6 +74,6 @@ public class UserEntity {
     private List<GroupEntity> groups;
     @OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ExperiencesEntity> experiences;
-    @OneToMany(mappedBy = "userEntity")
+    @OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ExperienceCommentEntity> comments;
 }
