@@ -459,7 +459,7 @@ public class UserService {
         List<String> profilePictures = userEntities.stream().map(UserEntity::getProfilePictureUrl).toList();
         long count = userRepository.count(specificationFindAllEntities);
         log.info("ActionLog.getUsersOnMap.end country {}, city {}", country, city);
-        return new MemberMapDto(profilePictures, (int) count);
+        return new MemberMapDto(profilePictures, (int) count, country, city);
 //burda casting olmalimi yuxarida map ve onun yuxarisindaki pagein ferqli tipine cevirme
     }
 

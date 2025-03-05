@@ -14,4 +14,6 @@ import java.util.List;
 public class MemberMapDto {
     private List<String> profilePicture;
     private Integer memberCount;
+    private String country;
+    private String city;
 }
