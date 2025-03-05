@@ -124,7 +124,7 @@ public class UserService {
                 notCompletedFields.add(key);
             }
         });
-        float completionPercent = (5f - notCompletedFields.size() / 5f) * 100;
+        float completionPercent = ((5f - notCompletedFields.size() )/ 5f) * 100;
         log.info("ActionLog.calcUserEmptyFields.end with user email {} ", user.getEmail());
         return new EmptyFieldsDto(completionPercent, notCompletedFields);
     }
@@ -282,7 +282,9 @@ public class UserService {
         Coordinate[] coordinates = new Coordinate[]{new Coordinate(coordinateDto.getLng(), coordinateDto.getLat())};
         CoordinateSequence coordinateSequence = new CoordinateArraySequence(coordinates);
         Point point = factory.createPoint(coordinateSequence);
-        userEntity.setUserCoordinate(new UserCoordinateEntity(point, List.of(userEntity)));
+        UserCoordinateEntity userCoordinateEntity =  new UserCoordinateEntity(point, List.of(userEntity));
+        userCoordinateRepository.save(userCoordinateEntity);
+        userEntity.setUserCoordinate(userCoordinateEntity);
 
         //send otp
         processOtp(userEntity);
