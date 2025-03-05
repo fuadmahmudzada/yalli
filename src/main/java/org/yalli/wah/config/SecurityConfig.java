@@ -103,7 +103,8 @@ public class SecurityConfig {
 //                        .requestMatchers("/v3/api-docs/**").permitAll()
 
                 )
-                .logout(logoutConfigurer -> logoutConfigurer.logoutUrl("/v1//logout")
+
+                .logout(logoutConfigurer -> logoutConfigurer.logoutUrl("/v1/logout")
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
                         .deleteCookies("SESSIONID", "XSRF-TOKEN")
