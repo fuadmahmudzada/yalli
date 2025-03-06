@@ -14,7 +14,7 @@ public class CookieConfig {
         DefaultCookieSerializer serializer = new DefaultCookieSerializer();
         serializer.setCookieName("SESSIONID");
         serializer.setCookiePath("/");
-        serializer.setDomainName(System.getenv("DOMAIN_NAME"));
+        serializer.setDomainName("localhost");
         serializer.setSameSite("None");
         serializer.setUseSecureCookie(true);
         return serializer;

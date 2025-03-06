@@ -17,6 +17,14 @@ spring:
               - email
               - profile
               - openid
+        provider:
+          google:
+            authorization-uri:
+              https://accounts.google.com/o/oauth2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri:
+              https://www.googleapis.com/oauth2/v3/userinfo
+
   datasource:
     username: yalli_database_8aka_user
     password: z9pu03Ay1hOqOiOB1s7HRvaqEFuf10H1

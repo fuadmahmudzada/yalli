@@ -1,5 +1,6 @@
 package org.yalli.wah.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -37,5 +38,14 @@ public class FileController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + fileName + "\"")
                 .contentType(MediaType.IMAGE_PNG)
                 .body(new InputStreamResource(minioService.downloadFile(fileName)));
+    }
+
+    @GetMapping("file/{pdfName}")
+    @Operation(summary = "cv download")
+    public ResponseEntity<InputStreamResource> downloadPDF(@PathVariable String pdfName) throws Exception {
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + pdfName + "\"")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(minioService.downloadFile(pdfName)));
     }
 }

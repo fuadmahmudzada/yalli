@@ -1,6 +1,7 @@
 package org.yalli.wah.service;
 
 
+import ch.qos.logback.classic.spi.IThrowableProxy;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -10,19 +11,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.yalli.wah.dao.entity.CommentEntity;
+import org.yalli.wah.dao.entity.ExperiencesEntity;
 import org.yalli.wah.dao.entity.MentorEntity;
 import org.yalli.wah.dao.repository.CommentRepository;
+import org.yalli.wah.dao.repository.ExperiencesRepository;
 import org.yalli.wah.dao.repository.MentorRepository;
+import org.yalli.wah.mapper.ExperiencesMapper;
 import org.yalli.wah.mapper.MentorMapper;
-import org.yalli.wah.model.dto.MentorDetailDto;
-import org.yalli.wah.model.dto.MentorSearchRequest;
-import org.yalli.wah.model.dto.MentorSearchDto;
-import org.yalli.wah.model.dto.MentorshipDto;
+import org.yalli.wah.model.dto.*;
 import org.yalli.wah.model.enums.MentorStatus;
 import org.yalli.wah.model.exception.InvalidInputException;
 import org.yalli.wah.model.exception.ResourceNotFoundException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -40,6 +42,8 @@ public class MentorService {
     private final EmailService emailService;
     private final UserService userService;
     private static final Locale AZERBAIJANI =  Locale.forLanguageTag("az");
+    private final ExperiencesRepository experiencesRepository;
+
     public Page<MentorSearchDto> searchMentors(MentorSearchRequest mentorSearchRequest, Pageable pageable) {
         Specification<MentorEntity> specification = Specification.where((root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -129,5 +133,17 @@ public class MentorService {
 
     private MentorEntity getMentorEntity(Long mentorId) {
         return mentorRepository.findById(mentorId).orElseThrow(() -> new ResourceNotFoundException("MENTOR_ENTITY_NOT_FOUND"));
+    }
+
+    public HashMap<String, Float> getMentorServices(Long id){
+        MentorEntity mentorEntity = mentorRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("MENTOR WITH " + id + " DOESN'T EXIST"));
+        System.out.println(mentorEntity.toString());
+        System.out.println(mentorEntity.getServices());
+        return mentorEntity.getServices();
+    }
+
+    public List<ExperienceDto> getMentorExps(Long id){
+        List<ExperiencesEntity> experiencesEntityList = experiencesRepository.findAllByUserEntity_Id(id);
+        return experiencesEntityList.stream().map(ExperiencesMapper.INSTANCE::toDto).toList();
     }
 }

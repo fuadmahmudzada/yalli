@@ -1,5 +1,6 @@
 package org.yalli.wah.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,5 +28,10 @@ public class Controller {
     @GetMapping("/user")
     public Map<String, Object> user(@AuthenticationPrincipal OAuth2User principal) {
         return principal.getAttributes();
+    }
+    @GetMapping("auth/google/callback")
+    public ResponseEntity<?> googleAuthSuccess(@AuthenticationPrincipal OAuth2User user) {
+        String email = user.getAttribute("email");
+        return ResponseEntity.ok(email);
     }
 }

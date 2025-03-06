@@ -2,9 +2,8 @@ package org.yalli.wah.model.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.security.core.parameters.P;
 import org.yalli.wah.model.enums.MentorCategory;
-import org.yalli.wah.model.enums.MentorExperienceYear;
+import org.yalli.wah.model.enums.MentorExpYearOnCategory;
 
 import java.util.List;
 
@@ -15,7 +14,7 @@ public class MentorSearchDto {
     private String fullName;
     private String country;
     private String city;
-    private MentorExperienceYear experienceYear;
+    private MentorExpYearOnCategory experienceYear;
     private List<String> skills;
     private MentorCategory mentorCategory;
     private String profilePicture;

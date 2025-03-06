@@ -7,16 +7,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.yalli.wah.model.dto.MentorDetailDto;
-import org.yalli.wah.model.dto.MentorSearchRequest;
-import org.yalli.wah.model.dto.MentorSearchDto;
-import org.yalli.wah.model.dto.MentorshipDto;
+import org.yalli.wah.model.dto.*;
 import org.yalli.wah.model.enums.MentorStatus;
 import org.yalli.wah.model.exception.InvalidInputException;
 import org.yalli.wah.service.MentorService;
 import org.yalli.wah.service.PermissionService;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
 
 import static org.yalli.wah.controller.EventController.removeCountryOfCity;
 
@@ -67,6 +66,19 @@ public class MentorController {
                 default -> throw new InvalidInputException("Unexpected value: " + operation);
             }
         }
+    }
+
+
+    @GetMapping("/services")
+    @ResponseStatus(HttpStatus.OK)
+    public HashMap<String, Float> getServices(@RequestHeader(required = true) Long id) {
+        return mentorService.getMentorServices(id);
+    }
+
+    @GetMapping("/experiences")
+    @ResponseStatus(HttpStatus.OK)
+    public List<ExperienceDto> getMentorExps(@RequestHeader Long id){
+        return mentorService.getMentorExps(id);
     }
 }
 

@@ -10,10 +10,12 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 import org.yalli.wah.model.enums.MentorCategory;
-import org.yalli.wah.model.enums.MentorExperienceYear;
+import org.yalli.wah.model.enums.MentorExp;
+import org.yalli.wah.model.enums.MentorExpYearOnCategory;
 import org.yalli.wah.model.enums.MentorStatus;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 
 @Data
@@ -41,8 +43,15 @@ public class MentorEntity {
     private String link;
     @Enumerated(EnumType.STRING)
     private MentorStatus status;
-    private MentorExperienceYear experienceLevel;
+    @Enumerated(EnumType.STRING)
+    private MentorExpYearOnCategory experienceYearOnCategory;
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "jsonb")
+    @Column(columnDefinition = "skills")
     private List<String> skills;
+    @JdbcTypeCode((SqlTypes.JSON))
+//    @Column(columnDefinition = "jsonb")
+    @Column(columnDefinition = "services")
+    private HashMap<String, Float> services;
+    @Enumerated(EnumType.STRING)
+    private MentorExp mentorExp;
 }

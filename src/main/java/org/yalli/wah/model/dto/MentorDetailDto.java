@@ -2,7 +2,8 @@ package org.yalli.wah.model.dto;
 
 import lombok.*;
 import org.yalli.wah.model.enums.MentorCategory;
-import org.yalli.wah.model.enums.MentorExperienceYear;
+import org.yalli.wah.model.enums.MentorExp;
+import org.yalli.wah.model.enums.MentorExpYearOnCategory;
 import org.yalli.wah.model.enums.SocialMedia;
 
 import java.time.LocalDate;
@@ -23,7 +24,8 @@ public class MentorDetailDto {
     private List<CommentDto> comments;
     private Double averageRating;
     private String link;
-    private MentorExperienceYear mentorExperienceYear;
+    private MentorExp mentorExp;
+    private MentorExpYearOnCategory mentorExpYearOnCategory;
     private List<SocialMedia> socialMediaLinks;
     private List<String> skills;
 }

@@ -143,13 +143,14 @@ public class SecurityConfig {
                         .ignoringRequestMatchers("/swagger-config")
                         .ignoringRequestMatchers("/v3/api-docs/**")
                         .ignoringRequestMatchers("/api/loginSuccess")
+                        .ignoringRequestMatchers("/auth/**")
                         .ignoringRequestMatchers("/api/user").ignoringRequestMatchers("/v1/users/map/coordinates")
                         .csrfTokenRepository(csrfTokenRepository))
 
 
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
-                .oauth2Login(oauth2 -> oauth2
-                        .defaultSuccessUrl("/", true)
+                .oauth2Login(oauth -> oauth
+                        .defaultSuccessUrl("/auth/google/callback", true)
                 )
 
                 .formLogin(
