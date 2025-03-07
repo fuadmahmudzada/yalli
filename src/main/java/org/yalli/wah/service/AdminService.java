@@ -83,13 +83,13 @@ public class AdminService {
         }
     }
 
-    public String login(LoginDto loginDto) {
+    public AdminLoginDto login(LoginDto loginDto) {
         var entity = adminRepository.findByEmail(loginDto.getEmail())
                 .orElseThrow(() -> new InvalidInputException("EMAIL_NOT_FOUND"));
         if (!entity.getPassword().equals(loginDto.getPassword())) {
             throw new InvalidInputException("INVALID_PASSWORD");
         }
-        return tokenUtil.generateToken();
+        return new AdminLoginDto(entity.getId(),tokenUtil.generateToken());
     }
 
 

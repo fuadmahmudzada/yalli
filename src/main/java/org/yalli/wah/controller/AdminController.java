@@ -84,7 +84,7 @@ public class AdminController {
     }
 
     @PostMapping("/login")
-    public String login(LoginDto loginDto) {
+    public AdminLoginDto login(LoginDto loginDto) {
         return adminService.login(loginDto);
     }
 
