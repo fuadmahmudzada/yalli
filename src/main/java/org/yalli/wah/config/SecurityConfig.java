@@ -46,14 +46,6 @@ public class SecurityConfig {
         csrfTokenRepository.setCookieCustomizer(responseCookieBuilder -> responseCookieBuilder.httpOnly(false).sameSite("none").secure(true));
 
         http.authorizeHttpRequests((requests) -> requests
-                                .requestMatchers(HttpMethod.GET, "/v1/admins").hasAnyRole("ADMIN", "SUPER_ADMIN", "MODERATOR")
-                                .requestMatchers(HttpMethod.GET, "/v1/admins/{adminId}").hasAnyRole("ADMIN", "SUPER_ADMIN", "MODERATOR")
-                                .requestMatchers(HttpMethod.POST, "/v1/admins").hasAnyRole("ADMIN", "SUPER_ADMIN", "MODERATOR")
-                                .requestMatchers(HttpMethod.PUT, "/v1/admins/{adminId}").hasAnyRole("ADMIN", "SUPER_ADMIN", "MODERATOR")
-                                .requestMatchers(HttpMethod.PATCH, "/v1/admins/{adminId}").permitAll()
-                                .requestMatchers(HttpMethod.DELETE, "/v1/admins/{adminId}").hasRole("SUPER_ADMIN")
-                                .requestMatchers("/v1/admins/add-notification", "/v1/admins/create-group", "/v1/admins/delete-group"
-                                        , "/v1/admins/events/**", "/v1/admins/update-group/").hasAnyRole("ADMIN", "SUPER_ADMIN", "MODERATOR")
                                 .requestMatchers("/v1/users/delete/{id}", "v1/users/search/**").authenticated()
                                 .requestMatchers("v1/comments").authenticated()
                                 .requestMatchers("v1/events/saveEvent", "v1/events/unsaveEvent").authenticated()
@@ -138,6 +130,7 @@ public class SecurityConfig {
                                 && request.getRequestURI().startsWith("/v1/events/"))
                         .ignoringRequestMatchers("/v1/files/{fileName}")
                         .ignoringRequestMatchers("/v1/admins/login")
+                        .ignoringRequestMatchers("/v1/admins/**")
                         .ignoringRequestMatchers("/swagger-ui/**")
                         .ignoringRequestMatchers("/oauth2/**", "/login/**")
                         .ignoringRequestMatchers("/swagger-config")
