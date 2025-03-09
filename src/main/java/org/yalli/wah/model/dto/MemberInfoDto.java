@@ -24,4 +24,5 @@ public class MemberInfoDto {
     private Map<SocialMedia, String> socialMediaAccounts;
     private List<String> notCompletedFields;
     private Float completionPercent;
+    private Boolean isMentor;
 }

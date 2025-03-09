@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.yalli.wah.dao.entity.UserCoordinateEntity;
 import org.yalli.wah.dao.entity.UserEntity;
+import org.yalli.wah.dao.repository.MentorRepository;
 import org.yalli.wah.dao.repository.UserCoordinateRepository;
 import org.yalli.wah.dao.repository.UserRepository;
 import org.yalli.wah.model.exception.ExcessivePasswordResetAttemptsException;
@@ -58,6 +59,7 @@ public class UserService {
     private final UserCoordinateRepository userCoordinateRepository;
 
     private final GeometryFactory factory = new GeometryFactory(new PrecisionModel(), 4326);
+    private final MentorRepository mentorRepository;
 
     public ResponseEntity<LoginResponseDto> login(Authentication authentication) throws IOException, InterruptedException {
         log.info("ActionLog.login.start email {}", authentication.getName());
@@ -491,7 +493,9 @@ public class UserService {
             return new ResourceNotFoundException("MEMBER_NOT_FOUND");
         });
         EmptyFieldsDto emptyFieldsDto = calcUserEmptyFields(userEntity);
-        return UserMapper.INSTANCE.mapUserEntityToMemberInfoDto(userEntity, emptyFieldsDto.getNotCompletedFields(), emptyFieldsDto.getCompletionPercent());
+        MemberInfoDto memberInfoDto = UserMapper.INSTANCE.mapUserEntityToMemberInfoDto(userEntity, emptyFieldsDto.getNotCompletedFields(), emptyFieldsDto.getCompletionPercent());
+        memberInfoDto.setIsMentor(mentorRepository.existsByUser_Id(userEntity.getId()));
+        return memberInfoDto;
     }
 
     public void updateUser(MemberUpdateDto memberUpdateDto, Long id) {
