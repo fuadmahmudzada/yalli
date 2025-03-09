@@ -146,4 +146,8 @@ public class MentorService {
         List<ExperiencesEntity> experiencesEntityList = experiencesRepository.findAllByUserEntity_Id(id);
         return experiencesEntityList.stream().map(ExperiencesMapper.INSTANCE::toDto).toList();
     }
+    public List<MentorAdminDto> getAllMentors(){
+        List<MentorEntity> mentorEntities =  mentorRepository.findAll();
+        return mentorEntities.stream().map(MentorMapper.INSTANCE::mapMentorToMentorAdminDto).toList();
+    }
 }
