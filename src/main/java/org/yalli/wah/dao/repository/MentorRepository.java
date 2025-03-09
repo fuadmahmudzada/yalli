@@ -13,5 +13,5 @@ public interface MentorRepository extends JpaRepository<MentorEntity, Long>, Jpa
 
     Optional<MentorEntity> findByUser_IdAndStatusIn(Long id, Collection<MentorStatus> statuses);
 
-    Boolean existsByUser_Id(Long userId);
+    Boolean existsByUser_IdAndStatus(Long userId, MentorStatus status);
 }

@@ -20,6 +20,7 @@ import org.yalli.wah.dao.entity.UserEntity;
 import org.yalli.wah.dao.repository.MentorRepository;
 import org.yalli.wah.dao.repository.UserCoordinateRepository;
 import org.yalli.wah.dao.repository.UserRepository;
+import org.yalli.wah.model.enums.MentorStatus;
 import org.yalli.wah.model.exception.ExcessivePasswordResetAttemptsException;
 import org.yalli.wah.mapper.ProfileMapper;
 import org.yalli.wah.mapper.UserMapper;
@@ -494,7 +495,7 @@ public class UserService {
         });
         EmptyFieldsDto emptyFieldsDto = calcUserEmptyFields(userEntity);
         MemberInfoDto memberInfoDto = UserMapper.INSTANCE.mapUserEntityToMemberInfoDto(userEntity, emptyFieldsDto.getNotCompletedFields(), emptyFieldsDto.getCompletionPercent());
-        memberInfoDto.setIsMentor(mentorRepository.existsByUser_Id(userEntity.getId()));
+        memberInfoDto.setIsMentor(mentorRepository.existsByUser_IdAndStatus(userEntity.getId(), MentorStatus.ACCEPTED));
         return memberInfoDto;
     }
 
