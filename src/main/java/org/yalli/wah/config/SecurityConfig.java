@@ -129,6 +129,7 @@ public class SecurityConfig {
                         .ignoringRequestMatchers(request -> request.getMethod().equals(HttpMethod.GET.name())
                                 && request.getRequestURI().startsWith("/v1/events/"))
                         .ignoringRequestMatchers("/v1/files/{fileName}")
+                        .ignoringRequestMatchers("/v1/admins/**")
                         .ignoringRequestMatchers("/v1/admins/login")
                         .ignoringRequestMatchers("/v1/admins/**")
                         .ignoringRequestMatchers("/swagger-ui/**")

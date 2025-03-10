@@ -4,6 +4,7 @@ package org.yalli.wah.model.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.yalli.wah.model.enums.MentorStatus;
 import org.yalli.wah.model.enums.SocialMedia;
 
 import java.time.LocalDate;
@@ -25,4 +26,5 @@ public class MemberInfoDto {
     private List<String> notCompletedFields;
     private Float completionPercent;
     private Boolean isMentor;
+    private MentorStatus mentorStatus;
 }

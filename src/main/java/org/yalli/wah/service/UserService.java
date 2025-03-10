@@ -1,6 +1,7 @@
 package org.yalli.wah.service;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
+import kotlin.OptIn;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.locationtech.jts.geom.*;
@@ -15,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.yalli.wah.dao.entity.MentorEntity;
 import org.yalli.wah.dao.entity.UserCoordinateEntity;
 import org.yalli.wah.dao.entity.UserEntity;
 import org.yalli.wah.dao.repository.MentorRepository;
@@ -496,6 +498,13 @@ public class UserService {
         EmptyFieldsDto emptyFieldsDto = calcUserEmptyFields(userEntity);
         MemberInfoDto memberInfoDto = UserMapper.INSTANCE.mapUserEntityToMemberInfoDto(userEntity, emptyFieldsDto.getNotCompletedFields(), emptyFieldsDto.getCompletionPercent());
         memberInfoDto.setIsMentor(mentorRepository.existsByUser_IdAndStatus(userEntity.getId(), MentorStatus.ACCEPTED));
+        Optional<MentorEntity> mentorEntity = mentorRepository.findByUser_Id(userEntity.getId());
+        if(mentorEntity.isPresent()){
+            memberInfoDto.setMentorStatus(mentorEntity.get().getStatus());
+        } else{
+            memberInfoDto.setMentorStatus(null);
+        }
+
         return memberInfoDto;
     }
 

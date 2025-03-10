@@ -6,6 +6,7 @@ import org.yalli.wah.dao.entity.MentorEntity;
 import org.yalli.wah.model.enums.MentorStatus;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -14,4 +15,5 @@ public interface MentorRepository extends JpaRepository<MentorEntity, Long>, Jpa
     Optional<MentorEntity> findByUser_IdAndStatusIn(Long id, Collection<MentorStatus> statuses);
 
     Boolean existsByUser_IdAndStatus(Long userId, MentorStatus status);
+    Optional<MentorEntity> findByUser_Id(Long userId);
 }
