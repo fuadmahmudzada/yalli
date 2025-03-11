@@ -8,7 +8,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public enum Role {
-    ADMIN(List.of("create", "update", "delete", "view")),
+    ADMIN(List.of("create", "update", "delete", "view", "mentorshipApply")),
     SUPER_ADMIN(List.of()),
     MODERATOR(List.of("create", "update", "delete", "mentorshipApply", "view"));
 
