@@ -57,7 +57,6 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.DELETE, "v1/groups/users/{userId}").authenticated()
                                 .requestMatchers(HttpMethod.POST, "v1/groups").authenticated()
                                 .requestMatchers(HttpMethod.POST, "v1/mentors").authenticated()
-                                .requestMatchers(HttpMethod.PATCH, "v1/mentors/{id}").authenticated()
                                 .requestMatchers("v1/notifications/getAll").authenticated()
                                 .requestMatchers("/api/loginSuccess", "/api/user").authenticated()
                                 .requestMatchers("v1/user/user-info", "/", "/error").permitAll()
@@ -78,6 +77,7 @@ public class SecurityConfig {
 //                                .requestMatchers("/loginFailure").permitAll()
 //                                .requestMatchers("/user").authenticated()
 //                                .requestMatchers("/", "/error", "/webjars/**", "/login/**",  "/login?error=true").permitAll() // Allow access to essential resources
+                                .requestMatchers(HttpMethod.PATCH, "v1/mentors/{id}").permitAll()
                                 .anyRequest().permitAll()
 
 //                        .requestMatchers("/v1/mentors/search/**", "v1/users/login",

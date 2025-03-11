@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.InvalidIsolationLevelException;
 import org.springframework.transaction.annotation.Transactional;
 import org.yalli.wah.dao.entity.EventEntity;
 import org.yalli.wah.dao.entity.UserEntity;
@@ -20,6 +21,7 @@ import org.yalli.wah.model.dto.EventDto;
 import org.yalli.wah.model.dto.EventSaveDto;
 import org.yalli.wah.model.dto.EventSearchRequest;
 import org.yalli.wah.model.enums.EventCategory;
+import org.yalli.wah.model.exception.InvalidInputException;
 import org.yalli.wah.model.exception.ResourceNotFoundException;
 
 import java.time.LocalDate;
@@ -141,6 +143,8 @@ public class EventService {
             eventEntity.getUsers().add(userEntity);
             userRepository.save(userEntity);
             eventRepository.save(eventEntity);
+        } else{
+            throw new InvalidInputException("User Have Already Saved Event");
         }
     }
 
