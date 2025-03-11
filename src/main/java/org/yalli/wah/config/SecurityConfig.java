@@ -22,6 +22,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -138,6 +139,7 @@ public class SecurityConfig {
                         .ignoringRequestMatchers("/v3/api-docs/**")
                         .ignoringRequestMatchers("/api/loginSuccess")
                         .ignoringRequestMatchers("/auth/**")
+                        .ignoringRequestMatchers( "/v1/mentors/{id}")
                         .ignoringRequestMatchers("/api/user").ignoringRequestMatchers("/v1/users/map/coordinates")
                         .csrfTokenRepository(csrfTokenRepository))
 
