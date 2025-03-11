@@ -50,7 +50,7 @@ public class SecurityConfig {
                                 .requestMatchers("/v1/users/delete/{id}", "v1/users/search/**").authenticated()
                                 .requestMatchers("v1/comments").authenticated()
                                 .requestMatchers("v1/events/saveEvent", "v1/events/unsaveEvent").authenticated()
-                                .requestMatchers("v1/files/upload").authenticated()
+                                .requestMatchers("v1/files/upload").permitAll()
                                 .requestMatchers(HttpMethod.GET, "v1/groups/users/{userId}").authenticated()
                                 .requestMatchers("v1/groups/{groupId}/users/{userId}").authenticated()
                                 .requestMatchers(HttpMethod.PUT, "v1/groups").authenticated()
@@ -140,6 +140,7 @@ public class SecurityConfig {
                         .ignoringRequestMatchers("/api/loginSuccess")
                         .ignoringRequestMatchers("/auth/**")
                         .ignoringRequestMatchers( "/v1/mentors/{id}")
+                        .ignoringRequestMatchers("/v1/files/upload")
                         .ignoringRequestMatchers("/api/user").ignoringRequestMatchers("/v1/users/map/coordinates")
                         .csrfTokenRepository(csrfTokenRepository))
 
