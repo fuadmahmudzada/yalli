@@ -30,7 +30,7 @@ public class EventEntity {
     private LocalDate date;
     private Boolean isPopular;
     private String link;
-    @ManyToMany(mappedBy = "savedEvents")
+    @ManyToMany(mappedBy = "savedEvents", cascade = CascadeType.PERSIST)
     private List<UserEntity> users = new ArrayList<>();
     @CreationTimestamp
     private LocalDateTime createdAt;

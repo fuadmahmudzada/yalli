@@ -67,6 +67,9 @@ public class TranslateUtil {
         countryMap.put("İsveçrə", "Switzerland");
         countryMap.put("Portuqaliya", "Portugal");
         countryMap.put("Cənubi Koreya", "South Korea");
+        countryMap.put("Hindistan", "India");
+        countryMap.put("Danimarka", "Denmark");
+
 
     }
 

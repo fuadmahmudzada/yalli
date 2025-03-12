@@ -5,8 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.yalli.wah.dao.entity.EventEntity;
+import org.yalli.wah.dao.entity.UserEntity;
 import org.yalli.wah.dao.repository.EventRepository;
+import org.yalli.wah.dao.repository.UserRepository;
 import org.yalli.wah.model.dto.*;
+import org.yalli.wah.model.exception.ResourceNotFoundException;
 import org.yalli.wah.service.*;
 
 import java.util.List;
@@ -21,6 +25,7 @@ public class AdminController {
     private final EventService eventService;
     private final EventRepository eventRepository;
     private final MentorService mentorService;
+    private final UserRepository userRepository;
 
     @GetMapping
     @Operation(summary = "get all admins")
@@ -127,6 +132,13 @@ public class AdminController {
     @DeleteMapping("/events/delete-event/{id}")
     public void deleteEvent(@PathVariable Long id, @RequestHeader("user-id") Long userId){
         if(permissionService.hasPermission(userId, "delete")){
+            List<UserEntity> users =  eventRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Event not found")).getUsers();
+            users.stream().forEach(x->{
+                List<EventEntity> events = x.getSavedEvents();
+                events.remove(eventRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Event not found")));
+                x.setSavedEvents(events);
+            });
+            userRepository.saveAllAndFlush(users);
             eventRepository.deleteById(id);
         }
     }

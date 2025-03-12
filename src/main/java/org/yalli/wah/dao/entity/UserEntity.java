@@ -42,7 +42,7 @@ public class UserEntity {
     private String profilePictureUrl;
     @Column(unique = true)
     private String googleId;
-    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @ManyToMany(cascade = {CascadeType.PERSIST})
     @JoinTable(
             name = "user_saved_events",
             joinColumns = @JoinColumn(name = "user_id"),
