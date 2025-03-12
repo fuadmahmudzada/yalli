@@ -76,7 +76,16 @@ public class MentorService {
             predicates.add(criteriaBuilder.equal(root.get("status"), MentorStatus.ACCEPTED));
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         });
-        return mentorRepository.findAll(specification, pageable).map(MentorMapper.INSTANCE::mapMentorEntityToMentorSearchDto);
+        return mentorRepository.findAll(specification, pageable).map(x-> {
+            int avgRating = 0;
+            for(CommentEntity commentEntity: x.getComments()){
+                avgRating+=commentEntity.getRate();
+            }
+            avgRating = !x.getComments().isEmpty() ? (byte)avgRating/x.getComments().size() : 0;
+            return MentorMapper.INSTANCE.mapMentorEntityToMentorSearchDto(x,
+                    x.getComments().size(),
+                    (byte)avgRating);
+        });
     }
 
     public MentorDetailDto getMentorById(Long id) {

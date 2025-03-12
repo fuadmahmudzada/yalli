@@ -22,12 +22,13 @@ public interface MentorMapper {
     @Mapping(target = "profilePicture", source = "mentorEntity.user.profilePictureUrl")
     MentorDetailDto mapMentorToMentorDetailDto(MentorEntity mentorEntity, Double averageRating);
 
-    @Mapping(target = "fullName", source = "user.fullName")
+    @Mapping(target = "fullName", source = "mentorEntity.user.fullName")
     @Mapping(target = "country", source = "mentorEntity.user.country")
     @Mapping(target = "city", source = "mentorEntity.user.city")
-    @Mapping(target = "profilePicture", source = "user.profilePictureUrl")
+    @Mapping(target = "profilePicture", source = "mentorEntity.user.profilePictureUrl")
+    @Mapping(target = "experienceYear", source = "mentorEntity.experienceYearOnCategory")
     @Mapping(target = "skills", expression = "java(fetchFirstThree(mentorEntity.getSkills()))")
-    MentorSearchDto mapMentorEntityToMentorSearchDto(MentorEntity mentorEntity);
+    MentorSearchDto mapMentorEntityToMentorSearchDto(MentorEntity mentorEntity, Integer commentCount, Byte averageRating);
 
     @Mapping(target = "status", expression = "java(MentorStatus.valueOf(\"APPLIED\"))")
     @Mapping(target = "user.id", source = "userId")
@@ -36,6 +37,7 @@ public interface MentorMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "link", source = "cvUrl")
+    @Mapping(target = "mentorCategory", source = "category")
     MentorEntity mapMentorshipDtoToEntity(MentorshipDto mentorshipDto);
 
     default List<String> fetchFirstThree(List<String> list){
