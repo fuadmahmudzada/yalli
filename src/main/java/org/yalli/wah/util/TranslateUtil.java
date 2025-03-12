@@ -33,7 +33,7 @@ public class TranslateUtil {
         countryMap.put("İtaliya", "Italy");
         countryMap.put("Avstraliya", "Australia");
         countryMap.put("İspaniya", "Spain");
-        countryMap.put("Niderland", "Netherlands");
+        countryMap.put("Niderland", "The Netherlands");
         countryMap.put("Avstriya", "Austria");
         countryMap.put("İsveç", "Sweden");
         countryMap.put("Belçika", "Belgium");
