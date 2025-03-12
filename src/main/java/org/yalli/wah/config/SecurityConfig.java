@@ -120,30 +120,31 @@ public class SecurityConfig {
                         return config;
                     }
                 }))
-                .csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable())
-//                .csrf(csrfConfigurer -> csrfConfigurer.csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
-//                        .ignoringRequestMatchers("/v1/mentors/search/**", "/v1/users/login",
-//                                "/v1/users/register/**"
-//                                , "/v1/users/reset-password/**"
-//                                , "/v1/users/send-otp"
-//                                , "/v1/users/confirm")
-//                        .ignoringRequestMatchers("/v1/events/{id}")
-//                        .ignoringRequestMatchers(request -> request.getMethod().equals(HttpMethod.GET.name())
-//                                && request.getRequestURI().startsWith("/v1/events/"))
-//                        .ignoringRequestMatchers("/v1/files/{fileName}")
-//                        .ignoringRequestMatchers("/v1/admins/**")
-//                        .ignoringRequestMatchers("/v1/admins/login")
-//                        .ignoringRequestMatchers("/v1/admins/**")
-//                        .ignoringRequestMatchers("/swagger-ui/**")
-//                        .ignoringRequestMatchers("/oauth2/**", "/login/**")
-//                        .ignoringRequestMatchers("/swagger-config")
-//                        .ignoringRequestMatchers("/v3/api-docs/**")
-//                        .ignoringRequestMatchers("/api/loginSuccess")
-//                        .ignoringRequestMatchers("/auth/**")
-//                        .ignoringRequestMatchers( "/v1/mentors/{id}")
-//                        .ignoringRequestMatchers("/v1/files/upload")
-//                        .ignoringRequestMatchers("/api/user").ignoringRequestMatchers("/v1/users/map/coordinates")
-//                        .csrfTokenRepository(csrfTokenRepository))
+
+                .csrf(csrfConfigurer -> csrfConfigurer.csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
+                        .ignoringRequestMatchers("/v1/mentors/search/**", "/v1/users/login",
+                                "/v1/users/register/**"
+                                , "/v1/users/reset-password/**"
+                                , "/v1/users/send-otp"
+                                , "/v1/users/confirm")
+                        .ignoringRequestMatchers("/v1/**")
+                        .ignoringRequestMatchers("/v1/events/{id}")
+                        .ignoringRequestMatchers(request -> request.getMethod().equals(HttpMethod.GET.name())
+                                && request.getRequestURI().startsWith("/v1/events/"))
+                        .ignoringRequestMatchers("/v1/files/{fileName}")
+                        .ignoringRequestMatchers("/v1/admins/**")
+                        .ignoringRequestMatchers("/v1/admins/login")
+                        .ignoringRequestMatchers("/v1/admins/**")
+                        .ignoringRequestMatchers("/swagger-ui/**")
+                        .ignoringRequestMatchers("/oauth2/**", "/login/**")
+                        .ignoringRequestMatchers("/swagger-config")
+                        .ignoringRequestMatchers("/v3/api-docs/**")
+                        .ignoringRequestMatchers("/api/loginSuccess")
+                        .ignoringRequestMatchers("/auth/**")
+                        .ignoringRequestMatchers( "/v1/mentors/{id}")
+                        .ignoringRequestMatchers("/v1/files/upload")
+                        .ignoringRequestMatchers("/api/user").ignoringRequestMatchers("/v1/users/map/coordinates")
+                        .csrfTokenRepository(csrfTokenRepository))
 
 
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
