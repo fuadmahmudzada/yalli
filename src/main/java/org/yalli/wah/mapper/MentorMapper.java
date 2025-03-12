@@ -35,6 +35,7 @@ public interface MentorMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "link", source = "cvUrl")
     MentorEntity mapMentorshipDtoToEntity(MentorshipDto mentorshipDto);
 
     default List<String> fetchFirstThree(List<String> list){
