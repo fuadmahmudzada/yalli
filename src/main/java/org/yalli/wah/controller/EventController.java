@@ -59,6 +59,9 @@ public class EventController {
         }
         for(String city : filter.getCity()) {
             String searchCity = TranslateUtil.getCityTranslation(city);
+            if(searchCity.contains(" ")){
+                searchCity = String.join("%20" ,searchCity.split(" "));
+            }
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create("https://secure.geonames.org/searchJSON?q="+ searchCity+ "&maxRows=1&username=dedatom596minduls.c"))
                     .header("Content-Type", "application/json")
