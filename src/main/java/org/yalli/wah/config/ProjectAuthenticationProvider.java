@@ -10,6 +10,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationConverter;
 import org.springframework.stereotype.Component;
+import org.yalli.wah.model.exception.InvalidInputException;
+import org.yalli.wah.model.exception.ResourceNotFoundException;
 
 @Component
 public class ProjectAuthenticationProvider implements AuthenticationProvider {
