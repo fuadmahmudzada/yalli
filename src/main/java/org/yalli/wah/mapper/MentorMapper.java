@@ -9,6 +9,7 @@ import org.yalli.wah.model.dto.MentorSearchDto;
 import org.yalli.wah.model.dto.MentorshipDto;
 import org.yalli.wah.model.enums.MentorStatus;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -19,8 +20,14 @@ public interface MentorMapper {
     @Mapping(target = "fullName", source = "mentorEntity.user.fullName")
     @Mapping(target = "country", source = "mentorEntity.user.country")
     @Mapping(target = "city", source = "mentorEntity.user.city")
+    @Mapping(target = "email", source = "mentorEntity.user.email")
+    @Mapping(target = "birthDate", source = "mentorEntity.user.birthDate")
+    @Mapping(target = "socialMediaLinks", source = "mentorEntity.user.socialMediaAccounts")
     @Mapping(target = "profilePicture", source = "mentorEntity.user.profilePictureUrl")
+    @Mapping(target = "mentorExpYearOnCategory", source = "mentorEntity.experienceYearOnCategory")
     MentorDetailDto mapMentorToMentorDetailDto(MentorEntity mentorEntity, Double averageRating);
+
+
 
     @Mapping(target = "fullName", source = "mentorEntity.user.fullName")
     @Mapping(target = "country", source = "mentorEntity.user.country")

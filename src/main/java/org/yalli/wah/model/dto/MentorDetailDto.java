@@ -7,6 +7,7 @@ import org.yalli.wah.model.enums.MentorExpYearOnCategory;
 import org.yalli.wah.model.enums.SocialMedia;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 
 @Data
@@ -26,6 +27,6 @@ public class MentorDetailDto {
     private String link;
     private MentorExp mentorExp;
     private MentorExpYearOnCategory mentorExpYearOnCategory;
-    private List<SocialMedia> socialMediaLinks;
+    private HashMap<SocialMedia, String> socialMediaLinks;
     private List<String> skills;
 }
