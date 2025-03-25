@@ -159,7 +159,7 @@ public class AdminController {
         if(!permissionService.hasPermission(userId,"delete")){
             throw new AccessDeniedException("User can't do this");
         }
-        mentorService.deleteMentor(userId);
+        mentorService.deleteMentor(mentorId);
 
     }
 
