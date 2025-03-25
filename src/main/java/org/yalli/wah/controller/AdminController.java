@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 import org.yalli.wah.dao.entity.EventEntity;
 import org.yalli.wah.dao.entity.UserEntity;
@@ -150,6 +151,16 @@ public class AdminController {
             return null;
         }
         return mentorService.getAllMentors();
+    }
+
+    @DeleteMapping("/mentors")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteMentor(@RequestHeader("mentor-id") Long mentorId, @RequestHeader("user-id") Long userId){
+        if(!permissionService.hasPermission(userId,"delete")){
+            throw new AccessDeniedException("User can't do this");
+        }
+        mentorService.deleteMentor(userId);
+
     }
 
 }

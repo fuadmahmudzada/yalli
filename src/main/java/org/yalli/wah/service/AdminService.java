@@ -89,7 +89,7 @@ public class AdminService {
         if (!entity.getPassword().equals(loginDto.getPassword())) {
             throw new InvalidInputException("INVALID_PASSWORD");
         }
-        return new AdminLoginDto(entity.getId(),tokenUtil.generateToken());
+        return new AdminLoginDto(entity.getId(),tokenUtil.generateToken(),entity.getRole());
     }
 
 
