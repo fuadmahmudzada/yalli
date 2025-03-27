@@ -8,10 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.yalli.wah.dao.entity.AdminEntity;
 import org.yalli.wah.dao.entity.NotificationEntity;
-import org.yalli.wah.dao.repository.AdminRepository;
-import org.yalli.wah.dao.repository.EventRepository;
-import org.yalli.wah.dao.repository.GroupRepository;
-import org.yalli.wah.dao.repository.NotificationRepository;
+import org.yalli.wah.dao.repository.*;
 import org.yalli.wah.mapper.AdminMapper;
 import org.yalli.wah.mapper.EventMapper;
 import org.yalli.wah.mapper.GroupMapper;
@@ -32,6 +29,7 @@ public class AdminService {
     private final TokenUtil tokenUtil;
     private final GroupRepository groupRepository;
     private final EventRepository eventRepository;
+    private final UserRepository userRepository;
 
     public void saveAdmin(AdminDto admin, Long userId) {
         log.info("saveAdmin by admin {}", userId);
@@ -109,7 +107,8 @@ public class AdminService {
 
     public void createGroup(AdminGroupRequestDto adminGroupRequestDto, Long adminId) {
         log.info("ActionLog.createGroup.start by admin {}", adminId);
-        groupRepository.save(AdminMapper.INSTANCE.ToGroupEntity(adminGroupRequestDto));
+        Long userId = userRepository.findByEmail(adminRepository.findById(adminId).orElseThrow(()->new ResourceNotFoundException("admin not found")).getEmail()).orElseThrow(()->new ResourceNotFoundException("admin should have user in platform")).getId();
+        groupRepository.save(AdminMapper.INSTANCE.ToGroupEntity(adminGroupRequestDto, userId));
         log.info("ActionLog.createGroup.end by admin {}", adminId);
     }
 
