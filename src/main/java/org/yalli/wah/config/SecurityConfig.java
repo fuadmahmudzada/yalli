@@ -52,7 +52,6 @@ public class SecurityConfig {
                                 .requestMatchers("v1/events/saveEvent", "v1/events/unsaveEvent").authenticated()
                                 .requestMatchers("v1/files/upload").permitAll()
                                 .requestMatchers(HttpMethod.GET, "v1/groups/users/{userId}").authenticated()
-                                .requestMatchers("v1/groups/{groupId}/users/{userId}").authenticated()
                                 .requestMatchers(HttpMethod.PUT, "v1/groups").authenticated()
                                 .requestMatchers(HttpMethod.DELETE, "v1/groups/users/{userId}").authenticated()
                                 .requestMatchers(HttpMethod.POST, "v1/groups").authenticated()
